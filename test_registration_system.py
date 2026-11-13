@@ -293,8 +293,8 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertIn("registrations", dash_body)
         self.assertIn("stats", dash_body)
 
-        # 5. Create a temporary registration, then Edit it and Delete it as Admin
-        reg_status, reg_res, _ = http_json_request(
+        # 5. Create a temporary registration, verify strict JSON schema, then Edit & Delete it as Admin
+        reg_status, reg_res, reg_headers = http_json_request(
             "/api/register",
             "POST",
             {
@@ -306,7 +306,33 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
             },
         )
         self.assertEqual(reg_status, 200)
+        self.assertIn("application/json", reg_headers.get("Content-Type", ""))
+        self.assertTrue(reg_res.get("success"))
+        self.assertEqual(reg_res.get("message"), "Registration completed successfully")
+        self.assertIsInstance(reg_res.get("data"), dict)
         created_id = reg_res["registrationId"]
+
+        # Verify invalid payload returns HTTP 400 with application/json and both message & error
+        bad_status, bad_res, bad_headers = http_json_request(
+            "/api/register",
+            "POST",
+            {"name": "A", "place": "Nilambur", "batchYear": "2019", "whatsappNumber": "123", "participation": "പങ്കെടുക്കും"},
+        )
+        self.assertEqual(bad_status, 400)
+        self.assertIn("application/json", bad_headers.get("Content-Type", ""))
+        self.assertFalse(bad_res.get("success", True))
+        self.assertTrue(bad_res.get("message"))
+
+        # Verify unknown /api/* route & unsupported method return JSON 404/405 (never HTML)
+        notfound_status, notfound_res, notfound_headers = http_json_request("/api/nonexistent", "GET")
+        self.assertEqual(notfound_status, 404)
+        self.assertIn("application/json", notfound_headers.get("Content-Type", ""))
+        self.assertFalse(notfound_res.get("success", True))
+
+        method_status, method_res, method_headers = http_json_request("/api/register", "PUT", {})
+        self.assertEqual(method_status, 405)
+        self.assertIn("application/json", method_headers.get("Content-Type", ""))
+        self.assertFalse(method_res.get("success", True))
 
         # 5A. Edit the registration via /api/admin/update
         upd_status, upd_body, _ = http_json_request(

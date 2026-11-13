@@ -1339,9 +1339,11 @@ function doPost(e) {
     return ContentService.createTextOutput(JSON.stringify(result))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
+    var errMsg = err && err.message ? err.message : 'Registration failed. Please try again.';
     return ContentService.createTextOutput(JSON.stringify({
       success: false,
-      error: err && err.message ? err.message : 'Server error processing request.'
+      message: errMsg,
+      error: errMsg
     })).setMimeType(ContentService.MimeType.JSON);
   }
 }
@@ -1686,8 +1688,23 @@ function submitRegistrationFromWebApp(payload) {
     var processed = processRegistrationRow(ss, sheet, lastRow);
     updateDashboardTablesAndCharts(ss);
 
+    var recData = {
+      registrationId: processed.regId,
+      confirmationMessage: CONFIG.CONFIRMATION_MESSAGE,
+      name: name,
+      place: place,
+      batchYear: batchYear,
+      formattedPhone: phoneCheck.display,
+      participation: participation,
+      shouldSendWhatsApp: processed.whatsapp.shouldSend,
+      whatsAppMessage: processed.whatsapp.message,
+      whatsAppClickToChatUrl: processed.whatsapp.clickToChatUrl
+    };
+
     return {
       success: true,
+      message: 'Registration completed successfully',
+      data: recData,
       registrationId: processed.regId,
       confirmationMessage: CONFIG.CONFIRMATION_MESSAGE,
       name: name,

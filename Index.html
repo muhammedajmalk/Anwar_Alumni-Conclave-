@@ -2129,7 +2129,7 @@
         padding: 7px 12px;
         font-size: 12px;
       }
-      .form-input,
+      .text-input,
       .admin-input,
       .filter-input,
       .filter-select {
@@ -2903,44 +2903,88 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       // -----------------------------------------------------------------------
       // Centralized Safe JSON API Client (prevents "Unexpected token ... not valid JSON")
       // -----------------------------------------------------------------------
-      function getApiUrl(path) {
+      function getApiBase() {
         if (window.AUFBRUCH_API_BASE) {
-          return String(window.AUFBRUCH_API_BASE).replace(/\/+$/, '') + path;
+          return String(window.AUFBRUCH_API_BASE).replace(/\/+$/, '');
+        }
+        var metaApi = document.querySelector('meta[name="aufbruch-api-base"]');
+        if (metaApi && metaApi.getAttribute('content')) {
+          return String(metaApi.getAttribute('content')).trim().replace(/\/+$/, '');
         }
         if (window.location && window.location.protocol === 'file:') {
-          return 'http://localhost:8765' + path;
+          return 'http://localhost:8765';
         }
-        return path;
+        return '';
+      }
+
+      function getApiUrl(path) {
+        return getApiBase() + path;
+      }
+
+      function isLocalStaticDevHost() {
+        if (!window.location) return false;
+        var host = window.location.hostname;
+        var port = window.location.port;
+        return (host === 'localhost' || host === '127.0.0.1') && port !== '8765';
+      }
+
+      function parseJsonSafe(resp, path) {
+        var contentType = (resp.headers && resp.headers.get('content-type')) ? resp.headers.get('content-type').toLowerCase() : '';
+        return resp.text().then(function(rawText) {
+          var trimmed = (rawText || '').trim();
+          var parsed = null;
+          if (trimmed) {
+            try {
+              parsed = JSON.parse(trimmed);
+            } catch (parseErr) {
+              var nonJsonErr = new Error(
+                'Backend API (' + path + ') returned an invalid non-JSON response (HTTP ' +
+                resp.status + '). Please ensure the Python backend server (server.py) is running and handling /api/* routes.'
+              );
+              nonJsonErr.isNonJson = true;
+              nonJsonErr.httpStatus = resp.status;
+              throw nonJsonErr;
+            }
+          } else {
+            parsed = {};
+          }
+          if (contentType && contentType.indexOf('application/json') === -1 && (!parsed || typeof parsed !== 'object')) {
+            var typeErr = new Error(
+              'Backend API (' + path + ') returned unexpected Content-Type (' + contentType + ') instead of application/json.'
+            );
+            typeErr.isNonJson = true;
+            typeErr.httpStatus = resp.status;
+            throw typeErr;
+          }
+          return {
+            status: resp.status,
+            ok: resp.ok,
+            data: parsed
+          };
+        });
       }
 
       function apiFetchJson(path, options) {
         var opts = options || {};
         var headers = Object.assign({ 'Accept': 'application/json' }, opts.headers || {});
         var fetchOpts = Object.assign({}, opts, { headers: headers });
+        var primaryUrl = getApiUrl(path);
 
-        return fetch(getApiUrl(path), fetchOpts).then(function(resp) {
-          return resp.text().then(function(rawText) {
-            var trimmed = (rawText || '').trim();
-            var parsed = null;
-            if (trimmed) {
-              try {
-                parsed = JSON.parse(trimmed);
-              } catch (parseErr) {
-                throw new Error(
-                  'Backend API (' + path + ') returned an invalid non-JSON response (HTTP ' +
-                  resp.status + '). Please ensure the Python backend server (server.py) is running and handling /api/* routes.'
-                );
-              }
-            } else {
-              parsed = {};
+        return fetch(primaryUrl, fetchOpts)
+          .then(function(resp) {
+            return parseJsonSafe(resp, path);
+          })
+          .catch(function(err) {
+            // If running under a separate local static dev server (e.g. Live Server :5500), retry server.py on :8765
+            if (!getApiBase() && isLocalStaticDevHost() && (err.isNonJson || err.httpStatus === 404 || err.httpStatus === 405)) {
+              var devFallbackOpts = Object.assign({}, fetchOpts);
+              delete devFallbackOpts.credentials;
+              return fetch('http://localhost:8765' + path, devFallbackOpts).then(function(fallbackResp) {
+                return parseJsonSafe(fallbackResp, path);
+              });
             }
-            return {
-              status: resp.status,
-              ok: resp.ok,
-              data: parsed
-            };
+            throw err;
           });
-        });
       }
 
       // -----------------------------------------------------------------------
@@ -3246,7 +3290,11 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         })
           .then(function(result) {
             if (!result.ok || !result.data || !result.data.success) {
-              throw new Error((result.data && result.data.error) ? result.data.error : 'Failed to save registration.');
+              throw new Error(
+                (result.data && (result.data.message || result.data.error))
+                  ? (result.data.message || result.data.error)
+                  : 'Registration failed. Please try again.'
+              );
             }
             renderConfirmationView(result.data);
           })
@@ -3340,6 +3388,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       });
 
       function renderConfirmationView(res) {
+        var r = (res && res.data && typeof res.data === 'object') ? Object.assign({}, res, res.data) : (res || {});
         isSubmitting = false;
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<span>Submit Registration</span><span>✓</span>';
@@ -3347,22 +3396,22 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         formContainer.style.display = 'none';
         confirmationScreen.style.display = 'block';
 
-        regIdBadge.textContent = 'Registration ID: ' + (res.registrationId || 'Confirmed');
-        confirmationMessageText.textContent = res.confirmationMessage || EXACT_CONFIRMATION_MESSAGE;
+        regIdBadge.textContent = 'Registration ID: ' + (r.registrationId || 'Confirmed');
+        confirmationMessageText.textContent = r.confirmationMessage || EXACT_CONFIRMATION_MESSAGE;
 
-        showToast('✓ Registration Successful! Saved for ' + res.name);
-        openSubmissionAlertModal(res);
+        showToast('✓ Registration Successful! Saved for ' + r.name);
+        openSubmissionAlertModal(r);
 
         // Strictly generate & open WhatsApp ONLY for "പങ്കെടുക്കും", never for "സാധിക്കില്ല"
-        if (res.shouldSendWhatsApp && res.whatsAppClickToChatUrl) {
+        if (r.shouldSendWhatsApp && r.whatsAppClickToChatUrl) {
           whatsappPanel.style.display = 'block';
           nonPartNoticePanel.style.display = 'none';
-          waRecipientDisplay.textContent = res.formattedPhone + ' (' + res.name + ')';
-          whatsappPreviewBox.textContent = res.whatsAppMessage;
-          whatsappActionBtn.href = res.whatsAppClickToChatUrl;
+          waRecipientDisplay.textContent = r.formattedPhone + ' (' + r.name + ')';
+          whatsappPreviewBox.textContent = r.whatsAppMessage;
+          whatsappActionBtn.href = r.whatsAppClickToChatUrl;
 
           try {
-            window.open(res.whatsAppClickToChatUrl, '_blank', 'noopener,noreferrer');
+            window.open(r.whatsAppClickToChatUrl, '_blank', 'noopener,noreferrer');
           } catch (e) {}
         } else {
           whatsappPanel.style.display = 'none';

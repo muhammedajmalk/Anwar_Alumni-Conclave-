@@ -302,17 +302,36 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         pass
 
+    def _normalize_route(self, raw_path: str) -> str:
+        route = raw_path.rstrip("/") or "/"
+        api_idx = route.find("/api/")
+        if api_idx != -1:
+            return route[api_idx:]
+        return route
+
     def send_error(self, code, message=None, explain=None):
         """Ensure /api/ routes never emit default HTML error pages."""
         path = urllib.parse.urlparse(getattr(self, "path", "") or "").path
         accept = (self.headers.get("Accept", "") if self.headers else "") or ""
-        if path.startswith("/api/") or "application/json" in accept:
-            self._send_json(code, {"success": False, "error": message or f"HTTP {code} error"})
+        if "/api/" in path or "application/json" in accept:
+            self._send_json(
+                code,
+                {
+                    "success": False,
+                    "message": message or f"HTTP {code} error",
+                    "error": message or f"HTTP {code} error",
+                },
+            )
             return
         super().send_error(code, message, explain)
 
     def _send_json(self, status_code: int, payload: dict, extra_headers: list[tuple[str, str]] | None = None):
-        body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        out = dict(payload)
+        if out.get("success") is False:
+            msg = out.get("message") or out.get("error") or "Registration failed. Please try again."
+            out["message"] = msg
+            out.setdefault("error", msg)
+        body = json.dumps(out, ensure_ascii=False).encode("utf-8")
         self.send_response(status_code)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
@@ -358,7 +377,7 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
-        route = parsed.path
+        route = self._normalize_route(parsed.path)
 
         try:
             # 1. Check Admin Session Status
@@ -394,7 +413,7 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
             if route in ("/", "/index.html", "/Index.html"):
                 file_path = WORKSPACE_DIR / "Index.html"
             else:
-                rel = route.lstrip("/")
+                rel = parsed.path.lstrip("/")
                 file_path = (WORKSPACE_DIR / rel).resolve()
                 if not str(file_path).startswith(str(WORKSPACE_DIR)):
                     self.send_error(403, "Forbidden")
@@ -417,6 +436,8 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-Type", mime_type)
             self.send_header("Content-Length", str(len(data)))
+            if file_path.suffix.lower() == ".html":
+                self.send_header("Cache-Control", "no-store, no-cache, must-revalidate")
             self.end_headers()
             self.wfile.write(data)
         except Exception as exc:
@@ -427,7 +448,7 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         parsed = urllib.parse.urlparse(self.path)
-        route = parsed.path
+        route = self._normalize_route(parsed.path)
         try:
             body = self._read_json_body()
         except Exception:
@@ -660,6 +681,8 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                 200,
                 {
                     "success": True,
+                    "message": "Registration completed successfully",
+                    "data": dict(new_rec),
                     "registrationId": new_rec["registrationId"],
                     "confirmationMessage": EXACT_CONFIRMATION_MESSAGE,
                     "name": new_rec["name"],
