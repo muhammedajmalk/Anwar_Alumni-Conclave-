@@ -173,7 +173,7 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
 
     def test_ui_sections_and_no_exposed_credentials(self):
         code_gs = (WORKSPACE_DIR / "Code.gs").read_text(encoding="utf-8")
-        index_html = (WORKSPACE_DIR / "Index.html").read_text(encoding="utf-8")
+        index_html = (WORKSPACE_DIR / "public" / "index.html").read_text(encoding="utf-8")
 
         # 1. Verify Registration Form is centered and WhatsApp Preview sidebar + box below it are removed
         self.assertIn("registration-centered-container", index_html)
@@ -249,9 +249,24 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertIn("safeDisplayText", index_html)
         self.assertIn("syncRouteFromLocation", index_html)
         self.assertIn("/api/admin/session", index_html)
+        self.assertIn("/fonts/Sora-Regular.ttf", index_html)
+        self.assertNotIn("./fonts/Sora-", index_html)
+        self.assertTrue((WORKSPACE_DIR / "public" / "index.html").exists())
+        self.assertTrue((WORKSPACE_DIR / "public" / "fonts" / "Sora-Regular.ttf").exists())
         self.assertTrue((WORKSPACE_DIR / "vercel.json").exists())
         self.assertTrue((WORKSPACE_DIR / "api" / "index.py").exists())
         self.assertTrue((WORKSPACE_DIR / "Procfile").exists())
+
+        vercel_cfg = json.loads((WORKSPACE_DIR / "vercel.json").read_text(encoding="utf-8"))
+        self.assertIsNone(vercel_cfg.get("framework"))
+        self.assertEqual(vercel_cfg.get("outputDirectory"), "public")
+        inc = vercel_cfg.get("functions", {}).get("api/index.py", {}).get("includeFiles", "")
+        self.assertIn("server.py", inc)
+        self.assertIn("registrations_db.json", inc)
+        dests = [r.get("destination", "") for r in vercel_cfg.get("rewrites", [])]
+        self.assertIn("/index.html", dests)
+        self.assertIn("/api/index.py?__route=$1", dests)
+        self.assertNotIn("/Index.html", dests)
 
     def test_backend_admin_auth_and_protected_routes(self):
         # 1. Unauthenticated requests to dashboard, update, and delete must be rejected with 401
@@ -332,6 +347,23 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertEqual(reg_res.get("message"), "Registration completed successfully")
         self.assertIsInstance(reg_res.get("data"), dict)
         created_id = reg_res["registrationId"]
+
+        # Verify rapid duplicate submission returns HTTP 409 JSON without creating duplicate row
+        dup_status, dup_res, dup_headers = http_json_request(
+            "/api/register",
+            "POST",
+            {
+                "name": "Temp Alumni Test",
+                "place": "Nilambur",
+                "batchYear": "2019",
+                "whatsappNumber": "9747380130",
+                "participation": "പങ്കെടുക്കും",
+            },
+        )
+        self.assertEqual(dup_status, 409)
+        self.assertIn("application/json", dup_headers.get("Content-Type", ""))
+        self.assertFalse(dup_res.get("success", True))
+        self.assertTrue(dup_res.get("duplicate"))
 
         # Verify invalid payload returns HTTP 400 with application/json and both message & error
         bad_status, bad_res, bad_headers = http_json_request(
@@ -453,12 +485,40 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
             self.assertEqual(resp.status, 200)
 
         # SPA HTML routes must serve UI HTML (not 404 or raw JSON)
-        for route in ["/", "/index.html", "/register", "/dashboard", "/admin", "/admin/login"]:
+        for route in ["/", "/index.html", "/register", "/register/", "/dashboard", "/dashboard/", "/admin", "/admin/", "/admin/login", "/admin/login/"]:
             with urllib.request.urlopen(f"{BASE_URL}{route}", timeout=5) as resp:
                 self.assertEqual(resp.status, 200)
                 self.assertIn("text/html", resp.headers.get("Content-Type", ""))
                 body_preview = resp.read(256).decode("utf-8", errors="ignore")
                 self.assertIn("<!DOCTYPE html>", body_preview)
+
+        # Static fonts must load with HTTP 200 and sensitive files must NOT be publicly served
+        with urllib.request.urlopen(f"{BASE_URL}/fonts/Sora-Regular.ttf", timeout=5) as resp:
+            self.assertEqual(resp.status, 200)
+            self.assertGreater(len(resp.read()), 10000)
+
+        for secret_path in ["/registrations_db.json", "/server.py", "/Code.gs", "/vercel.json"]:
+            with self.assertRaises(urllib.error.HTTPError) as ctx:
+                urllib.request.urlopen(f"{BASE_URL}{secret_path}", timeout=5)
+            self.assertIn(ctx.exception.code, (403, 404))
+
+        # Health endpoint and Vercel-rewritten ?__route= dispatch must return valid JSON
+        h_status, h_body, h_hdrs = http_json_request("/api/health", "GET")
+        self.assertEqual(h_status, 200)
+        self.assertIn("application/json", h_hdrs.get("Content-Type", ""))
+        self.assertTrue(h_body.get("success"))
+        self.assertEqual(h_body.get("status"), "ok")
+        self.assertNotIn("registrations", h_body)
+
+        rw_status, rw_body, rw_hdrs = http_json_request("/api/index.py?__route=admin/session", "GET")
+        self.assertEqual(rw_status, 401)
+        self.assertIn("application/json", rw_hdrs.get("Content-Type", ""))
+        self.assertFalse(rw_body.get("authenticated", True))
+
+        # Verify Vercel serverless handler import and subclass inheritance
+        from http.server import BaseHTTPRequestHandler
+        import api.index as vercel_api
+        self.assertTrue(issubclass(vercel_api.handler, BaseHTTPRequestHandler))
 
 
 if __name__ == "__main__":

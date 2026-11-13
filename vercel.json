@@ -1,33 +1,56 @@
 {
-  "version": 2,
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "outputDirectory": "public",
+  "functions": {
+    "api/index.py": {
+      "includeFiles": "{server.py,registrations_db.json,public/index.html}"
+    }
+  },
   "rewrites": [
     {
+      "source": "/api",
+      "destination": "/api/index.py?__route=health"
+    },
+    {
       "source": "/api/(.*)",
-      "destination": "/api/index.py"
+      "destination": "/api/index.py?__route=$1"
     },
     {
       "source": "/",
-      "destination": "/Index.html"
-    },
-    {
-      "source": "/index.html",
-      "destination": "/Index.html"
+      "destination": "/index.html"
     },
     {
       "source": "/register",
-      "destination": "/Index.html"
+      "destination": "/index.html"
+    },
+    {
+      "source": "/register/",
+      "destination": "/index.html"
     },
     {
       "source": "/dashboard",
-      "destination": "/Index.html"
+      "destination": "/index.html"
+    },
+    {
+      "source": "/dashboard/",
+      "destination": "/index.html"
     },
     {
       "source": "/admin",
-      "destination": "/Index.html"
+      "destination": "/index.html"
     },
     {
-      "source": "/admin/(.*)",
-      "destination": "/Index.html"
+      "source": "/admin/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin/login",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin/login/",
+      "destination": "/index.html"
     }
   ]
 }

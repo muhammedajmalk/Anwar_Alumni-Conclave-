@@ -14,56 +14,56 @@
        ========================================================================= */
     @font-face {
       font-family: 'Sora';
-      src: url('./fonts/Sora-Thin.ttf') format('truetype');
+      src: url('/fonts/Sora-Thin.ttf') format('truetype');
       font-weight: 100;
       font-style: normal;
       font-display: swap;
     }
     @font-face {
       font-family: 'Sora';
-      src: url('./fonts/Sora-ExtraLight.ttf') format('truetype');
+      src: url('/fonts/Sora-ExtraLight.ttf') format('truetype');
       font-weight: 200;
       font-style: normal;
       font-display: swap;
     }
     @font-face {
       font-family: 'Sora';
-      src: url('./fonts/Sora-Light.ttf') format('truetype');
+      src: url('/fonts/Sora-Light.ttf') format('truetype');
       font-weight: 300;
       font-style: normal;
       font-display: swap;
     }
     @font-face {
       font-family: 'Sora';
-      src: url('./fonts/Sora-Regular.ttf') format('truetype');
+      src: url('/fonts/Sora-Regular.ttf') format('truetype');
       font-weight: 400;
       font-style: normal;
       font-display: swap;
     }
     @font-face {
       font-family: 'Sora';
-      src: url('./fonts/Sora-Medium.ttf') format('truetype');
+      src: url('/fonts/Sora-Medium.ttf') format('truetype');
       font-weight: 500;
       font-style: normal;
       font-display: swap;
     }
     @font-face {
       font-family: 'Sora';
-      src: url('./fonts/Sora-SemiBold.ttf') format('truetype');
+      src: url('/fonts/Sora-SemiBold.ttf') format('truetype');
       font-weight: 600;
       font-style: normal;
       font-display: swap;
     }
     @font-face {
       font-family: 'Sora';
-      src: url('./fonts/Sora-Bold.ttf') format('truetype');
+      src: url('/fonts/Sora-Bold.ttf') format('truetype');
       font-weight: 700;
       font-style: normal;
       font-display: swap;
     }
     @font-face {
       font-family: 'Sora';
-      src: url('./fonts/Sora-ExtraBold.ttf') format('truetype');
+      src: url('/fonts/Sora-ExtraBold.ttf') format('truetype');
       font-weight: 800;
       font-style: normal;
       font-display: swap;
@@ -3494,7 +3494,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             }
           } else {
             if (window.history && window.history.replaceState) {
-              var cleanPath = window.location.pathname.toLowerCase();
+              var cleanPath = window.location.pathname.toLowerCase().replace(/\/+$/, '');
               var nextPath = (cleanPath === '/dashboard' || cleanPath === '/admin' || cleanPath === '/admin/login' || cleanPath === '/register')
                 ? '/'
                 : window.location.pathname;
@@ -3753,7 +3753,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             submitBtn.innerHTML = '<span>Submit Registration</span><span>✓</span>';
             var rawErrMsg = (err && err.message && err.message !== 'Failed to fetch')
               ? extractReadableMessage(err.message, 'Unable to submit registration. Please try again.')
-              : 'Unable to reach the registration server. Please ensure the backend server (server.py) is running and try again.';
+              : 'Unable to reach the registration server. Please check your connection and try again.';
             globalError.textContent = rawErrMsg;
             globalError.style.display = 'block';
             openSubmissionErrorModal(rawErrMsg);

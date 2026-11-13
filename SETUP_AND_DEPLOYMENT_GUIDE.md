@@ -10,7 +10,7 @@
 ### 2. Project Deliverables in Workspace
 | File | Description |
 | :--- | :--- |
-| [`Index.html`](./Index.html) | Complete, responsive, executive-level website & Google Apps Script Web App (`HtmlService`) in Deep Navy & Royal Gold. Includes: Hero Banner with live countdown, Conclave Schedule, the exact 5-field Registration Form, Live Malayalam WhatsApp Message Preview, Post-Submission Confirmation Screen with the **"Send WhatsApp Confirmation"** button, Interactive Admin Dashboard (KPI cards, Attendance Donut, Batch-wise & Place-wise Charts, Searchable Responses Table, CSV Export), and Google Sheets Sync. |
+| [`public/index.html`](./public/index.html) | Complete, responsive, executive-level website & Google Apps Script Web App (`HtmlService`) in Deep Navy & Royal Gold. Includes: Hero Banner with live countdown, Conclave Schedule, the exact 5-field Registration Form, Post-Submission Confirmation Screen, Interactive Admin Dashboard (KPI cards, Attendance Donut, Batch-wise & Place-wise Charts, Searchable Responses Table, View/Edit/Delete/Send Message Modals, CSV Export), and Backend/Google Sheets Sync. |
 | [`Code.gs`](./Code.gs) | Complete Google Apps Script backend: Account ownership guard (`anwarmajmau01@gmail.com`), automated Google Form builder (`createAufbruchGoogleForm`), Google Spreadsheet & Dashboard generator (`buildRegistrationDashboard`), `onFormSubmit` trigger handler, Indian mobile number validator, Malayalam WhatsApp Click-to-Chat URL builder, optional Meta WhatsApp Business Cloud API sender, Web App JSON/HTML endpoints (`doGet`, `doPost`, `submitRegistrationFromWebApp`, `getDashboardDataFromWebApp`), and end-to-end verification tests. |
 | [`appsscript.json`](./appsscript.json) | Google Apps Script project manifest (`Asia/Kolkata` timezone and required OAuth scopes for Forms, Sheets, Drive, ScriptApp Triggers, External Requests, and User Email verification). |
 | [`aufbruch_2026_form_header.png`](./aufbruch_2026_form_header.png) | Custom 1600×400 (4:1 aspect ratio) Deep Navy & Gold Header Banner for the native Google Form theme. |
@@ -28,7 +28,7 @@
 2. Click **New project** and title it:  
    `Aufbruch – Alumni Conclave 2026 Registration System`
 3. In `Code.gs`, replace the default code with the full contents of [`Code.gs`](./Code.gs).
-4. Click **`+` (Add a file)** → **HTML**, name the file **`Index`** (Apps Script automatically appends `.html`), and paste the full contents of [`Index.html`](./Index.html).
+4. Click **`+` (Add a file)** → **HTML**, name the file **`Index`** (Apps Script automatically appends `.html`), and paste the full contents of [`public/index.html`](./public/index.html).
 
 #### Step 2: Run `setupAufbruchSystem()` & Authorize
 1. Select **`setupAufbruchSystem`** in the function dropdown at the top of the Apps Script editor and click **Run**.
@@ -44,7 +44,18 @@
 1. In the Apps Script editor, click **Deploy** → **New deployment** → select **Web app**.
 2. Set **Execute as:** `Me (anwarmajmau01@gmail.com)` and **Who has access:** `Anyone`.
 3. Click **Deploy** and copy the **Web App URL**.
-4. You can also open [`Index.html`](./Index.html) directly in any browser or host it on any static web server and paste the **Web App URL** into the **Google Account & Automation Setup** section at the bottom of the page.
+4. You can also run locally via `python server.py` (serves `public/index.html` + `/api/*` on port `8765`), or deploy directly to **Vercel** (uses `vercel.json` + `public/` + `api/index.py`).
+
+### 3A. Vercel Deployment Settings & Environment Variables
+- **Framework Preset:** `Other` (`"framework": null` in `vercel.json`)
+- **Build Command:** Leave empty (none required)
+- **Output Directory:** `public` (`"outputDirectory": "public"` in `vercel.json`)
+- **Recommended Vercel Environment Variables (Project Settings → Environment Variables):**
+  - `ADMIN_USERNAME` — Administrator login username (defaults to `admin`)
+  - `ADMIN_PASSWORD` — Administrator login password (set securely in Vercel)
+  - `SESSION_SECRET` — Secret key used to sign HMAC admin session tokens
+  - `KV_REST_API_URL` and `KV_REST_API_TOKEN` (Upstash / Vercel Redis REST) — Enables durable cloud persistence across Vercel serverless cold starts (optional fallback seeds bundled `registrations_db.json` into `/tmp` when unset)
+  - `GAS_WEBAPP_URL` — Optional Google Apps Script Web App `/exec` URL to mirror submissions to Google Sheets
 
 ---
 

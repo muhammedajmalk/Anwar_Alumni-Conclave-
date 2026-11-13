@@ -39,8 +39,10 @@ def create_header_banner(output_path: Path):
         draw.line([(cx, cy), (cx + dx * corner_len, cy)], fill=gold_pale, width=5)
         draw.line([(cx, cy), (cx, cy + dy * corner_len)], fill=gold_pale, width=5)
 
-    # Load uploaded Sora font files from ./fonts/
-    fonts_dir = output_path.parent / "fonts"
+    # Load uploaded Sora font files from ./public/fonts/ or ./fonts/
+    fonts_dir = output_path.parent / "public" / "fonts"
+    if not fonts_dir.exists():
+        fonts_dir = output_path.parent / "fonts"
     def load_font(names, size):
         for name in names:
             try:

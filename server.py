@@ -24,13 +24,71 @@ import secrets
 import socket
 import tempfile
 import time
+import urllib.error
 import urllib.parse
+import urllib.request
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 WORKSPACE_DIR = Path(__file__).resolve().parent
+PUBLIC_DIR = WORKSPACE_DIR / "public"
 BUNDLED_DB_FILE = WORKSPACE_DIR / "registrations_db.json"
+KV_RECORDS_KEY = os.environ.get("KV_RECORDS_KEY", "aufbruch:registrations_v1")
+
+
+def _resolve_index_html() -> Path:
+    for candidate in (
+        PUBLIC_DIR / "index.html",
+        WORKSPACE_DIR / "index.html",
+        WORKSPACE_DIR / "Index.html",
+    ):
+        if candidate.exists() and candidate.is_file():
+            return candidate
+    return PUBLIC_DIR / "index.html"
+
+
+def _get_kv_config() -> tuple[str, str] | None:
+    url = (
+        os.environ.get("KV_REST_API_URL", "").strip()
+        or os.environ.get("UPSTASH_REDIS_REST_URL", "").strip()
+    )
+    token = (
+        os.environ.get("KV_REST_API_TOKEN", "").strip()
+        or os.environ.get("UPSTASH_REDIS_REST_TOKEN", "").strip()
+    )
+    if url and token:
+        return (url.rstrip("/"), token)
+    return None
+
+
+def _kv_command(cmd: list):
+    cfg = _get_kv_config()
+    if not cfg:
+        raise RuntimeError("KV REST configuration is not set.")
+    kv_url, kv_token = cfg
+    req = urllib.request.Request(
+        kv_url,
+        data=json.dumps(cmd).encode("utf-8"),
+        headers={
+            "Authorization": f"Bearer {kv_token}",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=8) as resp:
+        payload = json.loads(resp.read().decode("utf-8"))
+        if isinstance(payload, dict) and payload.get("error"):
+            raise RuntimeError(f"KV error: {payload['error']}")
+        return payload.get("result") if isinstance(payload, dict) else None
+
+
+def get_storage_mode() -> str:
+    if _get_kv_config():
+        return "vercel-kv"
+    if os.environ.get("DB_FILE", "").strip() or os.access(WORKSPACE_DIR, os.W_OK):
+        return "local-file"
+    return "tmp-ephemeral"
 
 
 def _resolve_db_file() -> Path:
@@ -100,6 +158,12 @@ def _mark_token_revoked(jti: str, exp: int) -> None:
     if not jti:
         return
     REVOKED_TOKENS.add(jti)
+    if _get_kv_config():
+        ttl = max(60, int(exp - time.time()))
+        try:
+            _kv_command(["SET", f"aufbruch:revoked_jti:{jti}", "1", "EX", str(ttl)])
+        except Exception:
+            pass
     revoked_map = _load_revoked_tokens()
     revoked_map[jti] = exp
     try:
@@ -113,6 +177,14 @@ def _is_jti_revoked(jti: str) -> bool:
         return True
     if jti in REVOKED_TOKENS:
         return True
+    if _get_kv_config():
+        try:
+            res = _kv_command(["GET", f"aufbruch:revoked_jti:{jti}"])
+            if res is not None:
+                REVOKED_TOKENS.add(jti)
+                return True
+        except Exception:
+            pass
     revoked_map = _load_revoked_tokens()
     if jti in revoked_map:
         REVOKED_TOKENS.add(jti)
@@ -253,9 +325,33 @@ def enrich_registration(rec: dict) -> dict:
     }
 
 
+def _load_seed_records() -> list[dict]:
+    if BUNDLED_DB_FILE.exists():
+        try:
+            data = json.loads(BUNDLED_DB_FILE.read_text(encoding="utf-8"))
+            if isinstance(data, list) and len(data) > 0:
+                return [enrich_registration(r) for r in data]
+        except Exception:
+            pass
+    return [enrich_registration(r) for r in DEFAULT_SEED_DATA]
+
+
 def load_db() -> list[dict]:
+    if _get_kv_config():
+        try:
+            raw = _kv_command(["GET", KV_RECORDS_KEY])
+            if raw:
+                data = json.loads(raw) if isinstance(raw, str) else raw
+                if isinstance(data, list):
+                    return [enrich_registration(r) for r in data]
+            seeded = _load_seed_records()
+            _kv_command(["SET", KV_RECORDS_KEY, json.dumps(seeded, ensure_ascii=False)])
+            return seeded
+        except Exception:
+            pass
+
     if not DB_FILE.exists():
-        seeded = [enrich_registration(r) for r in DEFAULT_SEED_DATA]
+        seeded = _load_seed_records()
         save_db(seeded)
         return seeded
     try:
@@ -264,13 +360,39 @@ def load_db() -> list[dict]:
             return [enrich_registration(r) for r in data]
     except Exception:
         pass
-    seeded = [enrich_registration(r) for r in DEFAULT_SEED_DATA]
+    seeded = _load_seed_records()
     save_db(seeded)
     return seeded
 
 
 def save_db(records: list[dict]) -> None:
-    DB_FILE.write_text(json.dumps(records, ensure_ascii=False, indent=2), encoding="utf-8")
+    serialized = json.dumps(records, ensure_ascii=False, indent=2)
+    kv_saved = False
+    if _get_kv_config():
+        _kv_command(["SET", KV_RECORDS_KEY, serialized])
+        kv_saved = True
+    try:
+        DB_FILE.write_text(serialized, encoding="utf-8")
+    except Exception as exc:
+        if not kv_saved:
+            raise RuntimeError(f"Failed to persist registration database: {exc}") from exc
+
+
+def _sync_registration_to_gas(record: dict) -> bool:
+    gas_url = os.environ.get("GAS_WEBAPP_URL", "").strip()
+    if not gas_url:
+        return False
+    try:
+        req = urllib.request.Request(
+            gas_url,
+            data=json.dumps({"action": "register", **record}, ensure_ascii=False).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=6) as resp:
+            return 200 <= resp.status < 300
+    except Exception:
+        return False
 
 
 def verify_admin_credentials(username: str, password: str) -> bool:
@@ -420,11 +542,27 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
         pass
 
     def _normalize_route(self, raw_path: str) -> str:
-        route = raw_path.rstrip("/") or "/"
-        api_idx = route.find("/api/")
+        parsed = urllib.parse.urlparse(raw_path or self.path)
+        qs = urllib.parse.parse_qs(parsed.query)
+        route_override = (qs.get("__route", [""])[0] or "").strip().strip("/")
+        clean_path = parsed.path.rstrip("/") or "/"
+
+        if clean_path in ("/api", "/api/index", "/api/index.py"):
+            if route_override:
+                return f"/api/{route_override}"
+            if self.headers:
+                for hdr in ("X-Vercel-Original-Url", "X-Forwarded-Uri", "X-Original-Uri"):
+                    hdr_val = (self.headers.get(hdr, "") or "").strip()
+                    if hdr_val:
+                        hdr_path = urllib.parse.urlparse(hdr_val).path.rstrip("/")
+                        if "/api/" in hdr_path and hdr_path not in ("/api/index", "/api/index.py"):
+                            return hdr_path[hdr_path.find("/api/"):]
+            return "/api/health"
+
+        api_idx = clean_path.find("/api/")
         if api_idx != -1:
-            return route[api_idx:]
-        return route
+            return clean_path[api_idx:]
+        return clean_path
 
     def send_error(self, code, message=None, explain=None):
         """Ensure /api/ routes never emit default HTML error pages."""
@@ -517,10 +655,27 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
-        route = self._normalize_route(parsed.path)
+        route = self._normalize_route(self.path)
         lower_route = route.lower()
 
         try:
+            # 0. Health / Readiness Endpoint (exposes only safe operational status)
+            if route in ("/api/health", "/api"):
+                records = load_db()
+                mode = get_storage_mode()
+                self._send_json(
+                    200,
+                    {
+                        "success": True,
+                        "status": "ok",
+                        "service": "aufbruch-2026-api",
+                        "storageMode": mode,
+                        "durableStorageConfigured": mode != "tmp-ephemeral",
+                        "recordCount": len(records),
+                    },
+                )
+                return
+
             # 1. Check Admin Session Status
             if route == "/api/admin/session":
                 sess = get_valid_session(self)
@@ -551,27 +706,14 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                 self._send_json(404, {"success": False, "error": "API endpoint not found."})
                 return
 
-            # 3. Static File Serving & Clean SPA Routing (restrict access to backend/db files)
+            # 3. Static File Serving strictly from public/ & Clean SPA Routing
             if lower_route in ("/", "/index.html", "/register", "/dashboard", "/admin", "/admin/login"):
-                file_path = WORKSPACE_DIR / "Index.html"
+                file_path = _resolve_index_html()
             else:
                 rel = parsed.path.lstrip("/")
-                file_path = (WORKSPACE_DIR / rel).resolve()
-                if not str(file_path).startswith(str(WORKSPACE_DIR)):
-                    self.send_error(403, "Forbidden")
-                    return
-                protected_names = {
-                    "registrations_db.json",
-                    "server.py",
-                    "code.gs",
-                    ".aufbruch_revoked_sessions.json",
-                    ".aufbruch_session_secret",
-                    "vercel.json",
-                    "procfile",
-                    "appsscript.json",
-                    "test_registration_system.py",
-                }
-                if file_path.name.lower() in protected_names or ".git" in file_path.parts or "api" in file_path.parts:
+                public_root = PUBLIC_DIR.resolve()
+                file_path = (PUBLIC_DIR / rel).resolve()
+                if not str(file_path).startswith(str(public_root)):
                     self.send_error(403, "Forbidden")
                     return
 
@@ -600,8 +742,7 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                 self.send_error(500, "Internal Server Error")
 
     def do_POST(self):
-        parsed = urllib.parse.urlparse(self.path)
-        route = self._normalize_route(parsed.path)
+        route = self._normalize_route(self.path)
         try:
             body = self._read_json_body()
         except Exception:
@@ -809,6 +950,34 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                 return
 
             records = load_db()
+
+            # Guard against accidental immediate double-submissions (within 5 seconds)
+            now_dt = datetime.now()
+            norm_name = name.lower()
+            norm_place = place.title()
+            for existing in records[:5]:
+                if (
+                    str(existing.get("name", "")).strip().lower() == norm_name
+                    and str(existing.get("place", "")).strip().title() == norm_place
+                    and str(existing.get("batchYear", "")).strip() == batch_year
+                    and str(existing.get("waNumber", "")).strip() == phone_res["waNumber"]
+                    and str(existing.get("participation", "")).strip() == participation
+                ):
+                    try:
+                        prev_dt = datetime.strptime(str(existing.get("timestamp", "")), "%Y-%m-%d %H:%M:%S")
+                        if abs((now_dt - prev_dt).total_seconds()) <= 5:
+                            self._send_json(
+                                409,
+                                {
+                                    "success": False,
+                                    "duplicate": True,
+                                    "error": "Duplicate submission detected. Your registration was already saved a moment ago.",
+                                },
+                            )
+                            return
+                    except Exception:
+                        pass
+
             numeric_ids = [
                 int(str(r.get("registrationId", "")))
                 for r in records
@@ -820,7 +989,7 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
             new_rec = enrich_registration(
                 {
                     "registrationId": reg_id,
-                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "timestamp": now_dt.strftime("%Y-%m-%d %H:%M:%S"),
                     "name": name,
                     "place": place,
                     "batchYear": batch_year,
@@ -830,6 +999,7 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
             )
             records.insert(0, new_rec)
             save_db(records)
+            gas_synced = _sync_registration_to_gas(new_rec)
 
             self._send_json(
                 200,
@@ -837,6 +1007,8 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                     "success": True,
                     "message": "Registration completed successfully",
                     "data": dict(new_rec),
+                    "gasSynced": gas_synced,
+                    "storageMode": get_storage_mode(),
                     "registrationId": new_rec["registrationId"],
                     "confirmationMessage": EXACT_CONFIRMATION_MESSAGE,
                     "name": new_rec["name"],
