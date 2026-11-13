@@ -54,7 +54,8 @@
   - `ADMIN_USERNAME` — Administrator login username (defaults to `admin`)
   - `ADMIN_PASSWORD` — Administrator login password (set securely in Vercel)
   - `SESSION_SECRET` — Secret key used to sign HMAC admin session tokens
-  - `KV_REST_API_URL` and `KV_REST_API_TOKEN` (Upstash / Vercel Redis REST) — Enables durable cloud persistence across Vercel serverless cold starts (optional fallback seeds bundled `registrations_db.json` into `/tmp` when unset)
+  - `BLOB_READ_WRITE_TOKEN` (Vercel Private Blob Store) — Automatically attached when a private Vercel Blob store is linked; provides durable cloud database and session-revocation storage across serverless instances
+  - `KV_REST_API_URL` and `KV_REST_API_TOKEN` (Upstash / Vercel Redis REST) — Optional alternative durable KV persistence (falls back to bundled `registrations_db.json` -> `/tmp` when neither Blob nor KV is configured)
   - `GAS_WEBAPP_URL` — Optional Google Apps Script Web App `/exec` URL to mirror submissions to Google Sheets
 
 ---

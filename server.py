@@ -31,10 +31,17 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
+try:
+    from vercel.blob import sync as vercel_blob
+except Exception:
+    vercel_blob = None
+
 WORKSPACE_DIR = Path(__file__).resolve().parent
 PUBLIC_DIR = WORKSPACE_DIR / "public"
 BUNDLED_DB_FILE = WORKSPACE_DIR / "registrations_db.json"
 KV_RECORDS_KEY = os.environ.get("KV_RECORDS_KEY", "aufbruch:registrations_v1")
+BLOB_RECORDS_PATH = os.environ.get("BLOB_RECORDS_PATH", "aufbruch/registrations_v1.json")
+BLOB_REVOKED_PATH = os.environ.get("BLOB_REVOKED_PATH", "aufbruch/revoked_sessions_v1.json")
 
 
 def _resolve_index_html() -> Path:
@@ -83,9 +90,41 @@ def _kv_command(cmd: list):
         return payload.get("result") if isinstance(payload, dict) else None
 
 
+def _get_blob_config() -> bool:
+    return bool(os.environ.get("BLOB_READ_WRITE_TOKEN", "").strip() and vercel_blob is not None)
+
+
+def _blob_load_json(pathname: str):
+    if not _get_blob_config():
+        return None
+    not_found_exc = getattr(vercel_blob, "BlobNotFoundError", FileNotFoundError)
+    try:
+        res = vercel_blob.get_blob(pathname, access="private")
+        raw = res.body.decode("utf-8") if isinstance(res.body, (bytes, bytearray)) else str(res.body)
+        return json.loads(raw)
+    except (not_found_exc, FileNotFoundError):
+        return None
+
+
+def _blob_save_json(pathname: str, payload_text: str) -> None:
+    if not _get_blob_config():
+        raise RuntimeError("Vercel Blob storage is not configured.")
+    vercel_blob.put_blob(
+        pathname,
+        payload_text.encode("utf-8"),
+        access="private",
+        content_type="application/json",
+        add_random_suffix=False,
+        allow_overwrite=True,
+        cache_control_max_age=0,
+    )
+
+
 def get_storage_mode() -> str:
     if _get_kv_config():
         return "vercel-kv"
+    if _get_blob_config():
+        return "vercel-blob"
     if os.environ.get("DB_FILE", "").strip() or os.access(WORKSPACE_DIR, os.W_OK):
         return "local-file"
     return "tmp-ephemeral"
@@ -158,10 +197,23 @@ def _mark_token_revoked(jti: str, exp: int) -> None:
     if not jti:
         return
     REVOKED_TOKENS.add(jti)
+    now = int(time.time())
     if _get_kv_config():
-        ttl = max(60, int(exp - time.time()))
+        ttl = max(60, int(exp - now))
         try:
             _kv_command(["SET", f"aufbruch:revoked_jti:{jti}", "1", "EX", str(ttl)])
+        except Exception:
+            pass
+    elif _get_blob_config():
+        try:
+            existing = _blob_load_json(BLOB_REVOKED_PATH)
+            blob_map = (
+                {k: int(v) for k, v in existing.items() if int(v) > now}
+                if isinstance(existing, dict)
+                else {}
+            )
+            blob_map[jti] = exp
+            _blob_save_json(BLOB_REVOKED_PATH, json.dumps(blob_map))
         except Exception:
             pass
     revoked_map = _load_revoked_tokens()
@@ -181,6 +233,15 @@ def _is_jti_revoked(jti: str) -> bool:
         try:
             res = _kv_command(["GET", f"aufbruch:revoked_jti:{jti}"])
             if res is not None:
+                REVOKED_TOKENS.add(jti)
+                return True
+        except Exception:
+            pass
+    elif _get_blob_config():
+        try:
+            now = int(time.time())
+            existing = _blob_load_json(BLOB_REVOKED_PATH)
+            if isinstance(existing, dict) and jti in existing and int(existing[jti]) > now:
                 REVOKED_TOKENS.add(jti)
                 return True
         except Exception:
@@ -350,6 +411,14 @@ def load_db() -> list[dict]:
         except Exception:
             pass
 
+    if _get_blob_config():
+        data = _blob_load_json(BLOB_RECORDS_PATH)
+        if isinstance(data, list):
+            return [enrich_registration(r) for r in data]
+        seeded = _load_seed_records()
+        save_db(seeded)
+        return seeded
+
     if not DB_FILE.exists():
         seeded = _load_seed_records()
         save_db(seeded)
@@ -367,14 +436,17 @@ def load_db() -> list[dict]:
 
 def save_db(records: list[dict]) -> None:
     serialized = json.dumps(records, ensure_ascii=False, indent=2)
-    kv_saved = False
+    cloud_saved = False
     if _get_kv_config():
         _kv_command(["SET", KV_RECORDS_KEY, serialized])
-        kv_saved = True
+        cloud_saved = True
+    elif _get_blob_config():
+        _blob_save_json(BLOB_RECORDS_PATH, serialized)
+        cloud_saved = True
     try:
         DB_FILE.write_text(serialized, encoding="utf-8")
     except Exception as exc:
-        if not kv_saved:
+        if not cloud_saved:
             raise RuntimeError(f"Failed to persist registration database: {exc}") from exc
 
 

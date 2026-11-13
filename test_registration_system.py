@@ -10,6 +10,7 @@ Registration System:
 """
 
 import json
+import os
 import re
 import unittest
 import urllib.error
@@ -519,6 +520,62 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         from http.server import BaseHTTPRequestHandler
         import api.index as vercel_api
         self.assertTrue(issubclass(vercel_api.handler, BaseHTTPRequestHandler))
+
+    def test_vercel_blob_storage_and_revocation(self):
+        class FakeBlobNotFound(FileNotFoundError):
+            pass
+
+        class FakeGetResult:
+            def __init__(self, body: bytes):
+                self.body = body
+
+        blob_store = {}
+
+        class FakeBlobSync:
+            BlobNotFoundError = FakeBlobNotFound
+
+            @staticmethod
+            def get_blob(pathname: str, access: str = "private"):
+                self.assertEqual(access, "private")
+                if pathname not in blob_store:
+                    raise FakeBlobNotFound(pathname)
+                return FakeGetResult(blob_store[pathname])
+
+            @staticmethod
+            def put_blob(pathname: str, body: bytes, access: str = "private", **kwargs):
+                self.assertEqual(access, "private")
+                self.assertTrue(kwargs.get("allow_overwrite"))
+                self.assertFalse(kwargs.get("add_random_suffix", True))
+                blob_store[pathname] = body
+
+        import server
+        orig_blob = server.vercel_blob
+        orig_token = os.environ.get("BLOB_READ_WRITE_TOKEN")
+        orig_revoked = set(server.REVOKED_TOKENS)
+        try:
+            server.vercel_blob = FakeBlobSync
+            os.environ["BLOB_READ_WRITE_TOKEN"] = "vercel_blob_rw_test_token"
+            self.assertEqual(server.get_storage_mode(), "vercel-blob")
+
+            seeded = server.load_db()
+            self.assertGreater(len(seeded), 0)
+            self.assertIn(server.BLOB_RECORDS_PATH, blob_store)
+
+            # Verify token revocation persists to private blob store
+            tok = server.create_session("admin")
+            verified = server._verify_signed_token(tok)
+            self.assertIsNotNone(verified)
+            server.revoke_session(tok)
+            server.REVOKED_TOKENS.clear()
+            self.assertIsNone(server._verify_signed_token(tok))
+        finally:
+            server.vercel_blob = orig_blob
+            server.REVOKED_TOKENS.clear()
+            server.REVOKED_TOKENS.update(orig_revoked)
+            if orig_token is None:
+                os.environ.pop("BLOB_READ_WRITE_TOKEN", None)
+            else:
+                os.environ["BLOB_READ_WRITE_TOKEN"] = orig_token
 
 
 if __name__ == "__main__":
