@@ -3141,17 +3141,91 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         'Registration Successful!\n\n' +
         'Thank you for registering for Aufbruch – Alumni Conclave 2026.';
 
-      // In-memory state for authenticated admin session only (never persisted or exposed to unauthorized users)
-      var adminSessionToken = sessionStorage.getItem('AUFBRUCH_ADMIN_SESSION_TOKEN') || '';
+      function safeStorageGet(key) {
+        try {
+          return window.sessionStorage ? (window.sessionStorage.getItem(key) || '') : '';
+        } catch (e) {
+          return '';
+        }
+      }
+
+      function safeStorageSet(key, val) {
+        try {
+          if (window.sessionStorage) window.sessionStorage.setItem(key, String(val || ''));
+        } catch (e) {}
+      }
+
+      function safeStorageRemove(key) {
+        try {
+          if (window.sessionStorage) window.sessionStorage.removeItem(key);
+        } catch (e) {}
+      }
+
+      function safeDisplayText(value, fallback) {
+        var fb = (fallback !== undefined && fallback !== null) ? String(fallback) : '';
+        if (value === null || value === undefined) return fb;
+        if (typeof value === 'string') return value;
+        if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+        if (Array.isArray(value)) {
+          var parts = [];
+          for (var i = 0; i < value.length; i++) {
+            var itemText = safeDisplayText(value[i], '');
+            if (itemText) parts.push(itemText);
+          }
+          return parts.length ? parts.join(', ') : fb;
+        }
+        if (typeof value === 'object') {
+          var candidateKeys = ['message', 'error', 'detail', 'label', 'name', 'title', 'value', 'text'];
+          for (var k = 0; k < candidateKeys.length; k++) {
+            var keyName = candidateKeys[k];
+            if (Object.prototype.hasOwnProperty.call(value, keyName) && value[keyName] !== undefined && value[keyName] !== null) {
+              var extracted = safeDisplayText(value[keyName], '');
+              if (extracted) return extracted;
+            }
+          }
+          return fb;
+        }
+        return fb;
+      }
+
+      function extractReadableMessage(value, fallback) {
+        var fb = fallback || 'An unexpected error occurred. Please try again.';
+        if (!value) return fb;
+        if (typeof value === 'string') {
+          var trimmed = value.trim();
+          if (!trimmed || trimmed === '[object Object]') return fb;
+          if ((trimmed.charAt(0) === '{' && trimmed.charAt(trimmed.length - 1) === '}') ||
+              (trimmed.charAt(0) === '[' && trimmed.charAt(trimmed.length - 1) === ']')) {
+            try {
+              var parsedMsg = JSON.parse(trimmed);
+              var inner = safeDisplayText(parsedMsg, '');
+              if (inner && inner !== '[object Object]') return inner;
+            } catch (e) {}
+            return fb;
+          }
+          if (/^<!doctype\s+html/i.test(trimmed) || /^<html/i.test(trimmed)) {
+            return fb;
+          }
+          return trimmed;
+        }
+        if (value instanceof Error) {
+          return extractReadableMessage(value.message, fb);
+        }
+        var text = safeDisplayText(value, fb);
+        return (text && text !== '[object Object]') ? text : fb;
+      }
+
+      // In-memory state for authenticated admin session only (never persisted in HTML or exposed to unauthorized users)
+      var adminSessionToken = safeStorageGet('AUFBRUCH_ADMIN_SESSION_TOKEN');
       var isAdminAuthenticated = false;
       var dashboardRegistrations = [];
 
       // -----------------------------------------------------------------------
-      // Centralized Safe JSON API Client (prevents "Unexpected token ... not valid JSON")
+      // Centralized Safe JSON API Client (prevents raw JSON / "[object Object]" display)
       // -----------------------------------------------------------------------
       function getApiBase() {
         if (window.AUFBRUCH_API_BASE) {
-          return String(window.AUFBRUCH_API_BASE).replace(/\/+$/, '');
+          return String(window.AUFBRUCH_API_BASE).trim().replace(/\/+$/, '');
         }
         var metaApi = document.querySelector('meta[name="aufbruch-api-base"]');
         if (metaApi && metaApi.getAttribute('content')) {
@@ -3163,8 +3237,28 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         return '';
       }
 
+      function isAppsScriptEndpointUrl(url) {
+        return /script\.google\.com\/macros\//i.test(String(url || ''));
+      }
+
       function getApiUrl(path) {
-        return getApiBase() + path;
+        var base = getApiBase();
+        if (!base) return path;
+        if (isAppsScriptEndpointUrl(base)) return base;
+        return base + path;
+      }
+
+      function getFetchCredentials() {
+        var base = getApiBase();
+        if (!base || !/^https?:\/\//i.test(base)) return 'same-origin';
+        try {
+          if (window.location && window.location.origin && new URL(base).origin === window.location.origin) {
+            return 'same-origin';
+          }
+          return 'include';
+        } catch (e) {
+          return 'same-origin';
+        }
       }
 
       function isLocalStaticDevHost() {
@@ -3180,12 +3274,29 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           var trimmed = (rawText || '').trim();
           var parsed = null;
           if (trimmed) {
+            if (/^<!doctype\s+html/i.test(trimmed) || /^<html/i.test(trimmed)) {
+              var htmlErr = new Error(
+                'Backend API (' + path + ') returned an HTML page (HTTP ' + resp.status +
+                ') instead of JSON. Please check your server or deployment routing.'
+              );
+              htmlErr.isNonJson = true;
+              htmlErr.httpStatus = resp.status;
+              throw htmlErr;
+            }
             try {
               parsed = JSON.parse(trimmed);
+              if (typeof parsed === 'string') {
+                var innerTrim = parsed.trim();
+                if (innerTrim.charAt(0) === '{' || innerTrim.charAt(0) === '[') {
+                  try {
+                    parsed = JSON.parse(innerTrim);
+                  } catch (innerErr) {}
+                }
+              }
             } catch (parseErr) {
               var nonJsonErr = new Error(
                 'Backend API (' + path + ') returned an invalid non-JSON response (HTTP ' +
-                resp.status + '). Please ensure the Python backend server (server.py) is running and handling /api/* routes.'
+                resp.status + '). Please ensure the backend API server is running and handling /api/* routes.'
               );
               nonJsonErr.isNonJson = true;
               nonJsonErr.httpStatus = resp.status;
@@ -3194,9 +3305,10 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           } else {
             parsed = {};
           }
-          if (contentType && contentType.indexOf('application/json') === -1 && (!parsed || typeof parsed !== 'object')) {
+          if (!parsed || typeof parsed !== 'object') {
             var typeErr = new Error(
-              'Backend API (' + path + ') returned unexpected Content-Type (' + contentType + ') instead of application/json.'
+              'Backend API (' + path + ') returned an unexpected response format (' +
+              (contentType || typeof parsed) + ') instead of a JSON object.'
             );
             typeErr.isNonJson = true;
             typeErr.httpStatus = resp.status;
@@ -3213,18 +3325,46 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       function apiFetchJson(path, options) {
         var opts = options || {};
         var headers = Object.assign({ 'Accept': 'application/json' }, opts.headers || {});
-        var fetchOpts = Object.assign({}, opts, { headers: headers });
-        var primaryUrl = getApiUrl(path);
+        var fetchOpts = Object.assign({ credentials: getFetchCredentials() }, opts, { headers: headers });
+        var base = getApiBase();
 
+        if (isAppsScriptEndpointUrl(base)) {
+          var actionMap = {
+            '/api/register': 'register',
+            '/api/admin/login': 'adminLogin',
+            '/api/admin/logout': 'adminLogout',
+            '/api/admin/session': 'adminSession',
+            '/api/admin/dashboard': 'dashboard',
+            '/api/admin/update': 'adminUpdate',
+            '/api/admin/delete': 'adminDelete'
+          };
+          var gasBody = {};
+          if (fetchOpts.body && typeof fetchOpts.body === 'string') {
+            try { gasBody = JSON.parse(fetchOpts.body); } catch (e) {}
+          }
+          gasBody.action = actionMap[path] || 'register';
+          if (adminSessionToken && !gasBody.sessionToken) {
+            gasBody.sessionToken = adminSessionToken;
+          }
+          return fetch(base, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(gasBody)
+          }).then(function(resp) {
+            return parseJsonSafe(resp, path);
+          });
+        }
+
+        var primaryUrl = getApiUrl(path);
         return fetch(primaryUrl, fetchOpts)
           .then(function(resp) {
             return parseJsonSafe(resp, path);
           })
           .catch(function(err) {
             // If running under a separate local static dev server (e.g. Live Server :5500), retry server.py on :8765
-            if (!getApiBase() && isLocalStaticDevHost() && (err.isNonJson || err.httpStatus === 404 || err.httpStatus === 405)) {
+            if (!base && isLocalStaticDevHost() && (err.isNonJson || err.httpStatus === 404 || err.httpStatus === 405)) {
               var devFallbackOpts = Object.assign({}, fetchOpts);
-              delete devFallbackOpts.credentials;
+              devFallbackOpts.credentials = 'include';
               return fetch('http://localhost:8765' + path, devFallbackOpts).then(function(fallbackResp) {
                 return parseJsonSafe(fallbackResp, path);
               });
@@ -3319,7 +3459,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       setInterval(updateCountdown, 1000);
 
       // -----------------------------------------------------------------------
-      // View Switching: Registration Form View vs. Admin Dashboard View
+      // View Switching & Route Persistence: Registration Form vs. Admin Dashboard
       // -----------------------------------------------------------------------
       var heroSection = document.getElementById('top');
       var registerSection = document.getElementById('register');
@@ -3329,7 +3469,45 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       var adminLoginSection = document.getElementById('adminLoginSection');
       var adminDashboardContent = document.getElementById('adminDashboardContent');
 
-      function showRegistrationSection(scrollToForm) {
+      function isAdminRouteActive() {
+        var hashVal = (window.location && window.location.hash) ? window.location.hash.toLowerCase() : '';
+        var pathVal = (window.location && window.location.pathname) ? window.location.pathname.toLowerCase().replace(/\/+$/, '') : '';
+        return (
+          hashVal === '#dashboard' ||
+          hashVal === '#admin' ||
+          hashVal === '#admin/login' ||
+          pathVal === '/dashboard' ||
+          pathVal === '/admin' ||
+          pathVal === '/admin/login'
+        );
+      }
+
+      function setRouteHash(hashTarget) {
+        try {
+          if (hashTarget) {
+            if (window.location.hash !== hashTarget) {
+              if (window.history && window.history.pushState) {
+                window.history.pushState(null, '', window.location.pathname + window.location.search + hashTarget);
+              } else {
+                window.location.hash = hashTarget;
+              }
+            }
+          } else {
+            if (window.history && window.history.replaceState) {
+              var cleanPath = window.location.pathname.toLowerCase();
+              var nextPath = (cleanPath === '/dashboard' || cleanPath === '/admin' || cleanPath === '/admin/login' || cleanPath === '/register')
+                ? '/'
+                : window.location.pathname;
+              window.history.replaceState(null, '', nextPath + window.location.search);
+            } else if (window.location.hash) {
+              window.location.hash = '';
+            }
+          }
+        } catch (e) {}
+      }
+
+      function showRegistrationSection(scrollToForm, options) {
+        var opts = options || {};
         dashboardSection.style.display = 'none';
         heroSection.style.display = 'block';
         registerSection.style.display = 'block';
@@ -3337,22 +3515,43 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         navDashboardLink.classList.remove('active');
         navLinks.classList.remove('open');
 
+        if (opts.updateRoute !== false) {
+          setRouteHash(scrollToForm ? '#register' : '');
+        }
+
         if (scrollToForm) {
           registerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       }
 
-      function showAdminDashboardSection() {
+      function showAdminDashboardSection(options) {
+        var opts = options || {};
         heroSection.style.display = 'none';
         registerSection.style.display = 'none';
         dashboardSection.style.display = 'block';
         navRegisterLink.classList.remove('active');
         navDashboardLink.classList.add('active');
         navLinks.classList.remove('open');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
 
+        if (opts.updateRoute !== false && !isAdminRouteActive()) {
+          setRouteHash('#dashboard');
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         verifySessionAndRenderAdminView();
       }
+
+      function syncRouteFromLocation() {
+        if (isAdminRouteActive()) {
+          showAdminDashboardSection({ updateRoute: false });
+        } else {
+          var scrollForm = (window.location && window.location.hash === '#register');
+          showRegistrationSection(scrollForm, { updateRoute: false });
+        }
+      }
+
+      window.addEventListener('hashchange', syncRouteFromLocation);
+      window.addEventListener('popstate', syncRouteFromLocation);
 
       document.getElementById('brandLogoLink').addEventListener('click', function(e) {
         e.preventDefault();
@@ -3508,7 +3707,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           google.script.run
             .withSuccessHandler(function(response) {
               if (!response || !response.success) {
-                var gasErrMsg = (response && response.error) ? response.error : 'Unable to save registration. Please try again.';
+                var gasErrMsg = extractReadableMessage(response && (response.message || response.error), 'Unable to save registration. Please try again.');
                 isSubmitting = false;
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<span>Submit Registration</span><span>✓</span>';
@@ -3520,7 +3719,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
               renderConfirmationView(response);
             })
             .withFailureHandler(function(err) {
-              var gasFailMsg = err && err.message ? err.message : 'Unable to save registration. Please try again.';
+              var gasFailMsg = extractReadableMessage(err, 'Unable to save registration. Please try again.');
               isSubmitting = false;
               submitBtn.disabled = false;
               submitBtn.innerHTML = '<span>Submit Registration</span><span>✓</span>';
@@ -3540,11 +3739,11 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         })
           .then(function(result) {
             if (!result.ok || !result.data || !result.data.success) {
-              throw new Error(
-                (result.data && (result.data.message || result.data.error))
-                  ? (result.data.message || result.data.error)
-                  : 'Registration failed. Please try again.'
+              var apiErrMsg = extractReadableMessage(
+                result.data && (result.data.message || result.data.error),
+                'Registration failed. Please try again.'
               );
+              throw new Error(apiErrMsg);
             }
             renderConfirmationView(result.data);
           })
@@ -3552,12 +3751,12 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             isSubmitting = false;
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<span>Submit Registration</span><span>✓</span>';
-            var errMsg = (err && err.message && err.message !== 'Failed to fetch')
-              ? err.message
+            var rawErrMsg = (err && err.message && err.message !== 'Failed to fetch')
+              ? extractReadableMessage(err.message, 'Unable to submit registration. Please try again.')
               : 'Unable to reach the registration server. Please ensure the backend server (server.py) is running and try again.';
-            globalError.textContent = errMsg;
+            globalError.textContent = rawErrMsg;
             globalError.style.display = 'block';
-            openSubmissionErrorModal(errMsg);
+            openSubmissionErrorModal(rawErrMsg);
           });
       });
 
@@ -3614,7 +3813,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           submissionAlertBadge.textContent = 'Registration Not Saved';
           submissionAlertBadge.style.display = 'inline-block';
         }
-        submissionAlertMessage.textContent = errMsg || 'Unable to submit registration. Please try again.';
+        submissionAlertMessage.textContent = extractReadableMessage(errMsg, 'Unable to submit registration. Please try again.');
         submissionAlertModal.setAttribute('aria-hidden', 'false');
         submissionAlertModal.classList.add('active');
         setTimeout(function() {
@@ -3757,28 +3956,61 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         adminDashboardContent.style.display = 'none';
         adminLoginSection.style.display = 'block';
         if (errorMsg) {
-          adminLoginError.textContent = errorMsg;
+          adminLoginError.textContent = extractReadableMessage(errorMsg, 'Invalid administrator username or password.');
           adminLoginError.style.display = 'block';
         } else {
           adminLoginError.style.display = 'none';
         }
       }
 
-      function showAuthenticatedDashboard(data) {
+      function normalizeRegistrationItem(item, index) {
+        var r = (item && typeof item === 'object') ? item : {};
+        var fallbackId = String(index + 1);
+        while (fallbackId.length < 3) fallbackId = '0' + fallbackId;
+        return {
+          registrationId: safeDisplayText(r.registrationId, fallbackId),
+          timestamp: safeDisplayText(r.timestamp, '-'),
+          name: safeDisplayText(r.name, '-'),
+          place: safeDisplayText(r.place, '-'),
+          batchYear: safeDisplayText(r.batchYear, '-'),
+          whatsappNumber: safeDisplayText(r.whatsappNumber, ''),
+          formattedPhone: safeDisplayText(r.formattedPhone || r.whatsappNumber, '-'),
+          waNumber: safeDisplayText(r.waNumber, ''),
+          participation: safeDisplayText(r.participation, '-'),
+          shouldSendWhatsApp: Boolean(r.shouldSendWhatsApp),
+          whatsAppMessage: safeDisplayText(r.whatsAppMessage, ''),
+          whatsAppClickToChatUrl: safeDisplayText(r.whatsAppClickToChatUrl, '')
+        };
+      }
+
+      function showAuthenticatedDashboard(rawPayload) {
+        var payload = (rawPayload && typeof rawPayload === 'object') ? rawPayload : {};
+        var rawRegs = Array.isArray(payload.registrations)
+          ? payload.registrations
+          : (payload.data && Array.isArray(payload.data.registrations) ? payload.data.registrations : []);
+
         isAdminAuthenticated = true;
         adminLoginError.style.display = 'none';
         adminLoginSection.style.display = 'none';
         adminDashboardContent.style.display = 'block';
-        dashboardRegistrations = Array.isArray(data.registrations) ? data.registrations : [];
+        dashboardRegistrations = rawRegs.map(normalizeRegistrationItem);
         renderDashboardUI();
       }
 
-      function getAuthHeaders() {
-        var headers = { 'Content-Type': 'application/json' };
+      function getAuthHeaders(includeJsonContentType) {
+        var headers = {};
+        if (includeJsonContentType) {
+          headers['Content-Type'] = 'application/json';
+        }
         if (adminSessionToken) {
           headers['Authorization'] = 'Bearer ' + adminSessionToken;
         }
         return headers;
+      }
+
+      function clearStoredAdminSession() {
+        adminSessionToken = '';
+        safeStorageRemove('AUFBRUCH_ADMIN_SESSION_TOKEN');
       }
 
       function verifySessionAndRenderAdminView() {
@@ -3793,8 +4025,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
               if (data && data.authenticated && data.success) {
                 showAuthenticatedDashboard(data);
               } else {
-                adminSessionToken = '';
-                sessionStorage.removeItem('AUFBRUCH_ADMIN_SESSION_TOKEN');
+                clearStoredAdminSession();
                 showLoginScreen();
               }
             })
@@ -3805,26 +4036,44 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           return;
         }
 
-        // 2. Backend HTTP Server Mode (/api/admin/dashboard)
-        apiFetchJson('/api/admin/dashboard', {
+        // 2. Backend HTTP Server Mode: First verify session status (GET /api/admin/session), then load protected data (GET /api/admin/dashboard)
+        var reqHeaders = getAuthHeaders(false);
+        apiFetchJson('/api/admin/session', {
           method: 'GET',
-          headers: getAuthHeaders(),
-          credentials: 'same-origin'
+          headers: reqHeaders
         })
-          .then(function(result) {
-            if (result.status === 401 || result.status === 403) {
-              throw new Error('Unauthorized');
+          .then(function(sessRes) {
+            if (sessRes.status === 401 || sessRes.status === 403 || !sessRes.data || !sessRes.data.authenticated) {
+              var err = new Error('Unauthorized');
+              err.isAuthError = true;
+              throw err;
             }
-            if (result.data && result.data.success) {
-              showAuthenticatedDashboard(result.data);
+            return apiFetchJson('/api/admin/dashboard', {
+              method: 'GET',
+              headers: getAuthHeaders(false)
+            });
+          })
+          .then(function(dashRes) {
+            if (dashRes.status === 401 || dashRes.status === 403) {
+              var authErr = new Error('Unauthorized');
+              authErr.isAuthError = true;
+              throw authErr;
+            }
+            if (dashRes.data && dashRes.data.success) {
+              showAuthenticatedDashboard(dashRes.data);
             } else {
-              showLoginScreen();
+              var msg = extractReadableMessage(dashRes.data && (dashRes.data.message || dashRes.data.error), 'Unable to load dashboard records.');
+              showLoginScreen(msg);
             }
           })
-          .catch(function() {
-            adminSessionToken = '';
-            sessionStorage.removeItem('AUFBRUCH_ADMIN_SESSION_TOKEN');
-            showLoginScreen();
+          .catch(function(err) {
+            if (err && err.isAuthError) {
+              clearStoredAdminSession();
+              showLoginScreen();
+              return;
+            }
+            clearStoredAdminSession();
+            showLoginScreen(extractReadableMessage(err, 'Unable to verify administrator session. Please log in again.'));
           });
       }
 
@@ -3852,18 +4101,19 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
               adminLoginBtn.textContent = 'Login';
               if (res && res.authenticated && res.sessionToken) {
                 adminSessionToken = res.sessionToken;
-                sessionStorage.setItem('AUFBRUCH_ADMIN_SESSION_TOKEN', adminSessionToken);
+                safeStorageSet('AUFBRUCH_ADMIN_SESSION_TOKEN', adminSessionToken);
                 adminPasswordInput.value = '';
+                setRouteHash('#dashboard');
                 showToast('🔓 Administrator login successful.');
                 verifySessionAndRenderAdminView();
               } else {
-                showLoginScreen((res && res.error) || 'Invalid administrator username or password.');
+                showLoginScreen(extractReadableMessage(res && (res.message || res.error), 'Invalid administrator username or password.'));
               }
             })
             .withFailureHandler(function(err) {
               adminLoginBtn.disabled = false;
               adminLoginBtn.textContent = 'Login';
-              showLoginScreen(err && err.message ? err.message : 'Authentication failed.');
+              showLoginScreen(extractReadableMessage(err, 'Authentication failed.'));
             })
             .authenticateAdminFromWebApp(username, password);
           return;
@@ -3873,7 +4123,6 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         apiFetchJson('/api/admin/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          credentials: 'same-origin',
           body: JSON.stringify({ username: username, password: password })
         })
           .then(function(result) {
@@ -3881,22 +4130,27 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             adminLoginBtn.textContent = 'Login';
 
             if (result.status === 200 && result.data && result.data.authenticated) {
-              adminSessionToken = result.data.sessionToken || '';
+              adminSessionToken = safeDisplayText(result.data.sessionToken, '');
               if (adminSessionToken) {
-                sessionStorage.setItem('AUFBRUCH_ADMIN_SESSION_TOKEN', adminSessionToken);
+                safeStorageSet('AUFBRUCH_ADMIN_SESSION_TOKEN', adminSessionToken);
               }
               adminPasswordInput.value = '';
+              setRouteHash('#dashboard');
               showToast('🔓 Welcome, Administrator! Loading dashboard...');
               verifySessionAndRenderAdminView();
             } else {
-              showLoginScreen((result.data && result.data.error) || 'Invalid administrator username or password.');
+              var loginErr = extractReadableMessage(
+                result.data && (result.data.message || result.data.error),
+                'Invalid administrator username or password.'
+              );
+              showLoginScreen(loginErr);
             }
           })
           .catch(function(err) {
             adminLoginBtn.disabled = false;
             adminLoginBtn.textContent = 'Login';
             var msg = (err && err.message && err.message !== 'Failed to fetch')
-              ? err.message
+              ? extractReadableMessage(err.message, 'Unable to reach authentication server.')
               : 'Unable to reach authentication server. Please ensure the backend server is running.';
             showLoginScreen(msg);
           });
@@ -3904,8 +4158,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
       adminLogoutBtn.addEventListener('click', function() {
         var currentToken = adminSessionToken;
-        adminSessionToken = '';
-        sessionStorage.removeItem('AUFBRUCH_ADMIN_SESSION_TOKEN');
+        clearStoredAdminSession();
         adminUsernameInput.value = '';
         adminPasswordInput.value = '';
         showLoginScreen();
@@ -3921,8 +4174,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           headers: {
             'Content-Type': 'application/json',
             'Authorization': currentToken ? ('Bearer ' + currentToken) : ''
-          },
-          credentials: 'same-origin'
+          }
         }).catch(function() {});
       });
 
@@ -4501,8 +4753,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         // 2. Backend HTTP Server Mode (/api/admin/update)
         apiFetchJson('/api/admin/update', {
           method: 'POST',
-          headers: getAuthHeaders(),
-          credentials: 'same-origin',
+          headers: getAuthHeaders(true),
           body: JSON.stringify(updatePayload)
         })
           .then(function(result) {
@@ -4515,7 +4766,10 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
               return;
             }
             if (result.status !== 200 || !result.data || !result.data.success) {
-              editModalError.textContent = (result.data && result.data.error) || 'Failed to update registration.';
+              editModalError.textContent = extractReadableMessage(
+                result.data && (result.data.message || result.data.error),
+                'Failed to update registration.'
+              );
               editModalError.style.display = 'block';
               return;
             }
@@ -4528,7 +4782,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             saveEditBtn.disabled = false;
             saveEditBtn.textContent = 'Save Changes';
             editModalError.textContent = (err && err.message && err.message !== 'Failed to fetch')
-              ? err.message
+              ? extractReadableMessage(err.message, 'Network error while updating registration.')
               : 'Network error while updating registration.';
             editModalError.style.display = 'block';
           });
@@ -4556,7 +4810,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             .withFailureHandler(function(err) {
               confirmDeleteBtn.disabled = false;
               confirmDeleteBtn.textContent = 'Confirm Delete';
-              deleteModalError.textContent = err && err.message ? err.message : 'Failed to delete registration.';
+              deleteModalError.textContent = extractReadableMessage(err, 'Failed to delete registration.');
               deleteModalError.style.display = 'block';
             })
             .deleteRegistrationFromAdmin(adminSessionToken, targetId);
@@ -4566,8 +4820,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         // 2. Backend HTTP Server Mode (/api/admin/delete)
         apiFetchJson('/api/admin/delete', {
           method: 'POST',
-          headers: getAuthHeaders(),
-          credentials: 'same-origin',
+          headers: getAuthHeaders(true),
           body: JSON.stringify({ registrationId: targetId })
         })
           .then(function(result) {
@@ -4580,7 +4833,10 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
               return;
             }
             if (result.status !== 200 || !result.data || !result.data.success) {
-              deleteModalError.textContent = (result.data && result.data.error) || 'Failed to delete registration.';
+              deleteModalError.textContent = extractReadableMessage(
+                result.data && (result.data.message || result.data.error),
+                'Failed to delete registration.'
+              );
               deleteModalError.style.display = 'block';
               return;
             }
@@ -4593,14 +4849,14 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             confirmDeleteBtn.disabled = false;
             confirmDeleteBtn.textContent = 'Confirm Delete';
             deleteModalError.textContent = (err && err.message && err.message !== 'Failed to fetch')
-              ? err.message
+              ? extractReadableMessage(err.message, 'Network error while deleting registration.')
               : 'Network error while deleting registration.';
             deleteModalError.style.display = 'block';
           });
       });
 
       function escapeHtml(str) {
-        return String(str || '')
+        return safeDisplayText(str, '')
           .replace(/&/g, '&amp;')
           .replace(/</g, '&lt;')
           .replace(/>/g, '&gt;')
@@ -4608,7 +4864,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       }
 
       function escapeAttr(str) {
-        return String(str || '').replace(/"/g, '&quot;');
+        return safeDisplayText(str, '').replace(/"/g, '&quot;');
       }
 
       document.getElementById('searchTableInput').addEventListener('input', renderResponsesTable);
@@ -4668,9 +4924,11 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         showToast('📥 Exported registrations spreadsheet (CSV with Malayalam UTF-8 support).');
       });
 
-      // Handle initial URL hash if navigating directly to #dashboard
-      if (window.location.hash === '#dashboard') {
-        showAdminDashboardSection();
+      // Handle initial route (/admin, /admin/login, /dashboard, #dashboard, #admin)
+      if (isAdminRouteActive()) {
+        showAdminDashboardSection({ updateRoute: false });
+      } else if (window.location.hash === '#register') {
+        showRegistrationSection(true, { updateRoute: false });
       }
     })();
   </script>

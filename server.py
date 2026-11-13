@@ -12,6 +12,7 @@ Provides:
   - POST /api/admin/seed
 """
 
+import base64
 import hashlib
 import hmac
 import http.cookies
@@ -20,6 +21,8 @@ import mimetypes
 import os
 import re
 import secrets
+import socket
+import tempfile
 import time
 import urllib.parse
 from datetime import datetime
@@ -27,7 +30,26 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 WORKSPACE_DIR = Path(__file__).resolve().parent
-DB_FILE = WORKSPACE_DIR / "registrations_db.json"
+BUNDLED_DB_FILE = WORKSPACE_DIR / "registrations_db.json"
+
+
+def _resolve_db_file() -> Path:
+    env_db = os.environ.get("DB_FILE", "").strip()
+    if env_db:
+        return Path(env_db)
+    # Use workspace file whenever directory is writable; fall back to tmp only on read-only serverless hosts
+    if os.access(WORKSPACE_DIR, os.W_OK):
+        return BUNDLED_DB_FILE
+    tmp_db = Path(tempfile.gettempdir()) / "aufbruch_registrations_db.json"
+    if not tmp_db.exists() and BUNDLED_DB_FILE.exists():
+        try:
+            tmp_db.write_text(BUNDLED_DB_FILE.read_text(encoding="utf-8"), encoding="utf-8")
+        except Exception:
+            pass
+    return tmp_db
+
+
+DB_FILE = _resolve_db_file()
 
 # ============================================================================
 # SERVER-SIDE ADMIN CREDENTIALS (PBKDF2-HMAC-SHA256)
@@ -42,10 +64,60 @@ ADMIN_PASSWORD_HASH = hashlib.pbkdf2_hmac(
     "sha256", _DEFAULT_PASSWORD.encode("utf-8"), _ADMIN_SALT, 120_000
 ).hex()
 
-# Active server-side sessions: token -> {"username": str, "expires_at": float}
+# Active server-side sessions + persistent HMAC signing (survives restarts/workers)
 ACTIVE_SESSIONS: dict[str, dict] = {}
+REVOKED_TOKENS: set[str] = set()
+REVOKED_FILE = (
+    WORKSPACE_DIR / ".aufbruch_revoked_sessions.json"
+    if os.access(WORKSPACE_DIR, os.W_OK)
+    else Path(tempfile.gettempdir()) / ".aufbruch_revoked_sessions.json"
+)
 SESSION_TTL_SECONDS = 8 * 3600  # 8 hours
 SESSION_COOKIE_NAME = "aufbruch_admin_session"
+
+
+def _get_session_signing_key() -> bytes:
+    env_secret = os.environ.get("SESSION_SECRET", "").strip()
+    if env_secret:
+        return hashlib.sha256(env_secret.encode("utf-8")).digest()
+    return hmac.new(_ADMIN_SALT, ADMIN_PASSWORD_HASH.encode("utf-8"), hashlib.sha256).digest()
+
+
+def _load_revoked_tokens() -> dict[str, int]:
+    now = int(time.time())
+    revoked_map: dict[str, int] = {}
+    if REVOKED_FILE.exists():
+        try:
+            raw = json.loads(REVOKED_FILE.read_text(encoding="utf-8"))
+            if isinstance(raw, dict):
+                revoked_map = {k: int(v) for k, v in raw.items() if int(v) > now}
+        except Exception:
+            revoked_map = {}
+    return revoked_map
+
+
+def _mark_token_revoked(jti: str, exp: int) -> None:
+    if not jti:
+        return
+    REVOKED_TOKENS.add(jti)
+    revoked_map = _load_revoked_tokens()
+    revoked_map[jti] = exp
+    try:
+        REVOKED_FILE.write_text(json.dumps(revoked_map), encoding="utf-8")
+    except Exception:
+        pass
+
+
+def _is_jti_revoked(jti: str) -> bool:
+    if not jti:
+        return True
+    if jti in REVOKED_TOKENS:
+        return True
+    revoked_map = _load_revoked_tokens()
+    if jti in revoked_map:
+        REVOKED_TOKENS.add(jti)
+        return True
+    return False
 
 EXACT_CONFIRMATION_MESSAGE = (
     "Registration Successful!\n\n"
@@ -213,43 +285,87 @@ def verify_admin_credentials(username: str, password: str) -> bool:
 
 
 def create_session(username: str) -> str:
-    token = secrets.token_urlsafe(32)
+    now = int(time.time())
+    exp = now + SESSION_TTL_SECONDS
+    jti = secrets.token_hex(12)
+    payload_bytes = json.dumps({"u": username, "exp": exp, "jti": jti}, separators=(",", ":")).encode("utf-8")
+    b64 = base64.urlsafe_b64encode(payload_bytes).decode("ascii").rstrip("=")
+    sig = hmac.new(_get_session_signing_key(), b64.encode("ascii"), hashlib.sha256).hexdigest()
+    token = f"{b64}.{sig}"
     ACTIVE_SESSIONS[token] = {
         "username": username,
-        "expires_at": time.time() + SESSION_TTL_SECONDS,
+        "expires_at": float(exp),
+        "jti": jti,
     }
     return token
 
 
+def _verify_signed_token(token: str) -> dict | None:
+    if not token or "." not in token:
+        return None
+    parts = token.split(".", 1)
+    if len(parts) != 2:
+        return None
+    b64, sig = parts
+    expected_sig = hmac.new(_get_session_signing_key(), b64.encode("ascii"), hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(sig, expected_sig):
+        return None
+    try:
+        padded = b64 + "=" * (-len(b64) % 4)
+        payload = json.loads(base64.urlsafe_b64decode(padded.encode("ascii")).decode("utf-8"))
+        username = str(payload.get("u", "")).strip()
+        exp = float(payload.get("exp", 0))
+        jti = str(payload.get("jti", "")).strip()
+    except Exception:
+        return None
+
+    if not username or not hmac.compare_digest(username, ADMIN_USERNAME):
+        return None
+    if time.time() > exp or _is_jti_revoked(jti):
+        ACTIVE_SESSIONS.pop(token, None)
+        return None
+
+    return {"token": token, "username": username, "expires_at": exp, "jti": jti}
+
+
+def revoke_session(token: str) -> None:
+    if not token:
+        return
+    sess = ACTIVE_SESSIONS.pop(token, None) or _verify_signed_token(token)
+    if sess:
+        _mark_token_revoked(str(sess.get("jti", "")), int(sess.get("expires_at", time.time() + SESSION_TTL_SECONDS)))
+
+
 def get_valid_session(handler: BaseHTTPRequestHandler) -> dict | None:
-    token = None
+    candidates: list[str] = []
 
     # 1. Check Authorization Bearer header
     auth_header = handler.headers.get("Authorization", "")
     if auth_header.startswith("Bearer "):
-        token = auth_header[7:].strip()
+        bearer_tok = auth_header[7:].strip()
+        if bearer_tok:
+            candidates.append(bearer_tok)
 
     # 2. Check HttpOnly Cookie
-    if not token:
-        cookie_header = handler.headers.get("Cookie", "")
-        if cookie_header:
-            jar = http.cookies.SimpleCookie()
-            try:
-                jar.load(cookie_header)
-                if SESSION_COOKIE_NAME in jar:
-                    token = jar[SESSION_COOKIE_NAME].value
-            except Exception:
-                pass
+    cookie_header = handler.headers.get("Cookie", "")
+    if cookie_header:
+        jar = http.cookies.SimpleCookie()
+        try:
+            jar.load(cookie_header)
+            if SESSION_COOKIE_NAME in jar:
+                cookie_tok = jar[SESSION_COOKIE_NAME].value
+                if cookie_tok and cookie_tok not in candidates:
+                    candidates.append(cookie_tok)
+        except Exception:
+            pass
 
-    if not token or token not in ACTIVE_SESSIONS:
-        return None
+    for token in candidates:
+        verified = _verify_signed_token(token)
+        if verified:
+            ACTIVE_SESSIONS[token] = verified
+            return verified
 
-    sess = ACTIVE_SESSIONS[token]
-    if time.time() > sess["expires_at"]:
-        ACTIVE_SESSIONS.pop(token, None)
-        return None
-
-    return {"token": token, **sess}
+    return None
 
 
 def build_dashboard_payload() -> dict:
@@ -283,6 +399,7 @@ def build_dashboard_payload() -> dict:
 
     return {
         "success": True,
+        "authenticated": True,
         "registrations": records,
         "stats": {
             "total": total,
@@ -325,6 +442,33 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
             return
         super().send_error(code, message, explain)
 
+    def _send_cors_headers(self):
+        origin = (self.headers.get("Origin", "") if self.headers else "") or ""
+        if origin and origin != "null":
+            self.send_header("Access-Control-Allow-Origin", origin)
+            self.send_header("Access-Control-Allow-Credentials", "true")
+            self.send_header("Vary", "Origin")
+        else:
+            self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept")
+
+    def _is_https_request(self) -> bool:
+        proto = (self.headers.get("X-Forwarded-Proto", "") if self.headers else "") or ""
+        return "https" in proto.lower()
+
+    def _build_session_cookie(self, value: str, max_age: int) -> str:
+        parts = [
+            f"{SESSION_COOKIE_NAME}={value}",
+            "HttpOnly",
+            "Path=/",
+            f"Max-Age={max_age}",
+            "SameSite=Lax",
+        ]
+        if self._is_https_request():
+            parts.append("Secure")
+        return "; ".join(parts)
+
     def _send_json(self, status_code: int, payload: dict, extra_headers: list[tuple[str, str]] | None = None):
         out = dict(payload)
         if out.get("success") is False:
@@ -336,9 +480,7 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store, no-cache, must-revalidate")
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        self._send_cors_headers()
         if extra_headers:
             for k, v in extra_headers:
                 self.send_header(k, v)
@@ -357,9 +499,7 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
 
     def do_OPTIONS(self):
         self.send_response(204)
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        self._send_cors_headers()
         self.send_header("Content-Length", "0")
         self.end_headers()
 
@@ -378,6 +518,7 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
         route = self._normalize_route(parsed.path)
+        lower_route = route.lower()
 
         try:
             # 1. Check Admin Session Status
@@ -397,6 +538,7 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                         401,
                         {
                             "success": False,
+                            "authenticated": False,
                             "error": "Unauthorized access. Please log in with valid administrator credentials.",
                         },
                     )
@@ -409,8 +551,8 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                 self._send_json(404, {"success": False, "error": "API endpoint not found."})
                 return
 
-            # 3. Static File Serving (restrict access to .py, .json db, Code.gs)
-            if route in ("/", "/index.html", "/Index.html"):
+            # 3. Static File Serving & Clean SPA Routing (restrict access to backend/db files)
+            if lower_route in ("/", "/index.html", "/register", "/dashboard", "/admin", "/admin/login"):
                 file_path = WORKSPACE_DIR / "Index.html"
             else:
                 rel = parsed.path.lstrip("/")
@@ -418,7 +560,18 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                 if not str(file_path).startswith(str(WORKSPACE_DIR)):
                     self.send_error(403, "Forbidden")
                     return
-                if file_path.name in ("registrations_db.json", "server.py"):
+                protected_names = {
+                    "registrations_db.json",
+                    "server.py",
+                    "code.gs",
+                    ".aufbruch_revoked_sessions.json",
+                    ".aufbruch_session_secret",
+                    "vercel.json",
+                    "procfile",
+                    "appsscript.json",
+                    "test_registration_system.py",
+                }
+                if file_path.name.lower() in protected_names or ".git" in file_path.parts or "api" in file_path.parts:
                     self.send_error(403, "Forbidden")
                     return
 
@@ -478,9 +631,7 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                 return
 
             token = create_session(username)
-            cookie_val = (
-                f"{SESSION_COOKIE_NAME}={token}; HttpOnly; Path=/; Max-Age={SESSION_TTL_SECONDS}; SameSite=Strict"
-            )
+            cookie_val = self._build_session_cookie(token, SESSION_TTL_SECONDS)
             self._send_json(
                 200,
                 {
@@ -497,8 +648,11 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
         if route == "/api/admin/logout":
             sess = get_valid_session(self)
             if sess and sess.get("token"):
-                ACTIVE_SESSIONS.pop(sess["token"], None)
-            clear_cookie = f"{SESSION_COOKIE_NAME}=; HttpOnly; Path=/; Max-Age=0; SameSite=Strict"
+                revoke_session(sess["token"])
+            auth_header = self.headers.get("Authorization", "")
+            if auth_header.startswith("Bearer "):
+                revoke_session(auth_header[7:].strip())
+            clear_cookie = self._build_session_cookie("", 0)
             self._send_json(
                 200,
                 {"success": True, "authenticated": False},
@@ -700,12 +854,28 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
         self._send_json(404, {"success": False, "error": "Endpoint not found."})
 
 
-def run_server(port: int = 8765):
+class DualStackHTTPServer(ThreadingHTTPServer):
+    address_family = socket.AF_INET6
+
+    def server_bind(self):
+        try:
+            self.socket.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0)
+        except Exception:
+            pass
+        return super().server_bind()
+
+
+def run_server(port: int | None = None):
+    if port is None:
+        port = int(os.environ.get("PORT", "8765"))
     load_db()
-    server = ThreadingHTTPServer(("0.0.0.0", port), AufbruchRequestHandler)
+    try:
+        server = DualStackHTTPServer(("::", port), AufbruchRequestHandler)
+    except OSError:
+        server = ThreadingHTTPServer(("0.0.0.0", port), AufbruchRequestHandler)
     print(f"Aufbruch 2026 Secure Server listening on http://localhost:{port}")
     server.serve_forever()
 
 
 if __name__ == "__main__":
-    run_server(8765)
+    run_server()

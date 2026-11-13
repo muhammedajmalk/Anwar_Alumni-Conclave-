@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/",
+      "destination": "/Index.html"
+    },
+    {
+      "source": "/index.html",
+      "destination": "/Index.html"
+    },
+    {
+      "source": "/register",
+      "destination": "/Index.html"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/Index.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/Index.html"
+    },
+    {
+      "source": "/admin/(.*)",
+      "destination": "/Index.html"
+    }
+  ]
+}

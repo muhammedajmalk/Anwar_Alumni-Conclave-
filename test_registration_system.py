@@ -244,6 +244,15 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertIn("action-delete-btn", index_html)
         self.assertIn("action-message-btn", index_html)
 
+        # 9. Verify Object/JSON Display Guards, Session Endpoint Integration, Routing & Deployment Files
+        self.assertIn("extractReadableMessage", index_html)
+        self.assertIn("safeDisplayText", index_html)
+        self.assertIn("syncRouteFromLocation", index_html)
+        self.assertIn("/api/admin/session", index_html)
+        self.assertTrue((WORKSPACE_DIR / "vercel.json").exists())
+        self.assertTrue((WORKSPACE_DIR / "api" / "index.py").exists())
+        self.assertTrue((WORKSPACE_DIR / "Procfile").exists())
+
     def test_backend_admin_auth_and_protected_routes(self):
         # 1. Unauthenticated requests to dashboard, update, and delete must be rejected with 401
         status, body, _ = http_json_request("/api/admin/dashboard", "GET")
@@ -389,13 +398,67 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertFalse(out_body.get("authenticated", True))
 
-        # 7. Subsequent request with logged-out token must return 401 Unauthorized
+        # 7. Subsequent requests with logged-out token must return 401 Unauthorized
         status, _, _ = http_json_request(
             "/api/admin/dashboard",
             "GET",
             headers=auth_headers,
         )
         self.assertEqual(status, 401)
+
+        sess_out_status, sess_out_body, _ = http_json_request(
+            "/api/admin/session",
+            "GET",
+            headers=auth_headers,
+        )
+        self.assertEqual(sess_out_status, 401)
+        self.assertFalse(sess_out_body.get("authenticated", True))
+
+    def test_admin_session_and_spa_routes(self):
+        # Unauthenticated session check must return 401 JSON
+        status, sess_unauth, sess_hdrs = http_json_request("/api/admin/session", "GET")
+        self.assertEqual(status, 401)
+        self.assertIn("application/json", sess_hdrs.get("Content-Type", ""))
+        self.assertFalse(sess_unauth.get("authenticated", True))
+
+        # Login with cookie jar & verify session + dashboard persistence
+        import http.cookiejar
+        cj = http.cookiejar.CookieJar()
+        opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+        login_req = urllib.request.Request(
+            f"{BASE_URL}/api/admin/login",
+            data=json.dumps({"username": "admin", "password": "Aufbruch@2026"}).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with opener.open(login_req, timeout=5) as resp:
+            self.assertEqual(resp.status, 200)
+            login_json = json.loads(resp.read().decode("utf-8"))
+            self.assertTrue(login_json.get("authenticated"))
+
+        with opener.open(f"{BASE_URL}/api/admin/session", timeout=5) as resp:
+            self.assertEqual(resp.status, 200)
+            sess_json = json.loads(resp.read().decode("utf-8"))
+            self.assertTrue(sess_json.get("authenticated"))
+            self.assertEqual(sess_json.get("username"), "admin")
+
+        # Logout via cookie jar
+        logout_req = urllib.request.Request(
+            f"{BASE_URL}/api/admin/logout",
+            data=b"{}",
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with opener.open(logout_req, timeout=5) as resp:
+            self.assertEqual(resp.status, 200)
+
+        # SPA HTML routes must serve UI HTML (not 404 or raw JSON)
+        for route in ["/", "/index.html", "/register", "/dashboard", "/admin", "/admin/login"]:
+            with urllib.request.urlopen(f"{BASE_URL}{route}", timeout=5) as resp:
+                self.assertEqual(resp.status, 200)
+                self.assertIn("text/html", resp.headers.get("Content-Type", ""))
+                body_preview = resp.read(256).decode("utf-8", errors="ignore")
+                self.assertIn("<!DOCTYPE html>", body_preview)
 
 
 if __name__ == "__main__":

@@ -4,3 +4,5 @@ __pycache__/
 .vscode/
 .DS_Store
 Thumbs.db
+.aufbruch_revoked_sessions.json
+.aufbruch_session_secret

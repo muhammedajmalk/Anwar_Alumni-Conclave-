@@ -1317,6 +1317,15 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
+    if (action === 'adminSession') {
+      var validSess = isValidAdminSessionToken(body.sessionToken);
+      return ContentService.createTextOutput(JSON.stringify({
+        success: validSess,
+        authenticated: validSess,
+        username: validSess ? (PropertiesService.getScriptProperties().getProperty('ADMIN_USERNAME') || 'admin') : ''
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
     if (action === 'dashboard') {
       var dashData = getDashboardDataFromWebApp(body.sessionToken);
       return ContentService.createTextOutput(JSON.stringify(dashData))
