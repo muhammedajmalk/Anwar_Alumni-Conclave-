@@ -302,12 +302,24 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         pass
 
+    def send_error(self, code, message=None, explain=None):
+        """Ensure /api/ routes never emit default HTML error pages."""
+        path = urllib.parse.urlparse(getattr(self, "path", "") or "").path
+        accept = (self.headers.get("Accept", "") if self.headers else "") or ""
+        if path.startswith("/api/") or "application/json" in accept:
+            self._send_json(code, {"success": False, "error": message or f"HTTP {code} error"})
+            return
+        super().send_error(code, message, explain)
+
     def _send_json(self, status_code: int, payload: dict, extra_headers: list[tuple[str, str]] | None = None):
         body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         self.send_response(status_code)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store, no-cache, must-revalidate")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
         if extra_headers:
             for k, v in extra_headers:
                 self.send_header(k, v)
@@ -319,73 +331,115 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
         if length <= 0:
             return {}
         raw = self.rfile.read(length)
-        try:
-            return json.loads(raw.decode("utf-8"))
-        except Exception:
-            return {}
+        data = json.loads(raw.decode("utf-8"))
+        if not isinstance(data, dict):
+            raise ValueError("JSON body must be an object.")
+        return data
+
+    def do_OPTIONS(self):
+        self.send_response(204)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+
+    def _method_not_allowed(self):
+        self._send_json(405, {"success": False, "error": f"Method {self.command} is not allowed on this endpoint."})
+
+    def do_PUT(self):
+        self._method_not_allowed()
+
+    def do_PATCH(self):
+        self._method_not_allowed()
+
+    def do_DELETE(self):
+        self._method_not_allowed()
 
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
         route = parsed.path
 
-        # 1. Check Admin Session Status
-        if route == "/api/admin/session":
-            sess = get_valid_session(self)
-            if not sess:
-                self._send_json(401, {"authenticated": False, "error": "Unauthorized"})
-                return
-            self._send_json(200, {"authenticated": True, "username": sess["username"]})
-            return
-
-        # 2. Protected Admin Dashboard Data Endpoint
-        if route == "/api/admin/dashboard":
-            sess = get_valid_session(self)
-            if not sess:
-                self._send_json(
-                    401,
-                    {
-                        "success": False,
-                        "error": "Unauthorized access. Please log in with valid administrator credentials.",
-                    },
-                )
-                return
-            self._send_json(200, build_dashboard_payload())
-            return
-
-        # 3. Static File Serving (restrict access to .py, .json db, Code.gs)
-        if route in ("/", "/index.html", "/Index.html"):
-            file_path = WORKSPACE_DIR / "Index.html"
-        else:
-            rel = route.lstrip("/")
-            file_path = (WORKSPACE_DIR / rel).resolve()
-            if not str(file_path).startswith(str(WORKSPACE_DIR)):
-                self.send_error(403, "Forbidden")
-                return
-            if file_path.name in ("registrations_db.json", "server.py"):
-                self.send_error(403, "Forbidden")
+        try:
+            # 1. Check Admin Session Status
+            if route == "/api/admin/session":
+                sess = get_valid_session(self)
+                if not sess:
+                    self._send_json(401, {"success": False, "authenticated": False, "error": "Unauthorized"})
+                    return
+                self._send_json(200, {"success": True, "authenticated": True, "username": sess["username"]})
                 return
 
-        if not file_path.exists() or not file_path.is_file():
-            self.send_error(404, "Not Found")
-            return
+            # 2. Protected Admin Dashboard Data Endpoint
+            if route == "/api/admin/dashboard":
+                sess = get_valid_session(self)
+                if not sess:
+                    self._send_json(
+                        401,
+                        {
+                            "success": False,
+                            "error": "Unauthorized access. Please log in with valid administrator credentials.",
+                        },
+                    )
+                    return
+                self._send_json(200, build_dashboard_payload())
+                return
 
-        mime_type, _ = mimetypes.guess_type(str(file_path))
-        if file_path.suffix.lower() == ".ttf":
-            mime_type = "font/ttf"
-        elif not mime_type:
-            mime_type = "application/octet-stream"
+            # Any other /api/ GET route returns JSON 404 (never HTML)
+            if route.startswith("/api/"):
+                self._send_json(404, {"success": False, "error": "API endpoint not found."})
+                return
 
-        data = file_path.read_bytes()
-        self.send_response(200)
-        self.send_header("Content-Type", mime_type)
-        self.send_header("Content-Length", str(len(data)))
-        self.end_headers()
-        self.wfile.write(data)
+            # 3. Static File Serving (restrict access to .py, .json db, Code.gs)
+            if route in ("/", "/index.html", "/Index.html"):
+                file_path = WORKSPACE_DIR / "Index.html"
+            else:
+                rel = route.lstrip("/")
+                file_path = (WORKSPACE_DIR / rel).resolve()
+                if not str(file_path).startswith(str(WORKSPACE_DIR)):
+                    self.send_error(403, "Forbidden")
+                    return
+                if file_path.name in ("registrations_db.json", "server.py"):
+                    self.send_error(403, "Forbidden")
+                    return
+
+            if not file_path.exists() or not file_path.is_file():
+                self.send_error(404, "Not Found")
+                return
+
+            mime_type, _ = mimetypes.guess_type(str(file_path))
+            if file_path.suffix.lower() == ".ttf":
+                mime_type = "font/ttf"
+            elif not mime_type:
+                mime_type = "application/octet-stream"
+
+            data = file_path.read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", mime_type)
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+        except Exception as exc:
+            if route.startswith("/api/"):
+                self._send_json(500, {"success": False, "error": f"Internal server error: {exc}"})
+            else:
+                self.send_error(500, "Internal Server Error")
 
     def do_POST(self):
         parsed = urllib.parse.urlparse(self.path)
         route = parsed.path
-        body = self._read_json_body()
+        try:
+            body = self._read_json_body()
+        except Exception:
+            self._send_json(400, {"success": False, "error": "Invalid JSON request payload."})
+            return
+
+        try:
+            self._handle_post_route(route, body)
+        except Exception as exc:
+            self._send_json(500, {"success": False, "error": f"Internal server error: {exc}"})
+
+    def _handle_post_route(self, route: str, body: dict):
 
         # 1. Admin Login Route
         if route == "/api/admin/login":

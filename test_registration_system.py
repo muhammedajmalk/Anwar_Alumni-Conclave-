@@ -226,6 +226,8 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertIn("#FFC21A", index_html)
         self.assertIn("#FF9800", index_html)
         self.assertIn("isSubmitting", index_html)
+        self.assertIn("apiFetchJson", index_html)
+        self.assertIn("openSubmissionErrorModal", index_html)
         self.assertNotIn("alert(res.confirmationMessage", index_html)
         self.assertNotIn("window.alert(", index_html)
         self.assertIn("opacity: 0.5", index_html)

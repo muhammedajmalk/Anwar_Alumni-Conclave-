@@ -147,12 +147,18 @@
       font-family: var(--font-primary);
     }
 
+    html {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
     body {
       background-color: var(--surface-slate);
       color: var(--text-primary);
       line-height: 1.6;
       font-weight: 400;
       min-height: 100vh;
+      max-width: 100%;
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
@@ -2036,6 +2042,249 @@
       letter-spacing: -0.2px;
       margin-bottom: 6px;
     }
+
+    /* Error state for Custom Submission Alert Modal */
+    .submission-alert-box.is-error {
+      border-color: rgba(239, 68, 68, 0.55);
+      border-top-color: #EF4444;
+      box-shadow: 0 28px 68px rgba(0, 0, 0, 0.78),
+                  0 0 32px rgba(239, 68, 68, 0.18);
+    }
+
+    .submission-alert-box.is-error .submission-alert-icon {
+      background: rgba(239, 68, 68, 0.16);
+      border-color: #EF4444;
+      color: #FCA5A5;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.25);
+    }
+
+    .submission-alert-box.is-error .submission-alert-badge {
+      color: #FCA5A5;
+      background: rgba(239, 68, 68, 0.14);
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    /* =========================================================================
+       COMPREHENSIVE MOBILE & TABLET RESPONSIVENESS
+       ========================================================================= */
+    .hero-container,
+    .registration-centered-container,
+    .dashboard-container,
+    .kpi-card,
+    .analytics-card,
+    .table-card {
+      min-width: 0;
+    }
+
+    .wa-preview-box,
+    .confirmation-msg,
+    .global-error {
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .table-responsive {
+      -webkit-overflow-scrolling: touch;
+      max-width: 100%;
+    }
+
+    .resp-table {
+      min-width: 760px;
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 0 14px;
+      }
+      .nav-container {
+        height: 64px;
+        gap: 10px;
+      }
+      .brand-logo {
+        gap: 9px;
+        min-width: 0;
+      }
+      .brand-emblem {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+        border-radius: 9px;
+      }
+      .brand-title {
+        font-size: 14px;
+      }
+      .brand-sub {
+        font-size: 10px;
+      }
+      .nav-links {
+        top: 64px;
+        z-index: 999;
+        box-shadow: 0 18px 36px rgba(0, 0, 0, 0.55);
+      }
+      .nav-actions {
+        gap: 8px;
+        flex-shrink: 0;
+      }
+      .nav-cta-btn {
+        padding: 7px 12px;
+        font-size: 12px;
+      }
+      .form-input,
+      .admin-input,
+      .filter-input,
+      .filter-select {
+        font-size: 16px;
+      }
+      .dashboard-section {
+        padding: 36px 14px 56px;
+      }
+      .dash-top-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .dash-toolbar {
+        width: 100%;
+      }
+      .table-header-bar {
+        padding: 16px 14px;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .table-filters {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .filter-input,
+      .filter-select {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 580px) {
+      .hero-section {
+        padding: 28px 12px 36px;
+      }
+      .hero-frame {
+        padding: 24px 14px 22px;
+        border-radius: 18px;
+      }
+      .hero-badge {
+        font-size: 10px;
+        letter-spacing: 1px;
+        padding: 6px 12px;
+      }
+      .countdown-wrap {
+        width: 100%;
+        padding: 10px 10px;
+        gap: 4px;
+        justify-content: space-around;
+        margin-bottom: 22px;
+      }
+      .countdown-item {
+        min-width: 0;
+        flex: 1;
+      }
+      .countdown-sep {
+        font-size: 16px;
+      }
+      .hero-cta-row {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+      }
+      .btn-gold-lg,
+      .btn-outline-gold {
+        width: 100%;
+        justify-content: center;
+        padding: 13px 18px;
+        font-size: 14px;
+      }
+      .section-wrap {
+        padding: 32px 12px 44px;
+      }
+      .section-header {
+        margin-bottom: 24px;
+      }
+      .form-card {
+        padding: 22px 16px;
+        border-radius: 16px;
+      }
+      .form-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding-bottom: 16px;
+        margin-bottom: 20px;
+      }
+      .confirmation-box {
+        padding: 28px 16px;
+        border-radius: 16px;
+      }
+      .dash-toolbar {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+      .dash-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 10px 10px;
+        font-size: 12px;
+      }
+      .kpi-card {
+        padding: 18px 16px;
+      }
+      .kpi-value {
+        font-size: 28px;
+      }
+      .analytics-card {
+        padding: 18px 14px;
+      }
+      .bar-row-meta {
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .toast-alert {
+        left: 14px;
+        right: 14px;
+        bottom: 14px;
+        max-width: none;
+        padding: 14px 16px;
+      }
+      .site-footer {
+        padding: 30px 16px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .admin-modal-overlay,
+      .submission-alert-overlay {
+        padding: 14px;
+      }
+      .admin-modal-actions {
+        flex-direction: column-reverse;
+        width: 100%;
+      }
+      .modal-btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .nav-cta-btn {
+        display: none;
+      }
+      .brand-title {
+        font-size: 13.5px;
+      }
+      .brand-sub {
+        font-size: 9.5px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -2652,6 +2901,49 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       var dashboardRegistrations = [];
 
       // -----------------------------------------------------------------------
+      // Centralized Safe JSON API Client (prevents "Unexpected token ... not valid JSON")
+      // -----------------------------------------------------------------------
+      function getApiUrl(path) {
+        if (window.AUFBRUCH_API_BASE) {
+          return String(window.AUFBRUCH_API_BASE).replace(/\/+$/, '') + path;
+        }
+        if (window.location && window.location.protocol === 'file:') {
+          return 'http://localhost:8765' + path;
+        }
+        return path;
+      }
+
+      function apiFetchJson(path, options) {
+        var opts = options || {};
+        var headers = Object.assign({ 'Accept': 'application/json' }, opts.headers || {});
+        var fetchOpts = Object.assign({}, opts, { headers: headers });
+
+        return fetch(getApiUrl(path), fetchOpts).then(function(resp) {
+          return resp.text().then(function(rawText) {
+            var trimmed = (rawText || '').trim();
+            var parsed = null;
+            if (trimmed) {
+              try {
+                parsed = JSON.parse(trimmed);
+              } catch (parseErr) {
+                throw new Error(
+                  'Backend API (' + path + ') returned an invalid non-JSON response (HTTP ' +
+                  resp.status + '). Please ensure the Python backend server (server.py) is running and handling /api/* routes.'
+                );
+              }
+            } else {
+              parsed = {};
+            }
+            return {
+              status: resp.status,
+              ok: resp.ok,
+              data: parsed
+            };
+          });
+        });
+      }
+
+      // -----------------------------------------------------------------------
       // Phone Normalization & Personalized Malayalam WhatsApp Message Builder
       // -----------------------------------------------------------------------
       function normalizeIndianPhone(raw) {
@@ -2947,16 +3239,11 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         }
 
         // 2. Submit to Backend Server (/api/register)
-        fetch('/api/register', {
+        apiFetchJson('/api/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         })
-          .then(function(resp) {
-            return resp.json().then(function(data) {
-              return { ok: resp.ok, data: data };
-            });
-          })
           .then(function(result) {
             if (!result.ok || !result.data || !result.data.success) {
               throw new Error((result.data && result.data.error) ? result.data.error : 'Failed to save registration.');
@@ -2969,9 +3256,10 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             submitBtn.innerHTML = '<span>Submit Registration</span><span>✓</span>';
             var errMsg = (err && err.message && err.message !== 'Failed to fetch')
               ? err.message
-              : 'Unable to submit registration right now. Please check your connection and try again.';
+              : 'Unable to reach the registration server. Please ensure the backend server (server.py) is running and try again.';
             globalError.textContent = errMsg;
             globalError.style.display = 'block';
+            openSubmissionErrorModal(errMsg);
           });
       });
 
@@ -2990,6 +3278,8 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       var registerAnotherBtn = document.getElementById('registerAnotherBtn');
 
       var submissionAlertModal = document.getElementById('submissionAlertModal');
+      var submissionAlertBox = document.getElementById('submissionAlertBox');
+      var submissionAlertIcon = document.getElementById('submissionAlertIcon');
       var submissionAlertTitle = document.getElementById('submissionAlertTitle');
       var submissionAlertBadge = document.getElementById('submissionAlertBadge');
       var submissionAlertMessage = document.getElementById('submissionAlertMessage');
@@ -2998,9 +3288,25 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
       function openSubmissionAlertModal(res) {
         if (!submissionAlertModal) return;
+        if (submissionAlertBox) submissionAlertBox.classList.remove('is-error');
+        if (submissionAlertIcon) submissionAlertIcon.textContent = '✓';
         submissionAlertTitle.textContent = 'Registration Successful!';
         submissionAlertBadge.textContent = 'Registration ID: ' + (res.registrationId || 'Confirmed');
         submissionAlertMessage.textContent = 'Thank you for registering for Aufbruch – Alumni Conclave 2026.';
+        submissionAlertModal.setAttribute('aria-hidden', 'false');
+        submissionAlertModal.classList.add('active');
+        setTimeout(function() {
+          if (submissionAlertOkBtn) submissionAlertOkBtn.focus();
+        }, 50);
+      }
+
+      function openSubmissionErrorModal(errMsg) {
+        if (!submissionAlertModal) return;
+        if (submissionAlertBox) submissionAlertBox.classList.add('is-error');
+        if (submissionAlertIcon) submissionAlertIcon.textContent = '✕';
+        submissionAlertTitle.textContent = 'Submission Failed';
+        submissionAlertBadge.textContent = 'Registration Not Saved';
+        submissionAlertMessage.textContent = errMsg || 'Unable to submit registration. Please try again.';
         submissionAlertModal.setAttribute('aria-hidden', 'false');
         submissionAlertModal.classList.add('active');
         setTimeout(function() {
@@ -3158,20 +3464,17 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         }
 
         // 2. Backend HTTP Server Mode (/api/admin/dashboard)
-        fetch('/api/admin/dashboard', {
+        apiFetchJson('/api/admin/dashboard', {
           method: 'GET',
           headers: getAuthHeaders(),
           credentials: 'same-origin'
         })
-          .then(function(resp) {
-            if (resp.status === 401 || resp.status === 403) {
+          .then(function(result) {
+            if (result.status === 401 || result.status === 403) {
               throw new Error('Unauthorized');
             }
-            return resp.json();
-          })
-          .then(function(data) {
-            if (data && data.success) {
-              showAuthenticatedDashboard(data);
+            if (result.data && result.data.success) {
+              showAuthenticatedDashboard(result.data);
             } else {
               showLoginScreen();
             }
@@ -3225,17 +3528,12 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         }
 
         // 2. Backend Server Mode (/api/admin/login)
-        fetch('/api/admin/login', {
+        apiFetchJson('/api/admin/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'same-origin',
           body: JSON.stringify({ username: username, password: password })
         })
-          .then(function(resp) {
-            return resp.json().then(function(data) {
-              return { status: resp.status, data: data };
-            });
-          })
           .then(function(result) {
             adminLoginBtn.disabled = false;
             adminLoginBtn.textContent = 'Login';
@@ -3252,10 +3550,13 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
               showLoginScreen((result.data && result.data.error) || 'Invalid administrator username or password.');
             }
           })
-          .catch(function() {
+          .catch(function(err) {
             adminLoginBtn.disabled = false;
             adminLoginBtn.textContent = 'Login';
-            showLoginScreen('Unable to reach authentication server. Please ensure the backend server is running.');
+            var msg = (err && err.message && err.message !== 'Failed to fetch')
+              ? err.message
+              : 'Unable to reach authentication server. Please ensure the backend server is running.';
+            showLoginScreen(msg);
           });
       });
 
@@ -3273,7 +3574,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           return;
         }
 
-        fetch('/api/admin/logout', {
+        apiFetchJson('/api/admin/logout', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -3630,17 +3931,12 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         }
 
         // 2. Backend HTTP Server Mode (/api/admin/update)
-        fetch('/api/admin/update', {
+        apiFetchJson('/api/admin/update', {
           method: 'POST',
           headers: getAuthHeaders(),
           credentials: 'same-origin',
           body: JSON.stringify(updatePayload)
         })
-          .then(function(resp) {
-            return resp.json().then(function(data) {
-              return { status: resp.status, data: data };
-            });
-          })
           .then(function(result) {
             saveEditBtn.disabled = false;
             saveEditBtn.textContent = 'Save Changes';
@@ -3660,10 +3956,12 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             showAuthenticatedDashboard(result.data);
             showToast('✓ Registration #' + regId + ' updated successfully!');
           })
-          .catch(function() {
+          .catch(function(err) {
             saveEditBtn.disabled = false;
             saveEditBtn.textContent = 'Save Changes';
-            editModalError.textContent = 'Network error while updating registration.';
+            editModalError.textContent = (err && err.message && err.message !== 'Failed to fetch')
+              ? err.message
+              : 'Network error while updating registration.';
             editModalError.style.display = 'block';
           });
       });
@@ -3698,17 +3996,12 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         }
 
         // 2. Backend HTTP Server Mode (/api/admin/delete)
-        fetch('/api/admin/delete', {
+        apiFetchJson('/api/admin/delete', {
           method: 'POST',
           headers: getAuthHeaders(),
           credentials: 'same-origin',
           body: JSON.stringify({ registrationId: targetId })
         })
-          .then(function(resp) {
-            return resp.json().then(function(data) {
-              return { status: resp.status, data: data };
-            });
-          })
           .then(function(result) {
             confirmDeleteBtn.disabled = false;
             confirmDeleteBtn.textContent = 'Confirm Delete';
@@ -3728,10 +4021,12 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             showAuthenticatedDashboard(result.data);
             showToast('🗑️ Registration #' + targetId + ' deleted successfully!');
           })
-          .catch(function() {
+          .catch(function(err) {
             confirmDeleteBtn.disabled = false;
             confirmDeleteBtn.textContent = 'Confirm Delete';
-            deleteModalError.textContent = 'Network error while deleting registration.';
+            deleteModalError.textContent = (err && err.message && err.message !== 'Failed to fetch')
+              ? err.message
+              : 'Network error while deleting registration.';
             deleteModalError.style.display = 'block';
           });
       });
