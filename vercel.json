@@ -2,19 +2,15 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "outputDirectory": "public",
-  "functions": {
-    "api/index.py": {
-      "includeFiles": "{server.py,registrations_db.json,public/index.html}"
-    }
-  },
+
   "rewrites": [
     {
       "source": "/api",
-      "destination": "/api/index.py?__route=health"
+      "destination": "server.py?__route=health"
     },
     {
       "source": "/api/(.*)",
-      "destination": "/api/index.py?__route=$1"
+      "destination": "server.py?__route=$1"
     },
     {
       "source": "/",
