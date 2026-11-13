@@ -1,0 +1,3815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aufbruch – Alumni Conclave 2026</title>
+  <meta name="description" content="Official Registration Portal & Executive Dashboard for Aufbruch – Alumni Conclave 2026." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@100;200;300;400;500;600;700;800&family=Noto+Sans+Malayalam:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* =========================================================================
+       0. SORA FONT FAMILY (@font-face local + webfont)
+       ========================================================================= */
+    @font-face {
+      font-family: 'Sora';
+      src: url('./fonts/Sora-Thin.ttf') format('truetype');
+      font-weight: 100;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Sora';
+      src: url('./fonts/Sora-ExtraLight.ttf') format('truetype');
+      font-weight: 200;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Sora';
+      src: url('./fonts/Sora-Light.ttf') format('truetype');
+      font-weight: 300;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Sora';
+      src: url('./fonts/Sora-Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Sora';
+      src: url('./fonts/Sora-Medium.ttf') format('truetype');
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Sora';
+      src: url('./fonts/Sora-SemiBold.ttf') format('truetype');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Sora';
+      src: url('./fonts/Sora-Bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Sora';
+      src: url('./fonts/Sora-ExtraBold.ttf') format('truetype');
+      font-weight: 800;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    :root {
+      --font-primary: 'Sora', 'Noto Sans Malayalam', sans-serif;
+      --navy-950: #050B16;
+      --navy-900: #0A1628;
+      --navy-850: #0F203C;
+      --navy-800: #122645;
+      --navy-700: #1B365D;
+      --navy-600: #274978;
+      --gold-600: #B89225;
+      --gold-500: #D4AF37;
+      --gold-400: #E5C453;
+      --gold-300: #F3DF91;
+      --gold-100: #FCF8E8;
+      --gold-glow: rgba(212, 175, 55, 0.22);
+      --gold-border: rgba(212, 175, 55, 0.38);
+      --surface-white: #FFFFFF;
+      --surface-slate: #F8FAFC;
+      --surface-soft: #F1F5F9;
+      --text-primary: #0F172A;
+      --text-secondary: #475569;
+      --text-muted: #64748B;
+      --border-light: #E2E8F0;
+      --whatsapp-bright: #25D366;
+      --whatsapp-green: #128C7E;
+      --whatsapp-dark: #075E54;
+      --success-bg: #DCFCE7;
+      --success-text: #166534;
+      --danger: #DC2626;
+      --danger-bg: #FEE2E2;
+      --danger-text: #991B1B;
+      --radius-xl: 20px;
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --shadow-xl: 0 24px 50px rgba(5, 11, 22, 0.35);
+      --shadow-card: 0 12px 32px rgba(15, 23, 42, 0.08);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-primary);
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-family: var(--font-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    body,
+    button,
+    input,
+    select,
+    textarea,
+    table,
+    th,
+    td,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    a,
+    span,
+    label,
+    li,
+    code,
+    pre {
+      font-family: var(--font-primary);
+    }
+
+    body {
+      background-color: var(--surface-slate);
+      color: var(--text-primary);
+      line-height: 1.6;
+      font-weight: 400;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* =========================================================================
+       1. EXECUTIVE TOP NAVIGATION BAR
+       ========================================================================= */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(6, 13, 26, 0.95);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.28);
+      padding: 0 24px;
+    }
+
+    .nav-container {
+      max-width: 1240px;
+      margin: 0 auto;
+      height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #FFFFFF;
+    }
+
+    .brand-emblem {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--gold-400) 0%, var(--gold-600) 100%);
+      color: var(--navy-950);
+      font-family: var(--font-primary);
+      font-weight: 800;
+      font-size: 19px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(212, 175, 55, 0.35);
+      flex-shrink: 0;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      white-space: nowrap;
+    }
+
+    .brand-title {
+      font-family: var(--font-primary);
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.2px;
+      color: #FFFFFF;
+      line-height: 1.2;
+    }
+
+    .brand-title span {
+      color: var(--gold-400);
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      font-weight: 500;
+      color: #94A3B8;
+      letter-spacing: 0.2px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      list-style: none;
+    }
+
+    .nav-link {
+      color: #CBD5E1;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 9px 16px;
+      border-radius: 9px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      white-space: nowrap;
+      letter-spacing: -0.1px;
+      border: 1px solid transparent;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--gold-300);
+      background: rgba(212, 175, 55, 0.14);
+      border-color: rgba(212, 175, 55, 0.28);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .owner-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #6EE7B7;
+      font-size: 13.5px;
+      font-weight: 300;
+      padding: 6px 14px;
+      border-radius: 999px;
+      white-space: nowrap;
+      letter-spacing: 0.1px;
+    }
+
+    .designed-by-text {
+      font-family: var(--font-primary);
+      font-weight: 300;
+      font-size: inherit;
+      letter-spacing: 0.15px;
+      line-height: 1.6;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 8px #10B981;
+    }
+
+    .nav-cta-btn {
+      background: linear-gradient(135deg, var(--gold-400) 0%, var(--gold-500) 100%);
+      color: var(--navy-950);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 9px 18px;
+      border-radius: 8px;
+      box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .nav-cta-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(212, 175, 55, 0.45);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      color: var(--gold-300);
+      padding: 8px 11px;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 1024px) {
+      .owner-pill {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 74px;
+        left: 0;
+        right: 0;
+        background: var(--navy-950);
+        border-bottom: 1px solid var(--gold-border);
+        flex-direction: column;
+        padding: 16px;
+        gap: 8px;
+      }
+      .nav-links.open {
+        display: flex;
+      }
+      .nav-link {
+        width: 100%;
+        text-align: left;
+        padding: 11px 14px;
+      }
+      .mobile-menu-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    /* =========================================================================
+       2. EXECUTIVE HERO SECTION
+       ========================================================================= */
+    .hero-section {
+      position: relative;
+      background: radial-gradient(circle at 50% 0%, #1B3864 0%, var(--navy-900) 55%, var(--navy-950) 100%);
+      color: #FFFFFF;
+      padding: 56px 24px 64px;
+      border-bottom: 4px solid var(--gold-500);
+      overflow: hidden;
+    }
+
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(212, 175, 55, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212, 175, 55, 0.05) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+
+    .hero-container {
+      position: relative;
+      max-width: 1100px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .hero-frame {
+      border: 1px solid rgba(212, 175, 55, 0.38);
+      background: linear-gradient(180deg, rgba(10, 22, 40, 0.72) 0%, rgba(6, 13, 26, 0.88) 100%);
+      border-radius: 24px;
+      padding: 44px 36px 40px;
+      box-shadow: 0 28px 60px rgba(0, 0, 0, 0.48), 0 0 40px rgba(212, 175, 55, 0.14);
+      position: relative;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(212, 175, 55, 0.14);
+      border: 1px solid rgba(212, 175, 55, 0.48);
+      color: var(--gold-300);
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      padding: 7px 18px;
+      border-radius: 999px;
+      margin-bottom: 18px;
+    }
+
+    .hero-title {
+      font-family: var(--font-primary);
+      font-size: clamp(28px, 4.6vw, 48px);
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      line-height: 1.18;
+      color: #FFFFFF;
+      margin-bottom: 14px;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, #FFF3B0 0%, var(--gold-400) 50%, var(--gold-500) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(14.5px, 1.8vw, 17px);
+      color: #CBD5E1;
+      max-width: 700px;
+      margin: 0 auto 26px;
+      font-weight: 400;
+      line-height: 1.65;
+    }
+
+    .hero-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin: 0 auto 26px;
+      max-width: 420px;
+    }
+
+    .hero-divider-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-500), transparent);
+    }
+
+    .hero-divider-diamond {
+      color: var(--gold-400);
+      font-size: 14px;
+    }
+
+    /* Countdown Timer */
+    .countdown-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(8px, 2.2vw, 16px);
+      flex-wrap: nowrap;
+      margin-bottom: 30px;
+      padding: 12px clamp(14px, 3vw, 24px);
+      background: rgba(5, 11, 22, 0.65);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      border-radius: 14px;
+      max-width: 100%;
+    }
+
+    .countdown-item {
+      text-align: center;
+      min-width: clamp(46px, 10vw, 64px);
+    }
+
+    .countdown-num {
+      font-family: var(--font-primary);
+      font-size: clamp(19px, 3.5vw, 24px);
+      font-weight: 800;
+      color: var(--gold-300);
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+    }
+
+    .countdown-unit {
+      font-size: clamp(9px, 1.8vw, 10.5px);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #94A3B8;
+      font-weight: 600;
+    }
+
+    .countdown-sep {
+      color: rgba(212, 175, 55, 0.45);
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .hero-cta-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-gold-lg {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--gold-400) 0%, var(--gold-500) 100%);
+      color: var(--navy-950);
+      font-size: 15px;
+      font-weight: 700;
+      padding: 15px 30px;
+      border-radius: 12px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(212, 175, 55, 0.35);
+      transition: all 0.2s ease;
+    }
+
+    .btn-gold-lg:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(212, 175, 55, 0.5);
+    }
+
+    .btn-outline-gold {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--gold-300);
+      border: 1.5px solid rgba(212, 175, 55, 0.5);
+      font-size: 14.5px;
+      font-weight: 600;
+      padding: 14px 26px;
+      border-radius: 12px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline-gold:hover {
+      background: rgba(212, 175, 55, 0.14);
+      border-color: var(--gold-400);
+    }
+
+    @media (max-width: 580px) {
+      .hero-section {
+        padding: 36px 16px 44px;
+      }
+      .hero-frame {
+        padding: 28px 18px 26px;
+      }
+    }
+
+    /* =========================================================================
+       3. CENTERED REGISTRATION FORM SECTION
+       ========================================================================= */
+    .section-wrap {
+      max-width: 1240px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 60px 24px 72px;
+      flex: 1;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .section-eyebrow {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.6px;
+      color: var(--gold-600);
+      background: var(--gold-100);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      padding: 5px 14px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: var(--font-primary);
+      font-size: clamp(24px, 3.4vw, 34px);
+      font-weight: 800;
+      letter-spacing: -0.6px;
+      color: var(--navy-900);
+      margin-bottom: 10px;
+    }
+
+    .section-desc {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .registration-centered-container {
+      max-width: 700px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .form-card {
+      background: var(--surface-white);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-light);
+      border-top: 5px solid var(--gold-500);
+      box-shadow: var(--shadow-card);
+      padding: 40px 38px;
+    }
+
+    @media (max-width: 580px) {
+      .section-wrap {
+        padding: 42px 16px 56px;
+      }
+      .form-card {
+        padding: 26px 20px;
+      }
+    }
+
+    .form-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding-bottom: 20px;
+      margin-bottom: 26px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .form-card-title {
+      font-family: var(--font-primary);
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: var(--navy-900);
+    }
+
+    .required-badge {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--danger);
+      background: #FEF2F2;
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid #FECACA;
+    }
+
+    .field-group {
+      margin-bottom: 24px;
+    }
+
+    .field-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--navy-900);
+      margin-bottom: 6px;
+    }
+
+    .field-label .req {
+      color: var(--danger);
+      margin-left: 4px;
+    }
+
+    .field-type-tag {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--surface-soft);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .field-help {
+      font-size: 12.5px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+
+    .text-input {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 14.5px;
+      font-family: var(--font-primary);
+      font-weight: 500;
+      color: var(--text-primary);
+      background: var(--surface-slate);
+      border: 1.5px solid #CBD5E1;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    .text-input::placeholder {
+      font-weight: 400;
+      color: #94A3B8;
+    }
+
+    .text-input:focus {
+      background: #FFFFFF;
+      border-color: var(--navy-700);
+      box-shadow: 0 0 0 3.5px rgba(27, 54, 93, 0.13);
+    }
+
+    .text-input.invalid {
+      border-color: var(--danger);
+      background: #FEF2F2;
+    }
+
+    .text-input.valid {
+      border-color: #10B981;
+      background: #FFFFFF;
+    }
+
+    .phone-status-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 6px;
+      font-size: 12.5px;
+    }
+
+    .phone-normalized-pill {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      color: #065F46;
+      background: #D1FAE5;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .error-text {
+      display: none;
+      color: var(--danger);
+      font-size: 12.5px;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+
+    .error-text.visible {
+      display: block;
+    }
+
+    /* Radio Options (Multiple Choice) */
+    .radio-group {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 520px) {
+      .radio-group {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .radio-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 18px;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 12px;
+      background: var(--surface-slate);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .radio-card:hover {
+      border-color: var(--navy-700);
+      background: #F1F5F9;
+    }
+
+    .radio-card.selected-yes {
+      border-color: #059669;
+      background: #ECFDF5;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+    }
+
+    .radio-card.selected-no {
+      border-color: #DC2626;
+      background: #FEF2F2;
+      box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+    }
+
+    .radio-card input[type="radio"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--navy-800);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .radio-label-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .radio-label-text {
+      font-family: var(--font-primary);
+      font-size: 15.5px;
+      font-weight: 700;
+      color: var(--navy-900);
+    }
+
+    .radio-label-sub {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .submit-btn {
+      width: 100%;
+      margin-top: 10px;
+      padding: 16px 24px;
+      font-size: 15.5px;
+      font-weight: 700;
+      letter-spacing: 0.1px;
+      color: var(--navy-950);
+      background: linear-gradient(135deg, var(--gold-400) 0%, var(--gold-500) 100%);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 8px 22px rgba(212, 175, 55, 0.38);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(212, 175, 55, 0.5);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .global-error {
+      display: none;
+      background: #FEF2F2;
+      border: 1px solid #FCA5A5;
+      color: #991B1B;
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    /* Post-Submission Confirmation Card */
+    .confirmation-screen {
+      display: none;
+      background: var(--surface-white);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-light);
+      border-top: 5px solid var(--gold-500);
+      box-shadow: var(--shadow-xl);
+      padding: 40px 34px;
+      text-align: center;
+    }
+
+    .success-icon-circle {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--navy-800), var(--navy-900));
+      border: 2.5px solid var(--gold-500);
+      color: var(--gold-400);
+      font-size: 34px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+      box-shadow: 0 10px 25px rgba(10, 22, 40, 0.25);
+    }
+
+    .reg-summary-pill {
+      display: inline-block;
+      background: var(--gold-100);
+      color: var(--navy-900);
+      border: 1px solid var(--gold-500);
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 999px;
+      margin-bottom: 20px;
+    }
+
+    .confirmation-box {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-left: 5px solid var(--navy-800);
+      border-radius: 12px;
+      padding: 22px 22px;
+      text-align: left;
+      margin-bottom: 24px;
+      white-space: pre-line;
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--navy-900);
+      font-weight: 600;
+    }
+
+    .whatsapp-panel {
+      display: none;
+      background: #ECFDF5;
+      border: 1.5px solid #6EE7B7;
+      border-radius: 14px;
+      padding: 24px 22px;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    .whatsapp-panel-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #065F46;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .whatsapp-preview {
+      background: #FFFFFF;
+      border: 1px solid #A7F3D0;
+      border-radius: 10px;
+      padding: 16px 18px;
+      font-family: var(--font-primary);
+      font-size: 14px;
+      line-height: 1.7;
+      color: #1E293B;
+      white-space: pre-line;
+      margin-bottom: 16px;
+    }
+
+    .whatsapp-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 16px 24px;
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+      color: #FFFFFF;
+      text-decoration: none;
+      font-size: 15.5px;
+      font-weight: 700;
+      border-radius: 12px;
+      box-shadow: 0 8px 22px rgba(18, 140, 126, 0.35);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .whatsapp-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(18, 140, 126, 0.45);
+    }
+
+    .non-part-notice-panel {
+      display: none;
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      color: #991B1B;
+      border-radius: 12px;
+      padding: 16px 18px;
+      font-size: 13.5px;
+      font-weight: 600;
+      margin-bottom: 22px;
+      text-align: left;
+    }
+
+    .secondary-btn {
+      background: var(--surface-soft);
+      border: 1.5px solid #CBD5E1;
+      color: var(--navy-900);
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .secondary-btn:hover {
+      background: #E2E8F0;
+      border-color: var(--navy-800);
+    }
+
+    /* =========================================================================
+       4. SECURE ADMIN LOGIN & REGISTRATION DASHBOARD SECTION
+       ========================================================================= */
+    .dashboard-section {
+      display: none;
+      background: var(--navy-950);
+      color: #FFFFFF;
+      padding: 72px 24px 84px;
+      border-top: 4px solid var(--gold-500);
+      flex: 1;
+    }
+
+    .dashboard-container {
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+
+    /* Secure Admin Login Card */
+    .admin-login-wrapper {
+      max-width: 480px;
+      margin: 12px auto 0;
+    }
+
+    .admin-login-card {
+      background: linear-gradient(180deg, var(--navy-900) 0%, #071020 100%);
+      border: 1px solid rgba(212, 175, 55, 0.38);
+      border-top: 5px solid var(--gold-500);
+      border-radius: var(--radius-xl);
+      padding: 40px 36px;
+      box-shadow: 0 28px 60px rgba(0, 0, 0, 0.55);
+    }
+
+    @media (max-width: 520px) {
+      .admin-login-card {
+        padding: 28px 20px;
+      }
+    }
+
+    .admin-lock-badge {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      background: rgba(212, 175, 55, 0.14);
+      border: 1.5px solid rgba(212, 175, 55, 0.45);
+      color: var(--gold-400);
+      font-size: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+    }
+
+    .admin-login-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #FFFFFF;
+      text-align: center;
+      letter-spacing: -0.4px;
+      margin-bottom: 6px;
+    }
+
+    .admin-login-subtitle {
+      font-size: 13.5px;
+      color: #94A3B8;
+      text-align: center;
+      margin-bottom: 26px;
+      line-height: 1.55;
+    }
+
+    .admin-field-group {
+      margin-bottom: 18px;
+    }
+
+    .admin-field-label {
+      display: block;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #E2E8F0;
+      margin-bottom: 7px;
+    }
+
+    .admin-input {
+      width: 100%;
+      padding: 13px 15px;
+      font-size: 14.5px;
+      font-weight: 500;
+      color: #FFFFFF;
+      background: rgba(5, 11, 22, 0.85);
+      border: 1.5px solid rgba(212, 175, 55, 0.32);
+      border-radius: 10px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .admin-input::placeholder {
+      color: #64748B;
+      font-weight: 400;
+    }
+
+    .admin-input:focus {
+      border-color: var(--gold-400);
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.18);
+    }
+
+    .admin-login-error {
+      display: none;
+      background: rgba(220, 38, 38, 0.16);
+      border: 1px solid rgba(248, 113, 113, 0.45);
+      color: #FCA5A5;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    .admin-login-btn {
+      width: 100%;
+      margin-top: 6px;
+      padding: 14px 22px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--navy-950);
+      background: linear-gradient(135deg, var(--gold-400) 0%, var(--gold-500) 100%);
+      border: none;
+      border-radius: 11px;
+      cursor: pointer;
+      box-shadow: 0 8px 22px rgba(212, 175, 55, 0.32);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .admin-login-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 26px rgba(212, 175, 55, 0.45);
+    }
+
+    .admin-login-btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .admin-back-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      margin-top: 16px;
+      padding: 10px;
+      background: transparent;
+      border: none;
+      color: #94A3B8;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: color 0.15s ease;
+    }
+
+    .admin-back-link:hover {
+      color: var(--gold-300);
+    }
+
+    /* Authenticated Dashboard Content */
+    .admin-dashboard-content {
+      display: none;
+    }
+
+    .dash-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .dash-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .dash-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(212, 175, 55, 0.38);
+      color: #F8FAFC;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 16px;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .dash-btn:hover {
+      background: rgba(212, 175, 55, 0.18);
+      border-color: var(--gold-400);
+    }
+
+    .dash-btn.primary {
+      background: linear-gradient(135deg, var(--gold-400) 0%, var(--gold-500) 100%);
+      color: var(--navy-950);
+      border: none;
+      font-weight: 700;
+    }
+
+    .dash-btn.logout-btn {
+      background: rgba(220, 38, 38, 0.16);
+      border: 1px solid rgba(248, 113, 113, 0.45);
+      color: #FCA5A5;
+      font-weight: 700;
+    }
+
+    .dash-btn.logout-btn:hover {
+      background: rgba(220, 38, 38, 0.28);
+      border-color: #F87171;
+      color: #FFFFFF;
+    }
+
+    /* 4 KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    @media (max-width: 960px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .kpi-card {
+      background: linear-gradient(145deg, var(--navy-900) 0%, var(--navy-800) 100%);
+      border: 1px solid rgba(212, 175, 55, 0.28);
+      border-radius: 16px;
+      padding: 22px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card.yes-card {
+      border-top: 4px solid #10B981;
+    }
+
+    .kpi-card.no-card {
+      border-top: 4px solid #EF4444;
+    }
+
+    .kpi-card.total-card {
+      border-top: 4px solid var(--gold-500);
+    }
+
+    .kpi-card.rate-card {
+      border-top: 4px solid #38BDF8;
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+      color: #94A3B8;
+      margin-bottom: 8px;
+    }
+
+    .kpi-value {
+      font-family: var(--font-primary);
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      color: #FFFFFF;
+      line-height: 1.15;
+      margin-bottom: 6px;
+    }
+
+    .kpi-sub {
+      font-size: 12.5px;
+      font-weight: 400;
+      color: #CBD5E1;
+    }
+
+    /* Analytics Charts & Breakdown Grid */
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    @media (max-width: 1060px) {
+      .analytics-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .analytics-card {
+      background: var(--navy-900);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .analytics-card-title {
+      font-family: var(--font-primary);
+      font-size: 15.5px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      color: var(--gold-400);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .bar-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 270px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .bar-row {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .bar-row-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 600;
+      color: #E2E8F0;
+    }
+
+    .bar-track {
+      width: 100%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--gold-500), var(--gold-300));
+      transition: width 0.4s ease;
+    }
+
+    .bar-fill.place-fill {
+      background: linear-gradient(90deg, #10B981, #34D399);
+    }
+
+    /* Participation Donut Visual */
+    .donut-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      padding: 10px 0;
+    }
+
+    .donut-ring {
+      width: 156px;
+      height: 156px;
+      border-radius: 50%;
+      background: conic-gradient(#334155 0% 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+    }
+
+    .donut-hole {
+      width: 108px;
+      height: 108px;
+      border-radius: 50%;
+      background: var(--navy-900);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .donut-Legend {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 8px;
+    }
+
+    /* Responses Table Card */
+    .table-card {
+      background: var(--navy-900);
+      border: 1px solid rgba(212, 175, 55, 0.28);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .table-header-bar {
+      padding: 20px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .table-filters {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-input,
+    .filter-select {
+      background: var(--navy-950);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      color: #FFFFFF;
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      outline: none;
+    }
+
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .resp-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13.5px;
+    }
+
+    .resp-table th {
+      background: rgba(5, 11, 22, 0.85);
+      color: var(--gold-400);
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 13px 12px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+      white-space: nowrap;
+    }
+
+    .resp-table td {
+      padding: 13px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      color: #E2E8F0;
+      vertical-align: middle;
+    }
+
+    .resp-table tr:hover td {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .badge-yes {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(16, 185, 129, 0.18);
+      color: #6EE7B7;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .badge-no {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(239, 68, 68, 0.18);
+      color: #FCA5A5;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .table-wa-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+      color: #FFFFFF;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 7px 13px;
+      border-radius: 8px;
+      white-space: nowrap;
+      transition: opacity 0.15s ease;
+    }
+
+    .table-wa-btn:hover {
+      opacity: 0.92;
+    }
+
+    .table-wa-disabled {
+      font-size: 12px;
+      font-weight: 500;
+      color: #94A3B8;
+    }
+
+    /* Dedicated Actions Column & Buttons */
+    .actions-cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .action-edit-btn {
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid rgba(212, 175, 55, 0.45);
+      color: var(--gold-300);
+    }
+
+    .action-edit-btn:hover {
+      background: rgba(212, 175, 55, 0.28);
+      border-color: var(--gold-400);
+      color: #FFFFFF;
+    }
+
+    .action-delete-btn {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.42);
+      color: #FCA5A5;
+    }
+
+    .action-delete-btn:hover {
+      background: rgba(239, 68, 68, 0.28);
+      border-color: #F87171;
+      color: #FFFFFF;
+    }
+
+    /* Admin Edit & Delete Confirmation Modals */
+    .admin-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      background: rgba(4, 8, 17, 0.82);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .admin-modal-overlay.open {
+      display: flex;
+    }
+
+    .admin-modal-card {
+      width: 100%;
+      max-width: 540px;
+      background: linear-gradient(180deg, var(--navy-900) 0%, #071020 100%);
+      border: 1px solid rgba(212, 175, 55, 0.42);
+      border-top: 5px solid var(--gold-500);
+      border-radius: var(--radius-xl);
+      padding: 32px 30px;
+      box-shadow: 0 28px 65px rgba(0, 0, 0, 0.65);
+      color: #FFFFFF;
+      max-height: 92vh;
+      overflow-y: auto;
+    }
+
+    .admin-modal-card.delete-card {
+      max-width: 460px;
+      border-top-color: #EF4444;
+      text-align: center;
+    }
+
+    @media (max-width: 520px) {
+      .admin-modal-card {
+        padding: 24px 18px;
+      }
+    }
+
+    .admin-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .admin-modal-title {
+      font-size: 19px;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: -0.3px;
+    }
+
+    .admin-modal-id-pill {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gold-300);
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .admin-radio-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 480px) {
+      .admin-radio-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .admin-radio-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: rgba(5, 11, 22, 0.85);
+      border: 1.5px solid rgba(212, 175, 55, 0.28);
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      color: #F8FAFC;
+      transition: all 0.15s ease;
+    }
+
+    .admin-radio-option:hover {
+      border-color: var(--gold-400);
+    }
+
+    .admin-radio-option input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--gold-400);
+      cursor: pointer;
+    }
+
+    .admin-modal-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .admin-modal-card.delete-card .admin-modal-actions {
+      justify-content: center;
+    }
+
+    .modal-btn {
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: none;
+    }
+
+    .modal-btn-cancel {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: #E2E8F0;
+    }
+
+    .modal-btn-cancel:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #FFFFFF;
+    }
+
+    .modal-btn-save {
+      background: linear-gradient(135deg, var(--gold-400) 0%, var(--gold-500) 100%);
+      color: var(--navy-950);
+      box-shadow: 0 6px 18px rgba(212, 175, 55, 0.32);
+    }
+
+    .modal-btn-save:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(212, 175, 55, 0.45);
+    }
+
+    .modal-btn-confirm-delete {
+      background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+      color: #FFFFFF;
+      box-shadow: 0 6px 18px rgba(220, 38, 38, 0.35);
+    }
+
+    .modal-btn-confirm-delete:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(220, 38, 38, 0.5);
+    }
+
+    .delete-warn-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(239, 68, 68, 0.16);
+      border: 1.5px solid rgba(248, 113, 113, 0.5);
+      color: #F87171;
+      font-size: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+
+    .delete-confirm-question {
+      font-size: 18px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .delete-target-summary {
+      font-size: 13.5px;
+      color: #CBD5E1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+    }
+
+    /* Toast Notification */
+    .toast-alert {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 2000;
+      max-width: 420px;
+      background: var(--navy-900);
+      color: #FFFFFF;
+      border: 1.5px solid var(--gold-500);
+      border-radius: 14px;
+      padding: 18px 20px;
+      font-size: 13.5px;
+      font-weight: 600;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+      display: none;
+      animation: slideUp 0.25s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Custom Form Submission Alert Modal (ZYNEX Dark Theme) */
+    .submission-alert-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 4000;
+      background: rgba(5, 8, 16, 0.82);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                  visibility 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .submission-alert-overlay.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .submission-alert-box {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      background: #171A22;
+      color: #FFFFFF;
+      border: 1.5px solid rgba(255, 194, 26, 0.42);
+      border-top: 4px solid #FFC21A;
+      border-radius: 20px;
+      padding: 34px 30px 28px;
+      text-align: center;
+      box-shadow: 0 28px 68px rgba(0, 0, 0, 0.75),
+                  0 0 36px rgba(255, 194, 26, 0.14);
+      transform: translateY(18px) scale(0.95);
+      opacity: 0;
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                  opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .submission-alert-overlay.active .submission-alert-box {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    .submission-alert-close-icon {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 15px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .submission-alert-close-icon:hover {
+      background: rgba(255, 194, 26, 0.16);
+      border-color: #FFC21A;
+      color: #FFFFFF;
+    }
+
+    .submission-alert-icon {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      margin: 0 auto 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(255, 194, 26, 0.22) 0%, rgba(255, 152, 0, 0.16) 100%);
+      border: 2px solid #FFC21A;
+      color: #FFC21A;
+      font-size: 32px;
+      font-weight: 800;
+      box-shadow: 0 0 24px rgba(255, 194, 26, 0.28);
+    }
+
+    .submission-alert-title {
+      font-family: var(--font-primary);
+      font-size: 22px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 10px;
+      letter-spacing: -0.3px;
+      line-height: 1.3;
+    }
+
+    .submission-alert-badge {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #FFC21A;
+      background: rgba(255, 194, 26, 0.12);
+      border: 1px solid rgba(255, 194, 26, 0.38);
+      margin-bottom: 14px;
+    }
+
+    .submission-alert-message {
+      font-family: var(--font-primary);
+      font-size: 15px;
+      font-weight: 400;
+      color: #FFFFFF;
+      opacity: 0.92;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .submission-alert-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px 26px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #FFC21A 0%, #FF9800 100%);
+      color: #171A22;
+      font-family: var(--font-primary);
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(255, 152, 0, 0.35);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+    }
+
+    .submission-alert-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(255, 194, 26, 0.48);
+      filter: brightness(1.04);
+    }
+
+    .submission-alert-btn:active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 520px) {
+      .submission-alert-box {
+        padding: 28px 20px 22px;
+        border-radius: 16px;
+      }
+      .submission-alert-icon {
+        width: 58px;
+        height: 58px;
+        font-size: 26px;
+        margin-bottom: 14px;
+      }
+      .submission-alert-title {
+        font-size: 19px;
+      }
+      .submission-alert-message {
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+      .submission-alert-btn {
+        padding: 13px 20px;
+        font-size: 14px;
+      }
+    }
+
+    /* Footer */
+    .site-footer {
+      background: #040811;
+      color: #94A3B8;
+      border-top: 1px solid rgba(212, 175, 55, 0.25);
+      padding: 42px 24px;
+      text-align: center;
+      font-size: 13.5px;
+      margin-top: auto;
+    }
+
+    .site-footer .designed-by-text {
+      opacity: 0.5;
+    }
+
+    .footer-brand {
+      font-family: var(--font-primary);
+      color: var(--gold-400);
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: -0.2px;
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =========================================================================
+       1. STICKY EXECUTIVE NAVIGATION BAR
+       ========================================================================= -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="#register" class="brand-logo" id="brandLogoLink">
+        <div class="brand-emblem">A</div>
+        <div class="brand-text">
+          <div class="brand-title">AUFBRUCH <span>2026</span></div>
+          <div class="brand-sub">Alumni Conclave</div>
+        </div>
+      </a>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#register" class="nav-link active" id="navRegisterLink">Registration Form</a></li>
+        <li><a href="#dashboard" class="nav-link" id="navDashboardLink">Admin Dashboard</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <div class="owner-pill" title="Designed by: Ajmal Kattichira">
+          <span class="status-dot"></span>
+          <span class="designed-by-text">Designed by: Ajmal Kattichira</span>
+        </div>
+        <a href="#register" class="nav-cta-btn" id="navRegisterBtn">Register Now</a>
+        <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- =========================================================================
+       2. EXECUTIVE HERO SECTION
+       ========================================================================= -->
+  <header id="top" class="hero-section">
+    <div class="hero-container">
+      <div class="hero-frame">
+        <div class="hero-badge">✦ Official Alumni Conclave Portal ✦</div>
+        <h1 class="hero-title">Aufbruch – <span>Alumni Conclave 2026</span></h1>
+        <p class="hero-subtitle">
+          The Annual Alumni Summit is being held by Majmau Academy's Da'wa College Alumni organization, Anwar.
+        </p>
+
+        <div class="hero-divider">
+          <span class="hero-divider-line"></span>
+          <span class="hero-divider-diamond">◆</span>
+          <span class="hero-divider-line"></span>
+        </div>
+
+        <!-- Live Countdown -->
+        <div class="countdown-wrap" aria-label="Countdown to Aufbruch Alumni Conclave 2026">
+          <div class="countdown-item">
+            <div class="countdown-num" id="cdDays">28</div>
+            <div class="countdown-unit">Days</div>
+          </div>
+          <span class="countdown-sep">:</span>
+          <div class="countdown-item">
+            <div class="countdown-num" id="cdHours">04</div>
+            <div class="countdown-unit">Hours</div>
+          </div>
+          <span class="countdown-sep">:</span>
+          <div class="countdown-item">
+            <div class="countdown-num" id="cdMins">09</div>
+            <div class="countdown-unit">Minutes</div>
+          </div>
+          <span class="countdown-sep">:</span>
+          <div class="countdown-item">
+            <div class="countdown-num" id="cdSecs">45</div>
+            <div class="countdown-unit">Seconds</div>
+          </div>
+        </div>
+
+        <div class="hero-cta-row">
+          <a href="#register" class="btn-gold-lg" id="heroRegisterBtn">
+            <span>Complete Registration</span>
+            <span>→</span>
+          </a>
+          <a href="#dashboard" class="btn-outline-gold" id="heroDashboardBtn">
+            <span>🔒 Admin Dashboard</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       3. CENTERED REGISTRATION FORM SECTION (SOLE CONTENT IN THIS SECTION)
+       ========================================================================= -->
+  <section id="register" class="section-wrap">
+    <div class="section-header">
+      <span class="section-eyebrow">Official Event Registration</span>
+      <h2 class="section-title">Aufbruch – Alumni Conclave 2026</h2>
+      <p class="section-desc">
+        Complete your registration details below to confirm your participation
+      </p>
+    </div>
+
+    <div class="registration-centered-container">
+      <main id="formContainer" class="form-card">
+        <div class="form-card-header">
+          <h3 class="form-card-title">Alumni Registration Form</h3>
+          <span class="required-badge">* All 5 Fields Required</span>
+        </div>
+
+        <div id="globalError" class="global-error"></div>
+
+        <form id="registrationForm" novalidate>
+          <!-- Field 1: Name -->
+          <div class="field-group">
+            <label class="field-label" for="nameInput">
+              <span>1. Name <span class="req">*</span></span>
+              <span class="field-type-tag">Short Answer</span>
+            </label>
+            <div class="field-help">Enter your full name</div>
+            <input
+              type="text"
+              id="nameInput"
+              name="name"
+              class="text-input"
+              placeholder="Your answer (e.g., Muhammed Anwar)"
+              required
+              autocomplete="name"
+            />
+            <div id="nameError" class="error-text">Please enter your full name (minimum 2 characters).</div>
+          </div>
+
+          <!-- Field 2: Place -->
+          <div class="field-group">
+            <label class="field-label" for="placeInput">
+              <span>2. Place <span class="req">*</span></span>
+              <span class="field-type-tag">Short Answer</span>
+            </label>
+            <div class="field-help">Enter your locality</div>
+            <input
+              type="text"
+              id="placeInput"
+              name="place"
+              class="text-input"
+              placeholder="Your answer (e.g., Nilambur)"
+              required
+            />
+            <div id="placeError" class="error-text">Please enter your place / city.</div>
+          </div>
+
+          <!-- Field 3: Batch Year -->
+          <div class="field-group">
+            <label class="field-label" for="batchInput">
+              <span>3. Batch Year <span class="req">*</span></span>
+              <span class="field-type-tag">Short Answer</span>
+            </label>
+            <div class="field-help">Enter your batch year</div>
+            <input
+              type="text"
+              id="batchInput"
+              name="batchYear"
+              class="text-input"
+              placeholder="Your answer (e.g., 2018)"
+              required
+            />
+            <div id="batchError" class="error-text">Please enter a valid 4-digit Batch Year (e.g., 2018).</div>
+          </div>
+
+          <!-- Field 4: WhatsApp Number -->
+          <div class="field-group">
+            <label class="field-label" for="whatsappInput">
+              <span>4. WhatsApp Number <span class="req">*</span></span>
+              <span class="field-type-tag">Short Answer • Validated</span>
+            </label>
+            <div class="field-help">Mobile numbers with or without +91 country code</div>
+            <input
+              type="tel"
+              id="whatsappInput"
+              name="whatsappNumber"
+              class="text-input"
+              placeholder="e.g., +91 8606140996 or 9747380130"
+              required
+              autocomplete="tel"
+            />
+            <div class="phone-status-line">
+              <span id="phoneNormalizedBadge" class="phone-normalized-pill">✓ Formatted: +91 8606140996</span>
+            </div>
+            <div id="whatsappError" class="error-text">
+              Please enter a valid 10-digit mobile number.
+            </div>
+          </div>
+
+          <!-- Field 5: അലുംനി സംഗമത്തിൽ പങ്കെടുക്കുമോ...? -->
+          <div class="field-group">
+            <label class="field-label">
+              <span>5. അലുംനി സംഗമത്തിൽ പങ്കെടുക്കുമോ...? <span class="req">*</span></span>
+              <span class="field-type-tag">Multiple Choice</span>
+            </label>
+            <div class="field-help">Select your attendance confirmation</div>
+            <div class="radio-group" id="participationGroup">
+              <label class="radio-card" id="cardYes">
+                <input type="radio" name="participation" value="പങ്കെടുക്കും" required />
+                <div class="radio-label-wrap">
+                  <span class="radio-label-text">പങ്കെടുക്കും</span>
+                  <span class="radio-label-sub">Yes, I will attend</span>
+                </div>
+              </label>
+              <label class="radio-card" id="cardNo">
+                <input type="radio" name="participation" value="സാധിക്കില്ല" required />
+                <div class="radio-label-wrap">
+                  <span class="radio-label-text">സാധിക്കില്ല</span>
+                  <span class="radio-label-sub">Unable to attend</span>
+                </div>
+              </label>
+            </div>
+            <div id="participationError" class="error-text">Please select whether you will attend (പങ്കെടുക്കും or സാധിക്കില്ല).</div>
+          </div>
+
+          <button type="submit" id="submitBtn" class="submit-btn">
+            <span>Submit Registration</span>
+            <span>✓</span>
+          </button>
+        </form>
+      </main>
+
+      <!-- Post-Submission Confirmation View -->
+      <section id="confirmationScreen" class="confirmation-screen" aria-live="polite">
+        <div class="success-icon-circle">✓</div>
+        <div id="regIdBadge" class="reg-summary-pill">Registration ID: 001</div>
+
+        <!-- Exact Required Confirmation Message -->
+        <div id="confirmationMessageText" class="confirmation-box">Registration Successful!
+
+Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
+
+        <!-- Personalized WhatsApp Confirmation Panel (Shown ONLY if "പങ്കെടുക്കും") -->
+        <div id="whatsappPanel" class="whatsapp-panel">
+          <div class="whatsapp-panel-title">
+            <span>📲 Personalized WhatsApp Confirmation Ready</span>
+            <span style="font-size: 12px; font-weight: 700; background: #A7F3D0; color: #065F46; padding: 3px 10px; border-radius: 999px;">Click-to-Chat Verified</span>
+          </div>
+          <div style="font-size: 13px; color: #047857; margin-bottom: 12px;">
+            Recipient WhatsApp: <strong id="waRecipientDisplay"></strong>
+          </div>
+          <div id="whatsappPreviewBox" class="whatsapp-preview"></div>
+          <a
+            id="whatsappActionBtn"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="whatsapp-btn"
+          >
+            <span>📲 Send WhatsApp Confirmation</span>
+          </a>
+        </div>
+
+        <!-- Notice Shown When User Selects "സാധിക്കില്ല" -->
+        <div id="nonPartNoticePanel" class="non-part-notice-panel">
+          ℹ️ Your response (<strong>സാധിക്കില്ല</strong>) has been recorded in the registration database. As per event rules, no WhatsApp confirmation message is sent to non-participating members.
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+          <button type="button" id="registerAnotherBtn" class="secondary-btn">
+            + Submit Another Response
+          </button>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       4. SECURE ADMIN DASHBOARD SECTION (LOGIN REQUIRED)
+       ========================================================================= -->
+  <section id="dashboard" class="dashboard-section">
+    <div class="dashboard-container">
+
+      <!-- 4A. Secure Administrator Login View (Shown to Unauthenticated Users) -->
+      <div id="adminLoginSection" class="admin-login-wrapper">
+        <div class="admin-login-card">
+          <div class="admin-lock-badge">🔒</div>
+          <h2 class="admin-login-title">Administrator Login</h2>
+          <p class="admin-login-subtitle">
+            Restricted access. Please enter your authorized administrator credentials to view the Aufbruch 2026 Registration Dashboard.
+          </p>
+
+          <div id="adminLoginError" class="admin-login-error" role="alert"></div>
+
+          <form id="adminLoginForm" novalidate>
+            <div class="admin-field-group">
+              <label class="admin-field-label" for="adminUsername">Username</label>
+              <input
+                type="text"
+                id="adminUsername"
+                name="username"
+                class="admin-input"
+                placeholder="Enter administrator username"
+                required
+                autocomplete="username"
+              />
+            </div>
+
+            <div class="admin-field-group">
+              <label class="admin-field-label" for="adminPassword">Password</label>
+              <input
+                type="password"
+                id="adminPassword"
+                name="password"
+                class="admin-input"
+                placeholder="Enter administrator password"
+                required
+                autocomplete="current-password"
+              />
+            </div>
+
+            <button type="submit" id="adminLoginBtn" class="admin-login-btn">
+              Login
+            </button>
+          </form>
+
+          <button type="button" id="backToRegisterBtn" class="admin-back-link">
+            ← Return to Registration Form
+          </button>
+        </div>
+      </div>
+
+      <!-- 4B. Authenticated Registration Dashboard Content (Protected by Backend Session) -->
+      <div id="adminDashboardContent" class="admin-dashboard-content">
+        <div class="dash-top-bar">
+          <div>
+            <span class="section-eyebrow" style="background: rgba(212, 175, 55, 0.15); color: var(--gold-300);">Authorized Admin Session</span>
+            <h2 class="section-title" style="color: #FFFFFF; margin-bottom: 4px;">Registration Management Dashboard</h2>
+            <p style="color: #94A3B8; font-size: 14px;">
+              Real-time overview of Total Registrations, Participating vs. Not Participating members, Batch-wise & Place-wise counts
+            </p>
+          </div>
+
+          <div class="dash-toolbar">
+            <button type="button" id="syncSheetsBtn" class="dash-btn" title="Refresh from Backend / Google Sheets">
+              <span>🔄 Refresh Data</span>
+            </button>
+            <button type="button" id="exportCsvBtn" class="dash-btn primary">
+              <span>📥 Export Spreadsheet (CSV)</span>
+            </button>
+            <button type="button" id="adminLogoutBtn" class="dash-btn logout-btn">
+              <span>🚪 Logout</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Executive KPI Cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card total-card">
+            <div class="kpi-label">Total Registrations</div>
+            <div class="kpi-value" id="kpiTotal">0</div>
+            <div class="kpi-sub">All submitted responses</div>
+          </div>
+          <div class="kpi-card yes-card">
+            <div class="kpi-label">Participating Members</div>
+            <div class="kpi-value" id="kpiParticipating" style="color: #34D399;">0</div>
+            <div class="kpi-sub">Selected പങ്കെടുക്കും</div>
+          </div>
+          <div class="kpi-card no-card">
+            <div class="kpi-label">Not Participating</div>
+            <div class="kpi-value" id="kpiNotParticipating" style="color: #F87171;">0</div>
+            <div class="kpi-sub">Selected സാധിക്കില്ല (No WhatsApp)</div>
+          </div>
+          <div class="kpi-card rate-card">
+            <div class="kpi-label">Attendance Rate</div>
+            <div class="kpi-value" id="kpiRate" style="color: var(--gold-300);">0%</div>
+            <div class="kpi-sub">Confirmed participation share</div>
+          </div>
+        </div>
+
+        <!-- 3 Charts & Breakdown Panels -->
+        <div class="analytics-grid">
+          <!-- Chart 1: Attendance Split Donut -->
+          <div class="analytics-card">
+            <div class="analytics-card-title">
+              <span>📊 Attendance Breakdown</span>
+            </div>
+            <div class="donut-container">
+              <div class="donut-ring" id="attendanceDonut">
+                <div class="donut-hole">
+                  <span id="donutPercent" style="font-size: 22px; font-weight: 800; color: var(--gold-300);">0%</span>
+                  <span style="font-size: 10px; font-weight: 600; color: #94A3B8; text-transform: uppercase;">Attending</span>
+                </div>
+              </div>
+              <div class="donut-Legend">
+                <div class="legend-item">
+                  <span>🟢 പങ്കെടുക്കും (Participating)</span>
+                  <strong id="legendYesCount" style="color: #6EE7B7;">0</strong>
+                </div>
+                <div class="legend-item">
+                  <span>🔴 സാധിക്കില്ല (Not Participating)</span>
+                  <strong id="legendNoCount" style="color: #FCA5A5;">0</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart 2: Batch-wise Registration Count -->
+          <div class="analytics-card">
+            <div class="analytics-card-title">
+              <span>🎓 Batch-wise Registration Count</span>
+              <span id="batchUniqueBadge" style="font-size: 11.5px; font-weight: 600; color: #94A3B8;">0 Batches</span>
+            </div>
+            <div id="batchChartContainer" class="bar-list"></div>
+          </div>
+
+          <!-- Chart 3: Place-wise Registration Count -->
+          <div class="analytics-card">
+            <div class="analytics-card-title">
+              <span>📍 Place-wise Registration Count</span>
+              <span id="placeUniqueBadge" style="font-size: 11.5px; font-weight: 600; color: #94A3B8;">0 Places</span>
+            </div>
+            <div id="placeChartContainer" class="bar-list"></div>
+          </div>
+        </div>
+
+        <!-- Responses Management Table -->
+        <div class="table-card">
+          <div class="table-header-bar">
+            <div>
+              <h3 style="font-size: 17px; font-weight: 700; color: var(--gold-400); margin-bottom: 3px;">
+                Google Sheets Response Database (Form Responses 1)
+              </h3>
+              <p style="font-size: 12.5px; color: #94A3B8;">
+                Every registration is neatly organized with submission timestamp, normalized +91 number, and one-click WhatsApp action
+              </p>
+            </div>
+            <div class="table-filters">
+              <input
+                type="search"
+                id="searchTableInput"
+                class="filter-input"
+                placeholder="Search Name, Place, Batch, Phone..."
+              />
+              <select id="filterParticipationSelect" class="filter-select">
+                <option value="ALL">All Responses</option>
+                <option value="പങ്കെടുക്കും">പങ്കെടുക്കും (Participating)</option>
+                <option value="സാധിക്കില്ല">സാധിക്കില്ല (Not Participating)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="resp-table">
+              <thead>
+                <tr>
+                  <th>Reg ID</th>
+                  <th>Submission Date & Time</th>
+                  <th>Name</th>
+                  <th>Place</th>
+                  <th>Batch Year</th>
+                  <th>WhatsApp (+91)</th>
+                  <th>അലുംനി സംഗമത്തിൽ പങ്കെടുക്കുമോ...?</th>
+                  <th>WhatsApp Confirmation Action</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="responsesTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 4C. Edit Registration Modal Dialog -->
+        <div id="editRegistrationModal" class="admin-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="editModalHeading">
+          <div class="admin-modal-card">
+            <div class="admin-modal-header">
+              <h3 id="editModalHeading" class="admin-modal-title">Edit Registration</h3>
+              <span id="editModalRegIdBadge" class="admin-modal-id-pill">ID: 001</span>
+            </div>
+
+            <div id="editModalError" class="admin-login-error" role="alert"></div>
+
+            <form id="editRegistrationForm" novalidate>
+              <input type="hidden" id="editRegIdInput" />
+
+              <div class="admin-field-group">
+                <label class="admin-field-label" for="editNameInput">Name *</label>
+                <input
+                  type="text"
+                  id="editNameInput"
+                  class="admin-input"
+                  placeholder="Enter full name"
+                  required
+                />
+              </div>
+
+              <div class="admin-field-group">
+                <label class="admin-field-label" for="editPlaceInput">Place *</label>
+                <input
+                  type="text"
+                  id="editPlaceInput"
+                  class="admin-input"
+                  placeholder="Enter locality"
+                  required
+                />
+              </div>
+
+              <div class="admin-field-group">
+                <label class="admin-field-label" for="editBatchInput">Batch Year *</label>
+                <input
+                  type="text"
+                  id="editBatchInput"
+                  class="admin-input"
+                  placeholder="Enter batch year (e.g., 2018)"
+                  required
+                />
+              </div>
+
+              <div class="admin-field-group">
+                <label class="admin-field-label" for="editWhatsappInput">WhatsApp Number *</label>
+                <input
+                  type="tel"
+                  id="editWhatsappInput"
+                  class="admin-input"
+                  placeholder="Mobile number with or without +91"
+                  required
+                />
+              </div>
+
+              <div class="admin-field-group">
+                <label class="admin-field-label">Attendance Status (അലുംനി സംഗമത്തിൽ പങ്കെടുക്കുമോ...?) *</label>
+                <div class="admin-radio-row">
+                  <label class="admin-radio-option">
+                    <input type="radio" name="editParticipation" id="editPartYes" value="പങ്കെടുക്കും" required />
+                    <span>പങ്കെടുക്കും</span>
+                  </label>
+                  <label class="admin-radio-option">
+                    <input type="radio" name="editParticipation" id="editPartNo" value="സാധിക്കില്ല" required />
+                    <span>സാധിക്കില്ല</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="admin-modal-actions">
+                <button type="button" id="cancelEditBtn" class="modal-btn modal-btn-cancel">
+                  Cancel
+                </button>
+                <button type="submit" id="saveEditBtn" class="modal-btn modal-btn-save">
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- 4D. Delete Registration Confirmation Modal Popup -->
+        <div id="deleteConfirmModal" class="admin-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="deleteModalQuestion">
+          <div class="admin-modal-card delete-card">
+            <div class="delete-warn-icon">🗑️</div>
+            <h3 id="deleteModalQuestion" class="delete-confirm-question">
+              Are you sure you want to delete this registration?
+            </h3>
+            <div id="deleteTargetSummary" class="delete-target-summary"></div>
+            <p style="font-size: 12.5px; color: #94A3B8; margin-bottom: 6px;">
+              This action will permanently remove the registration from the database and Google Sheets.
+            </p>
+            <div id="deleteModalError" class="admin-login-error" role="alert"></div>
+
+            <div class="admin-modal-actions">
+              <button type="button" id="cancelDeleteBtn" class="modal-btn modal-btn-cancel">
+                Cancel
+              </button>
+              <button type="button" id="confirmDeleteBtn" class="modal-btn modal-btn-confirm-delete">
+                Confirm Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Toast Alert for Instant Confirmation -->
+  <div id="toastAlert" class="toast-alert" role="status" aria-live="polite"></div>
+
+  <!-- Custom Form Submission Alert Modal (Replaces Native Browser Alert) -->
+  <div id="submissionAlertModal" class="submission-alert-overlay" role="dialog" aria-modal="true" aria-labelledby="submissionAlertTitle" aria-hidden="true">
+    <div id="submissionAlertBox" class="submission-alert-box">
+      <button type="button" id="submissionAlertCloseIcon" class="submission-alert-close-icon" aria-label="Close alert">✕</button>
+      <div id="submissionAlertIcon" class="submission-alert-icon" aria-hidden="true">✓</div>
+      <div id="submissionAlertTitle" class="submission-alert-title">Registration Successful!</div>
+      <div id="submissionAlertBadge" class="submission-alert-badge">Registration ID: 001</div>
+      <p id="submissionAlertMessage" class="submission-alert-message">
+        Thank you for registering for Aufbruch – Alumni Conclave 2026.
+      </p>
+      <button type="button" id="submissionAlertOkBtn" class="submission-alert-btn">
+        <span>OK</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-brand">
+      AUFBRUCH – ALUMNI CONCLAVE 2026
+    </div>
+    <div class="designed-by-text" style="margin-top: 8px; font-size: 13.5px; font-weight: 300; color: #CBD5E1; opacity: 0.5;">
+      Designed by: Ajmal Kattichira
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       5. APPLICATION LOGIC (VALIDATION, WHATSAPP ENGINE & SECURE ADMIN AUTH)
+       ========================================================================= -->
+  <script>
+    (function() {
+      var EXACT_CONFIRMATION_MESSAGE =
+        'Registration Successful!\n\n' +
+        'Thank you for registering for Aufbruch – Alumni Conclave 2026.';
+
+      // In-memory state for authenticated admin session only (never persisted or exposed to unauthorized users)
+      var adminSessionToken = sessionStorage.getItem('AUFBRUCH_ADMIN_SESSION_TOKEN') || '';
+      var isAdminAuthenticated = false;
+      var dashboardRegistrations = [];
+
+      // -----------------------------------------------------------------------
+      // Phone Normalization & Personalized Malayalam WhatsApp Message Builder
+      // -----------------------------------------------------------------------
+      function normalizeIndianPhone(raw) {
+        var cleaned = String(raw || '').trim().replace(/[\s\-\.\(\)]/g, '');
+        if (cleaned.indexOf('+91') === 0) {
+          cleaned = cleaned.substring(3);
+        } else if (cleaned.length === 12 && cleaned.indexOf('91') === 0) {
+          cleaned = cleaned.substring(2);
+        } else if (cleaned.length === 11 && cleaned.indexOf('0') === 0) {
+          cleaned = cleaned.substring(1);
+        }
+        if (!/^[6-9]\d{9}$/.test(cleaned)) {
+          return { isValid: false, raw: raw };
+        }
+        return {
+          isValid: true,
+          national: cleaned,
+          waNumber: '91' + cleaned,
+          e164: '+91' + cleaned,
+          display: '+91 ' + cleaned.substring(0, 5) + ' ' + cleaned.substring(5)
+        };
+      }
+
+      function buildMalayalamWhatsAppMessage(name) {
+        var cleanName = String(name || 'Alumni Member').trim() || 'Alumni Member';
+        return (
+          'അസ്സലാമു അലൈകും\n\n' +
+          'Hi... *' + cleanName + '*\n\n' +
+          'നിങ്ങൾ അൻവാർ അലുംനി കോൺക്ലൈവിൽ രജിസ്റ്റർ ചെയ്തതിന് നന്ദി...\n\n' +
+          '*ഡിസംബർ 10 വൈകിട്ട് 3:30 മുതൽ രാത്രി 9:30 വരെ* നടക്കുന്ന സംഗമത്തിൽ പങ്കാളിത്തം ഉറപ്പ് വരുത്തുക.'
+        );
+      }
+
+      function formatTimestamp(d) {
+        var pad = function(n) { return n < 10 ? '0' + n : String(n); };
+        return (
+          d.getFullYear() + '-' +
+          pad(d.getMonth() + 1) + '-' +
+          pad(d.getDate()) + ' ' +
+          pad(d.getHours()) + ':' +
+          pad(d.getMinutes()) + ':' +
+          pad(d.getSeconds())
+        );
+      }
+
+      function showToast(msg) {
+        var toast = document.getElementById('toastAlert');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(function() {
+          toast.style.display = 'none';
+        }, 5000);
+      }
+
+      // -----------------------------------------------------------------------
+      // Mobile Navigation & Countdown Timer
+      // -----------------------------------------------------------------------
+      var mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      var navLinks = document.getElementById('navLinks');
+      if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', function() {
+          navLinks.classList.toggle('open');
+        });
+      }
+
+      function updateCountdown() {
+        var target = new Date('2026-12-10T15:30:00+05:30').getTime();
+        var now = Date.now();
+        var diff = Math.max(0, target - now);
+
+        var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        var mins = Math.floor((diff / (1000 * 60)) % 60);
+        var secs = Math.floor((diff / 1000) % 60);
+
+        var pad = function(n) { return n < 10 ? '0' + n : String(n); };
+        document.getElementById('cdDays').textContent = pad(days);
+        document.getElementById('cdHours').textContent = pad(hours);
+        document.getElementById('cdMins').textContent = pad(mins);
+        document.getElementById('cdSecs').textContent = pad(secs);
+      }
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+
+      // -----------------------------------------------------------------------
+      // View Switching: Registration Form View vs. Admin Dashboard View
+      // -----------------------------------------------------------------------
+      var heroSection = document.getElementById('top');
+      var registerSection = document.getElementById('register');
+      var dashboardSection = document.getElementById('dashboard');
+      var navRegisterLink = document.getElementById('navRegisterLink');
+      var navDashboardLink = document.getElementById('navDashboardLink');
+      var adminLoginSection = document.getElementById('adminLoginSection');
+      var adminDashboardContent = document.getElementById('adminDashboardContent');
+
+      function showRegistrationSection(scrollToForm) {
+        dashboardSection.style.display = 'none';
+        heroSection.style.display = 'block';
+        registerSection.style.display = 'block';
+        navRegisterLink.classList.add('active');
+        navDashboardLink.classList.remove('active');
+        navLinks.classList.remove('open');
+
+        if (scrollToForm) {
+          registerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+
+      function showAdminDashboardSection() {
+        heroSection.style.display = 'none';
+        registerSection.style.display = 'none';
+        dashboardSection.style.display = 'block';
+        navRegisterLink.classList.remove('active');
+        navDashboardLink.classList.add('active');
+        navLinks.classList.remove('open');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        verifySessionAndRenderAdminView();
+      }
+
+      document.getElementById('brandLogoLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        showRegistrationSection(false);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      navRegisterLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        showRegistrationSection(true);
+      });
+
+      document.getElementById('navRegisterBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        showRegistrationSection(true);
+      });
+
+      document.getElementById('heroRegisterBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        showRegistrationSection(true);
+      });
+
+      navDashboardLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        showAdminDashboardSection();
+      });
+
+      document.getElementById('heroDashboardBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        showAdminDashboardSection();
+      });
+
+      document.getElementById('backToRegisterBtn').addEventListener('click', function() {
+        showRegistrationSection(true);
+      });
+
+      // -----------------------------------------------------------------------
+      // Live Phone Input Validation & Participation Radio Selection
+      // -----------------------------------------------------------------------
+      var form = document.getElementById('registrationForm');
+      var nameInput = document.getElementById('nameInput');
+      var placeInput = document.getElementById('placeInput');
+      var batchInput = document.getElementById('batchInput');
+      var whatsappInput = document.getElementById('whatsappInput');
+      var phoneNormalizedBadge = document.getElementById('phoneNormalizedBadge');
+      var cardYes = document.getElementById('cardYes');
+      var cardNo = document.getElementById('cardNo');
+      var submitBtn = document.getElementById('submitBtn');
+      var globalError = document.getElementById('globalError');
+
+      whatsappInput.addEventListener('input', function() {
+        var phoneRes = normalizeIndianPhone(whatsappInput.value);
+        if (phoneRes.isValid) {
+          phoneNormalizedBadge.style.display = 'inline-flex';
+          phoneNormalizedBadge.textContent = '✓ WhatsApp Number: ' + phoneRes.display;
+          whatsappInput.classList.remove('invalid');
+          whatsappInput.classList.add('valid');
+          document.getElementById('whatsappError').classList.remove('visible');
+        } else {
+          phoneNormalizedBadge.style.display = 'none';
+          whatsappInput.classList.remove('valid');
+        }
+      });
+
+      var radios = document.querySelectorAll('input[name="participation"]');
+      for (var i = 0; i < radios.length; i++) {
+        radios[i].addEventListener('change', function() {
+          cardYes.classList.toggle('selected-yes', radios[0].checked);
+          cardNo.classList.toggle('selected-no', radios[1].checked);
+          document.getElementById('participationError').classList.remove('visible');
+        });
+      }
+
+      function setFieldError(inputEl, errorElId, hasError) {
+        var errEl = document.getElementById(errorElId);
+        if (inputEl) inputEl.classList.toggle('invalid', hasError);
+        if (errEl) errEl.classList.toggle('visible', hasError);
+      }
+
+      // -----------------------------------------------------------------------
+      // Public Registration Form Submission Handler
+      // -----------------------------------------------------------------------
+      var isSubmitting = false;
+
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (isSubmitting) return;
+        globalError.style.display = 'none';
+
+        var nameVal = nameInput.value.trim();
+        var placeVal = placeInput.value.trim();
+        var batchVal = batchInput.value.trim();
+        var phoneVal = whatsappInput.value.trim();
+        var partEl = document.querySelector('input[name="participation"]:checked');
+        var partVal = partEl ? partEl.value : '';
+
+        var valid = true;
+
+        if (nameVal.length < 2) {
+          setFieldError(nameInput, 'nameError', true);
+          valid = false;
+        } else {
+          setFieldError(nameInput, 'nameError', false);
+        }
+
+        if (placeVal.length < 2) {
+          setFieldError(placeInput, 'placeError', true);
+          valid = false;
+        } else {
+          setFieldError(placeInput, 'placeError', false);
+        }
+
+        var batchRegex = /^(19[5-9]\d|20[0-2]\d)(\s*[-–/]\s*(19[5-9]\d|20[0-2]\d|\d{2}))?$/;
+        if (!batchRegex.test(batchVal)) {
+          setFieldError(batchInput, 'batchError', true);
+          valid = false;
+        } else {
+          setFieldError(batchInput, 'batchError', false);
+        }
+
+        var phoneResult = normalizeIndianPhone(phoneVal);
+        if (!phoneResult.isValid) {
+          setFieldError(whatsappInput, 'whatsappError', true);
+          valid = false;
+        } else {
+          setFieldError(whatsappInput, 'whatsappError', false);
+        }
+
+        if (!partVal) {
+          document.getElementById('participationError').classList.add('visible');
+          valid = false;
+        } else {
+          document.getElementById('participationError').classList.remove('visible');
+        }
+
+        if (!valid) return;
+
+        isSubmitting = true;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>Saving Registration...</span>';
+
+        var payload = {
+          timestamp: formatTimestamp(new Date()),
+          name: nameVal,
+          place: placeVal,
+          batchYear: batchVal,
+          whatsappNumber: phoneVal,
+          participation: partVal
+        };
+
+        // 1. If running inside Google Apps Script HtmlService
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run
+            .withSuccessHandler(function(response) {
+              if (!response || !response.success) {
+                isSubmitting = false;
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Submit Registration</span><span>✓</span>';
+                globalError.textContent = (response && response.error) ? response.error : 'Unable to save registration. Please try again.';
+                globalError.style.display = 'block';
+                return;
+              }
+              renderConfirmationView(response);
+            })
+            .withFailureHandler(function(err) {
+              isSubmitting = false;
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = '<span>Submit Registration</span><span>✓</span>';
+              globalError.textContent = err && err.message ? err.message : 'Unable to save registration. Please try again.';
+              globalError.style.display = 'block';
+            })
+            .submitRegistrationFromWebApp(payload);
+          return;
+        }
+
+        // 2. Submit to Backend Server (/api/register)
+        fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+          .then(function(resp) {
+            return resp.json().then(function(data) {
+              return { ok: resp.ok, data: data };
+            });
+          })
+          .then(function(result) {
+            if (!result.ok || !result.data || !result.data.success) {
+              throw new Error((result.data && result.data.error) ? result.data.error : 'Failed to save registration.');
+            }
+            renderConfirmationView(result.data);
+          })
+          .catch(function(err) {
+            isSubmitting = false;
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<span>Submit Registration</span><span>✓</span>';
+            var errMsg = (err && err.message && err.message !== 'Failed to fetch')
+              ? err.message
+              : 'Unable to submit registration right now. Please check your connection and try again.';
+            globalError.textContent = errMsg;
+            globalError.style.display = 'block';
+          });
+      });
+
+      // -----------------------------------------------------------------------
+      // Render Post-Submission Confirmation Screen, Custom Alert & WhatsApp Trigger
+      // -----------------------------------------------------------------------
+      var formContainer = document.getElementById('formContainer');
+      var confirmationScreen = document.getElementById('confirmationScreen');
+      var regIdBadge = document.getElementById('regIdBadge');
+      var confirmationMessageText = document.getElementById('confirmationMessageText');
+      var whatsappPanel = document.getElementById('whatsappPanel');
+      var nonPartNoticePanel = document.getElementById('nonPartNoticePanel');
+      var waRecipientDisplay = document.getElementById('waRecipientDisplay');
+      var whatsappPreviewBox = document.getElementById('whatsappPreviewBox');
+      var whatsappActionBtn = document.getElementById('whatsappActionBtn');
+      var registerAnotherBtn = document.getElementById('registerAnotherBtn');
+
+      var submissionAlertModal = document.getElementById('submissionAlertModal');
+      var submissionAlertTitle = document.getElementById('submissionAlertTitle');
+      var submissionAlertBadge = document.getElementById('submissionAlertBadge');
+      var submissionAlertMessage = document.getElementById('submissionAlertMessage');
+      var submissionAlertOkBtn = document.getElementById('submissionAlertOkBtn');
+      var submissionAlertCloseIcon = document.getElementById('submissionAlertCloseIcon');
+
+      function openSubmissionAlertModal(res) {
+        if (!submissionAlertModal) return;
+        submissionAlertTitle.textContent = 'Registration Successful!';
+        submissionAlertBadge.textContent = 'Registration ID: ' + (res.registrationId || 'Confirmed');
+        submissionAlertMessage.textContent = 'Thank you for registering for Aufbruch – Alumni Conclave 2026.';
+        submissionAlertModal.setAttribute('aria-hidden', 'false');
+        submissionAlertModal.classList.add('active');
+        setTimeout(function() {
+          if (submissionAlertOkBtn) submissionAlertOkBtn.focus();
+        }, 50);
+      }
+
+      function closeSubmissionAlertModal() {
+        if (!submissionAlertModal) return;
+        submissionAlertModal.classList.remove('active');
+        submissionAlertModal.setAttribute('aria-hidden', 'true');
+      }
+
+      if (submissionAlertOkBtn) {
+        submissionAlertOkBtn.addEventListener('click', closeSubmissionAlertModal);
+      }
+      if (submissionAlertCloseIcon) {
+        submissionAlertCloseIcon.addEventListener('click', closeSubmissionAlertModal);
+      }
+      if (submissionAlertModal) {
+        submissionAlertModal.addEventListener('click', function(e) {
+          if (e.target === submissionAlertModal) {
+            closeSubmissionAlertModal();
+          }
+        });
+      }
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && submissionAlertModal && submissionAlertModal.classList.contains('active')) {
+          closeSubmissionAlertModal();
+        }
+      });
+
+      function renderConfirmationView(res) {
+        isSubmitting = false;
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>Submit Registration</span><span>✓</span>';
+
+        formContainer.style.display = 'none';
+        confirmationScreen.style.display = 'block';
+
+        regIdBadge.textContent = 'Registration ID: ' + (res.registrationId || 'Confirmed');
+        confirmationMessageText.textContent = res.confirmationMessage || EXACT_CONFIRMATION_MESSAGE;
+
+        showToast('✓ Registration Successful! Saved for ' + res.name);
+        openSubmissionAlertModal(res);
+
+        // Strictly generate & open WhatsApp ONLY for "പങ്കെടുക്കും", never for "സാധിക്കില്ല"
+        if (res.shouldSendWhatsApp && res.whatsAppClickToChatUrl) {
+          whatsappPanel.style.display = 'block';
+          nonPartNoticePanel.style.display = 'none';
+          waRecipientDisplay.textContent = res.formattedPhone + ' (' + res.name + ')';
+          whatsappPreviewBox.textContent = res.whatsAppMessage;
+          whatsappActionBtn.href = res.whatsAppClickToChatUrl;
+
+          try {
+            window.open(res.whatsAppClickToChatUrl, '_blank', 'noopener,noreferrer');
+          } catch (e) {}
+        } else {
+          whatsappPanel.style.display = 'none';
+          nonPartNoticePanel.style.display = 'block';
+          whatsappActionBtn.href = '#';
+        }
+      }
+
+      registerAnotherBtn.addEventListener('click', function() {
+        form.reset();
+        cardYes.classList.remove('selected-yes');
+        cardNo.classList.remove('selected-no');
+        phoneNormalizedBadge.style.display = 'none';
+        whatsappInput.classList.remove('valid', 'invalid');
+        confirmationScreen.style.display = 'none';
+        formContainer.style.display = 'block';
+      });
+
+      // -----------------------------------------------------------------------
+      // Secure Admin Authentication & Protected Backend Data Fetching
+      // -----------------------------------------------------------------------
+      var adminLoginForm = document.getElementById('adminLoginForm');
+      var adminUsernameInput = document.getElementById('adminUsername');
+      var adminPasswordInput = document.getElementById('adminPassword');
+      var adminLoginBtn = document.getElementById('adminLoginBtn');
+      var adminLoginError = document.getElementById('adminLoginError');
+      var adminLogoutBtn = document.getElementById('adminLogoutBtn');
+
+      function wipeDashboardDom() {
+        dashboardRegistrations = [];
+        document.getElementById('kpiTotal').textContent = '0';
+        document.getElementById('kpiParticipating').textContent = '0';
+        document.getElementById('kpiNotParticipating').textContent = '0';
+        document.getElementById('kpiRate').textContent = '0%';
+        document.getElementById('donutPercent').textContent = '0%';
+        document.getElementById('legendYesCount').textContent = '0';
+        document.getElementById('legendNoCount').textContent = '0';
+        document.getElementById('batchChartContainer').innerHTML = '';
+        document.getElementById('placeChartContainer').innerHTML = '';
+        document.getElementById('responsesTableBody').innerHTML = '';
+        var editModalEl = document.getElementById('editRegistrationModal');
+        var deleteModalEl = document.getElementById('deleteConfirmModal');
+        if (editModalEl) editModalEl.classList.remove('open');
+        if (deleteModalEl) deleteModalEl.classList.remove('open');
+      }
+
+      function showLoginScreen(errorMsg) {
+        isAdminAuthenticated = false;
+        wipeDashboardDom();
+        adminDashboardContent.style.display = 'none';
+        adminLoginSection.style.display = 'block';
+        if (errorMsg) {
+          adminLoginError.textContent = errorMsg;
+          adminLoginError.style.display = 'block';
+        } else {
+          adminLoginError.style.display = 'none';
+        }
+      }
+
+      function showAuthenticatedDashboard(data) {
+        isAdminAuthenticated = true;
+        adminLoginError.style.display = 'none';
+        adminLoginSection.style.display = 'none';
+        adminDashboardContent.style.display = 'block';
+        dashboardRegistrations = Array.isArray(data.registrations) ? data.registrations : [];
+        renderDashboardUI();
+      }
+
+      function getAuthHeaders() {
+        var headers = { 'Content-Type': 'application/json' };
+        if (adminSessionToken) {
+          headers['Authorization'] = 'Bearer ' + adminSessionToken;
+        }
+        return headers;
+      }
+
+      function verifySessionAndRenderAdminView() {
+        // 1. Google Apps Script Backend Mode
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          if (!adminSessionToken) {
+            showLoginScreen();
+            return;
+          }
+          google.script.run
+            .withSuccessHandler(function(data) {
+              if (data && data.authenticated && data.success) {
+                showAuthenticatedDashboard(data);
+              } else {
+                adminSessionToken = '';
+                sessionStorage.removeItem('AUFBRUCH_ADMIN_SESSION_TOKEN');
+                showLoginScreen();
+              }
+            })
+            .withFailureHandler(function() {
+              showLoginScreen();
+            })
+            .getDashboardDataFromWebApp(adminSessionToken);
+          return;
+        }
+
+        // 2. Backend HTTP Server Mode (/api/admin/dashboard)
+        fetch('/api/admin/dashboard', {
+          method: 'GET',
+          headers: getAuthHeaders(),
+          credentials: 'same-origin'
+        })
+          .then(function(resp) {
+            if (resp.status === 401 || resp.status === 403) {
+              throw new Error('Unauthorized');
+            }
+            return resp.json();
+          })
+          .then(function(data) {
+            if (data && data.success) {
+              showAuthenticatedDashboard(data);
+            } else {
+              showLoginScreen();
+            }
+          })
+          .catch(function() {
+            adminSessionToken = '';
+            sessionStorage.removeItem('AUFBRUCH_ADMIN_SESSION_TOKEN');
+            showLoginScreen();
+          });
+      }
+
+      adminLoginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        adminLoginError.style.display = 'none';
+
+        var username = adminUsernameInput.value.trim();
+        var password = adminPasswordInput.value;
+
+        if (!username || !password) {
+          adminLoginError.textContent = 'Please enter both username and password.';
+          adminLoginError.style.display = 'block';
+          return;
+        }
+
+        adminLoginBtn.disabled = true;
+        adminLoginBtn.textContent = 'Verifying Credentials...';
+
+        // 1. Google Apps Script Backend Mode
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run
+            .withSuccessHandler(function(res) {
+              adminLoginBtn.disabled = false;
+              adminLoginBtn.textContent = 'Login';
+              if (res && res.authenticated && res.sessionToken) {
+                adminSessionToken = res.sessionToken;
+                sessionStorage.setItem('AUFBRUCH_ADMIN_SESSION_TOKEN', adminSessionToken);
+                adminPasswordInput.value = '';
+                showToast('🔓 Administrator login successful.');
+                verifySessionAndRenderAdminView();
+              } else {
+                showLoginScreen((res && res.error) || 'Invalid administrator username or password.');
+              }
+            })
+            .withFailureHandler(function(err) {
+              adminLoginBtn.disabled = false;
+              adminLoginBtn.textContent = 'Login';
+              showLoginScreen(err && err.message ? err.message : 'Authentication failed.');
+            })
+            .authenticateAdminFromWebApp(username, password);
+          return;
+        }
+
+        // 2. Backend Server Mode (/api/admin/login)
+        fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({ username: username, password: password })
+        })
+          .then(function(resp) {
+            return resp.json().then(function(data) {
+              return { status: resp.status, data: data };
+            });
+          })
+          .then(function(result) {
+            adminLoginBtn.disabled = false;
+            adminLoginBtn.textContent = 'Login';
+
+            if (result.status === 200 && result.data && result.data.authenticated) {
+              adminSessionToken = result.data.sessionToken || '';
+              if (adminSessionToken) {
+                sessionStorage.setItem('AUFBRUCH_ADMIN_SESSION_TOKEN', adminSessionToken);
+              }
+              adminPasswordInput.value = '';
+              showToast('🔓 Welcome, Administrator! Loading dashboard...');
+              verifySessionAndRenderAdminView();
+            } else {
+              showLoginScreen((result.data && result.data.error) || 'Invalid administrator username or password.');
+            }
+          })
+          .catch(function() {
+            adminLoginBtn.disabled = false;
+            adminLoginBtn.textContent = 'Login';
+            showLoginScreen('Unable to reach authentication server. Please ensure the backend server is running.');
+          });
+      });
+
+      adminLogoutBtn.addEventListener('click', function() {
+        var currentToken = adminSessionToken;
+        adminSessionToken = '';
+        sessionStorage.removeItem('AUFBRUCH_ADMIN_SESSION_TOKEN');
+        adminUsernameInput.value = '';
+        adminPasswordInput.value = '';
+        showLoginScreen();
+        showToast('🔒 Logged out of Admin Dashboard.');
+
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run.logoutAdminFromWebApp(currentToken);
+          return;
+        }
+
+        fetch('/api/admin/logout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': currentToken ? ('Bearer ' + currentToken) : ''
+          },
+          credentials: 'same-origin'
+        }).catch(function() {});
+      });
+
+      // -----------------------------------------------------------------------
+      // Admin Dashboard Analytics, Charts & Table Renderer (Authenticated Only)
+      // -----------------------------------------------------------------------
+      function renderDashboardUI() {
+        if (!isAdminAuthenticated) {
+          wipeDashboardDom();
+          return;
+        }
+
+        var total = dashboardRegistrations.length;
+        var participating = 0;
+        var notParticipating = 0;
+        var batchMap = {};
+        var placeMap = {};
+
+        for (var i = 0; i < dashboardRegistrations.length; i++) {
+          var r = dashboardRegistrations[i];
+          var isYes = (r.participation === 'പങ്കെടുക്കും');
+          if (isYes) participating++;
+          else notParticipating++;
+
+          var bKey = r.batchYear || 'Unspecified';
+          if (!batchMap[bKey]) batchMap[bKey] = { total: 0, yes: 0, no: 0 };
+          batchMap[bKey].total++;
+          if (isYes) batchMap[bKey].yes++; else batchMap[bKey].no++;
+
+          var pKey = r.place || 'Unspecified';
+          if (!placeMap[pKey]) placeMap[pKey] = { total: 0, yes: 0, no: 0 };
+          placeMap[pKey].total++;
+          if (isYes) placeMap[pKey].yes++; else placeMap[pKey].no++;
+        }
+
+        var rate = total > 0 ? Math.round((participating / total) * 100) : 0;
+
+        // Update 4 KPI Cards
+        document.getElementById('kpiTotal').textContent = total;
+        document.getElementById('kpiParticipating').textContent = participating;
+        document.getElementById('kpiNotParticipating').textContent = notParticipating;
+        document.getElementById('kpiRate').textContent = rate + '%';
+
+        // Update Donut Chart
+        document.getElementById('donutPercent').textContent = rate + '%';
+        document.getElementById('legendYesCount').textContent = participating;
+        document.getElementById('legendNoCount').textContent = notParticipating;
+        var donutEl = document.getElementById('attendanceDonut');
+        if (total === 0) {
+          donutEl.style.background = 'conic-gradient(#334155 0% 100%)';
+        } else {
+          donutEl.style.background = 'conic-gradient(#10B981 0% ' + rate + '%, #EF4444 ' + rate + '% 100%)';
+        }
+
+        // Render Batch-wise Registration Count Chart
+        var batchKeys = Object.keys(batchMap).sort();
+        document.getElementById('batchUniqueBadge').textContent = batchKeys.length + ' Batches';
+        var batchContainer = document.getElementById('batchChartContainer');
+        batchContainer.innerHTML = '';
+        var maxBatch = 1;
+        batchKeys.forEach(function(k) {
+          if (batchMap[k].total > maxBatch) maxBatch = batchMap[k].total;
+        });
+
+        batchKeys.forEach(function(k) {
+          var item = batchMap[k];
+          var pct = Math.round((item.total / maxBatch) * 100);
+          var row = document.createElement('div');
+          row.className = 'bar-row';
+          row.innerHTML =
+            '<div class="bar-row-meta">' +
+              '<span>Batch ' + escapeHtml(k) + '</span>' +
+              '<span>' + item.total + ' (' + item.yes + ' പങ്കെടുക്കും)</span>' +
+            '</div>' +
+            '<div class="bar-track"><div class="bar-fill" style="width: ' + pct + '%;"></div></div>';
+          batchContainer.appendChild(row);
+        });
+
+        // Render Place-wise Registration Count Chart
+        var placeKeys = Object.keys(placeMap).sort(function(a, b) {
+          return placeMap[b].total - placeMap[a].total;
+        });
+        document.getElementById('placeUniqueBadge').textContent = placeKeys.length + ' Places';
+        var placeContainer = document.getElementById('placeChartContainer');
+        placeContainer.innerHTML = '';
+        var maxPlace = 1;
+        placeKeys.forEach(function(k) {
+          if (placeMap[k].total > maxPlace) maxPlace = placeMap[k].total;
+        });
+
+        placeKeys.forEach(function(k) {
+          var item = placeMap[k];
+          var pct = Math.round((item.total / maxPlace) * 100);
+          var row = document.createElement('div');
+          row.className = 'bar-row';
+          row.innerHTML =
+            '<div class="bar-row-meta">' +
+              '<span>' + escapeHtml(k) + '</span>' +
+              '<span>' + item.total + ' (' + item.yes + ' പങ്കെടുക്കും)</span>' +
+            '</div>' +
+            '<div class="bar-track"><div class="bar-fill place-fill" style="width: ' + pct + '%;"></div></div>';
+          placeContainer.appendChild(row);
+        });
+
+        renderResponsesTable();
+      }
+
+      function renderResponsesTable() {
+        var tbody = document.getElementById('responsesTableBody');
+        if (!isAdminAuthenticated) {
+          tbody.innerHTML = '';
+          return;
+        }
+
+        var searchVal = (document.getElementById('searchTableInput').value || '').trim().toLowerCase();
+        var partFilter = document.getElementById('filterParticipationSelect').value;
+
+        var filtered = dashboardRegistrations.filter(function(r) {
+          if (partFilter !== 'ALL' && r.participation !== partFilter) return false;
+          if (!searchVal) return true;
+          var hay = (
+            r.registrationId + ' ' +
+            r.name + ' ' +
+            r.place + ' ' +
+            r.batchYear + ' ' +
+            r.formattedPhone
+          ).toLowerCase();
+          return hay.indexOf(searchVal) !== -1;
+        });
+
+        tbody.innerHTML = '';
+
+        if (filtered.length === 0) {
+          var emptyTr = document.createElement('tr');
+          emptyTr.innerHTML =
+            '<td colspan="9" style="text-align: center; padding: 28px; color: #94A3B8;">' +
+              'No registration responses match your current filter.' +
+            '</td>';
+          tbody.appendChild(emptyTr);
+          return;
+        }
+
+        filtered.forEach(function(r) {
+          var tr = document.createElement('tr');
+          var isYes = (r.participation === 'പങ്കെടുക്കും');
+          var badgeHtml = isYes
+            ? '<span class="badge-yes">✓ പങ്കെടുക്കും</span>'
+            : '<span class="badge-no">✕ സാധിക്കില്ല</span>';
+
+          var waActionHtml = (r.shouldSendWhatsApp && r.whatsAppClickToChatUrl)
+            ? '<a href="' + escapeAttr(r.whatsAppClickToChatUrl) + '" target="_blank" rel="noopener noreferrer" class="table-wa-btn">📲 Send WhatsApp to ' + escapeHtml(r.name) + '</a>'
+            : '<span class="table-wa-disabled">🚫 No WhatsApp Sent (സാധിക്കില്ല)</span>';
+
+          var actionsHtml =
+            '<div class="actions-cell">' +
+              '<button type="button" class="action-btn action-edit-btn" data-reg-id="' + escapeAttr(r.registrationId) + '" title="Edit Registration">✏️ Edit</button>' +
+              '<button type="button" class="action-btn action-delete-btn" data-reg-id="' + escapeAttr(r.registrationId) + '" title="Delete Registration">🗑️ Delete</button>' +
+            '</div>';
+
+          tr.innerHTML =
+            '<td style="font-weight: 700; color: var(--gold-300);">' + escapeHtml(r.registrationId) + '</td>' +
+            '<td style="white-space: nowrap; color: #94A3B8;">' + escapeHtml(r.timestamp) + '</td>' +
+            '<td style="font-weight: 700; color: #FFFFFF;">' + escapeHtml(r.name) + '</td>' +
+            '<td>' + escapeHtml(r.place) + '</td>' +
+            '<td style="font-weight: 600;">' + escapeHtml(r.batchYear) + '</td>' +
+            '<td style="white-space: nowrap; font-weight: 600; font-size: 13px;">' + escapeHtml(r.formattedPhone) + '</td>' +
+            '<td>' + badgeHtml + '</td>' +
+            '<td>' + waActionHtml + '</td>' +
+            '<td>' + actionsHtml + '</td>';
+          tbody.appendChild(tr);
+        });
+      }
+
+      // -----------------------------------------------------------------------
+      // Admin Edit & Delete Registration Handlers
+      // -----------------------------------------------------------------------
+      var editRegistrationModal = document.getElementById('editRegistrationModal');
+      var editRegistrationForm = document.getElementById('editRegistrationForm');
+      var editModalRegIdBadge = document.getElementById('editModalRegIdBadge');
+      var editRegIdInput = document.getElementById('editRegIdInput');
+      var editNameInput = document.getElementById('editNameInput');
+      var editPlaceInput = document.getElementById('editPlaceInput');
+      var editBatchInput = document.getElementById('editBatchInput');
+      var editWhatsappInput = document.getElementById('editWhatsappInput');
+      var editPartYes = document.getElementById('editPartYes');
+      var editPartNo = document.getElementById('editPartNo');
+      var editModalError = document.getElementById('editModalError');
+      var saveEditBtn = document.getElementById('saveEditBtn');
+      var cancelEditBtn = document.getElementById('cancelEditBtn');
+
+      var deleteConfirmModal = document.getElementById('deleteConfirmModal');
+      var deleteTargetSummary = document.getElementById('deleteTargetSummary');
+      var deleteModalError = document.getElementById('deleteModalError');
+      var confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+      var cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+      var pendingDeleteRegId = '';
+
+      function findRegistrationById(regId) {
+        for (var i = 0; i < dashboardRegistrations.length; i++) {
+          if (String(dashboardRegistrations[i].registrationId) === String(regId)) {
+            return dashboardRegistrations[i];
+          }
+        }
+        return null;
+      }
+
+      function openEditModal(regId) {
+        if (!isAdminAuthenticated) return;
+        var rec = findRegistrationById(regId);
+        if (!rec) return;
+
+        editModalError.style.display = 'none';
+        editRegIdInput.value = rec.registrationId;
+        editModalRegIdBadge.textContent = 'ID: ' + rec.registrationId;
+        editNameInput.value = rec.name || '';
+        editPlaceInput.value = rec.place || '';
+        editBatchInput.value = rec.batchYear || '';
+        editWhatsappInput.value = rec.whatsappNumber || rec.formattedPhone || '';
+
+        if (rec.participation === 'സാധിക്കില്ല') {
+          editPartNo.checked = true;
+          editPartYes.checked = false;
+        } else {
+          editPartYes.checked = true;
+          editPartNo.checked = false;
+        }
+
+        editRegistrationModal.classList.add('open');
+      }
+
+      function closeEditModal() {
+        editRegistrationModal.classList.remove('open');
+        editModalError.style.display = 'none';
+      }
+
+      function openDeleteModal(regId) {
+        if (!isAdminAuthenticated) return;
+        var rec = findRegistrationById(regId);
+        if (!rec) return;
+
+        pendingDeleteRegId = String(rec.registrationId);
+        deleteModalError.style.display = 'none';
+        deleteTargetSummary.textContent = 'Registration #' + rec.registrationId + ' — ' + rec.name + ' (' + rec.place + ', Batch ' + rec.batchYear + ')';
+        deleteConfirmModal.classList.add('open');
+      }
+
+      function closeDeleteModal() {
+        pendingDeleteRegId = '';
+        deleteConfirmModal.classList.remove('open');
+        deleteModalError.style.display = 'none';
+      }
+
+      document.getElementById('responsesTableBody').addEventListener('click', function(e) {
+        var editBtn = e.target.closest('.action-edit-btn');
+        if (editBtn) {
+          openEditModal(editBtn.getAttribute('data-reg-id'));
+          return;
+        }
+        var deleteBtn = e.target.closest('.action-delete-btn');
+        if (deleteBtn) {
+          openDeleteModal(deleteBtn.getAttribute('data-reg-id'));
+        }
+      });
+
+      cancelEditBtn.addEventListener('click', closeEditModal);
+      cancelDeleteBtn.addEventListener('click', closeDeleteModal);
+
+      editRegistrationModal.addEventListener('click', function(e) {
+        if (e.target === editRegistrationModal) closeEditModal();
+      });
+
+      deleteConfirmModal.addEventListener('click', function(e) {
+        if (e.target === deleteConfirmModal) closeDeleteModal();
+      });
+
+      editRegistrationForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (!isAdminAuthenticated) return;
+
+        editModalError.style.display = 'none';
+        var regId = editRegIdInput.value.trim();
+        var nameVal = editNameInput.value.trim();
+        var placeVal = editPlaceInput.value.trim();
+        var batchVal = editBatchInput.value.trim();
+        var phoneVal = editWhatsappInput.value.trim();
+        var partEl = document.querySelector('input[name="editParticipation"]:checked');
+        var partVal = partEl ? partEl.value : '';
+
+        if (nameVal.length < 2) {
+          editModalError.textContent = 'Please enter a valid full name (minimum 2 characters).';
+          editModalError.style.display = 'block';
+          return;
+        }
+        if (placeVal.length < 2) {
+          editModalError.textContent = 'Please enter a valid locality / place.';
+          editModalError.style.display = 'block';
+          return;
+        }
+        if (!/^(19[5-9]\d|20[0-2]\d)(\s*[-–/]\s*(19[5-9]\d|20[0-2]\d|\d{2}))?$/.test(batchVal)) {
+          editModalError.textContent = 'Please enter a valid 4-digit Batch Year (e.g., 2018).';
+          editModalError.style.display = 'block';
+          return;
+        }
+        var phoneCheck = normalizeIndianPhone(phoneVal);
+        if (!phoneCheck.isValid) {
+          editModalError.textContent = 'Please enter a valid 10-digit mobile number.';
+          editModalError.style.display = 'block';
+          return;
+        }
+        if (partVal !== 'പങ്കെടുക്കും' && partVal !== 'സാധിക്കില്ല') {
+          editModalError.textContent = 'Please select Attendance Status (പങ്കെടുക്കും or സാധിക്കില്ല).';
+          editModalError.style.display = 'block';
+          return;
+        }
+
+        var updatePayload = {
+          registrationId: regId,
+          name: nameVal,
+          place: placeVal,
+          batchYear: batchVal,
+          whatsappNumber: phoneVal,
+          participation: partVal
+        };
+
+        saveEditBtn.disabled = true;
+        saveEditBtn.textContent = 'Saving...';
+
+        // 1. Google Apps Script Backend Mode
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run
+            .withSuccessHandler(function(data) {
+              saveEditBtn.disabled = false;
+              saveEditBtn.textContent = 'Save Changes';
+              closeEditModal();
+              if (data && data.success) {
+                showAuthenticatedDashboard(data);
+                showToast('✓ Registration #' + regId + ' updated successfully!');
+              }
+            })
+            .withFailureHandler(function(err) {
+              saveEditBtn.disabled = false;
+              saveEditBtn.textContent = 'Save Changes';
+              editModalError.textContent = err && err.message ? err.message : 'Failed to update registration.';
+              editModalError.style.display = 'block';
+            })
+            .updateRegistrationFromAdmin(adminSessionToken, updatePayload);
+          return;
+        }
+
+        // 2. Backend HTTP Server Mode (/api/admin/update)
+        fetch('/api/admin/update', {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          credentials: 'same-origin',
+          body: JSON.stringify(updatePayload)
+        })
+          .then(function(resp) {
+            return resp.json().then(function(data) {
+              return { status: resp.status, data: data };
+            });
+          })
+          .then(function(result) {
+            saveEditBtn.disabled = false;
+            saveEditBtn.textContent = 'Save Changes';
+
+            if (result.status === 401 || result.status === 403) {
+              closeEditModal();
+              showLoginScreen('Your administrator session has expired. Please log in again.');
+              return;
+            }
+            if (result.status !== 200 || !result.data || !result.data.success) {
+              editModalError.textContent = (result.data && result.data.error) || 'Failed to update registration.';
+              editModalError.style.display = 'block';
+              return;
+            }
+
+            closeEditModal();
+            showAuthenticatedDashboard(result.data);
+            showToast('✓ Registration #' + regId + ' updated successfully!');
+          })
+          .catch(function() {
+            saveEditBtn.disabled = false;
+            saveEditBtn.textContent = 'Save Changes';
+            editModalError.textContent = 'Network error while updating registration.';
+            editModalError.style.display = 'block';
+          });
+      });
+
+      confirmDeleteBtn.addEventListener('click', function() {
+        if (!isAdminAuthenticated || !pendingDeleteRegId) return;
+        var targetId = pendingDeleteRegId;
+        deleteModalError.style.display = 'none';
+        confirmDeleteBtn.disabled = true;
+        confirmDeleteBtn.textContent = 'Deleting...';
+
+        // 1. Google Apps Script Backend Mode
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run
+            .withSuccessHandler(function(data) {
+              confirmDeleteBtn.disabled = false;
+              confirmDeleteBtn.textContent = 'Confirm Delete';
+              closeDeleteModal();
+              if (data && data.success) {
+                showAuthenticatedDashboard(data);
+                showToast('🗑️ Registration #' + targetId + ' deleted successfully!');
+              }
+            })
+            .withFailureHandler(function(err) {
+              confirmDeleteBtn.disabled = false;
+              confirmDeleteBtn.textContent = 'Confirm Delete';
+              deleteModalError.textContent = err && err.message ? err.message : 'Failed to delete registration.';
+              deleteModalError.style.display = 'block';
+            })
+            .deleteRegistrationFromAdmin(adminSessionToken, targetId);
+          return;
+        }
+
+        // 2. Backend HTTP Server Mode (/api/admin/delete)
+        fetch('/api/admin/delete', {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          credentials: 'same-origin',
+          body: JSON.stringify({ registrationId: targetId })
+        })
+          .then(function(resp) {
+            return resp.json().then(function(data) {
+              return { status: resp.status, data: data };
+            });
+          })
+          .then(function(result) {
+            confirmDeleteBtn.disabled = false;
+            confirmDeleteBtn.textContent = 'Confirm Delete';
+
+            if (result.status === 401 || result.status === 403) {
+              closeDeleteModal();
+              showLoginScreen('Your administrator session has expired. Please log in again.');
+              return;
+            }
+            if (result.status !== 200 || !result.data || !result.data.success) {
+              deleteModalError.textContent = (result.data && result.data.error) || 'Failed to delete registration.';
+              deleteModalError.style.display = 'block';
+              return;
+            }
+
+            closeDeleteModal();
+            showAuthenticatedDashboard(result.data);
+            showToast('🗑️ Registration #' + targetId + ' deleted successfully!');
+          })
+          .catch(function() {
+            confirmDeleteBtn.disabled = false;
+            confirmDeleteBtn.textContent = 'Confirm Delete';
+            deleteModalError.textContent = 'Network error while deleting registration.';
+            deleteModalError.style.display = 'block';
+          });
+      });
+
+      function escapeHtml(str) {
+        return String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function escapeAttr(str) {
+        return String(str || '').replace(/"/g, '&quot;');
+      }
+
+      document.getElementById('searchTableInput').addEventListener('input', renderResponsesTable);
+      document.getElementById('filterParticipationSelect').addEventListener('change', renderResponsesTable);
+
+      // -----------------------------------------------------------------------
+      // Authenticated Toolbar Actions: Refresh Data & Export CSV
+      // -----------------------------------------------------------------------
+      document.getElementById('syncSheetsBtn').addEventListener('click', function() {
+        if (!isAdminAuthenticated) return;
+        showToast('🔄 Refreshing registration data...');
+        verifySessionAndRenderAdminView();
+      });
+
+      document.getElementById('exportCsvBtn').addEventListener('click', function() {
+        if (!isAdminAuthenticated) return;
+        var headers = [
+          'Registration ID',
+          'Timestamp',
+          'Name',
+          'Place',
+          'Batch Year',
+          'WhatsApp Number',
+          'Formatted WhatsApp (+91)',
+          'അലുംനി സംഗമത്തിൽ പങ്കെടുക്കുമോ...?',
+          'WhatsApp Click-to-Chat URL',
+          'WhatsApp Status'
+        ];
+        var csvRows = [headers.join(',')];
+
+        dashboardRegistrations.forEach(function(r) {
+          var row = [
+            r.registrationId,
+            r.timestamp,
+            r.name,
+            r.place,
+            r.batchYear,
+            r.whatsappNumber,
+            r.formattedPhone,
+            r.participation,
+            r.whatsAppClickToChatUrl || 'N/A (Selected സാധിക്കില്ല)',
+            r.shouldSendWhatsApp ? 'Click-to-Chat Link Ready' : 'Skipped – Not Participating (സാധിക്കില്ല)'
+          ].map(function(cell) {
+            return '"' + String(cell || '').replace(/"/g, '""') + '"';
+          });
+          csvRows.push(row.join(','));
+        });
+
+        var blob = new Blob(['\uFEFF' + csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'Aufbruch_Alumni_Conclave_2026_Registrations.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showToast('📥 Exported registrations spreadsheet (CSV with Malayalam UTF-8 support).');
+      });
+
+      // Handle initial URL hash if navigating directly to #dashboard
+      if (window.location.hash === '#dashboard') {
+        showAdminDashboardSection();
+      }
+    })();
+  </script>
+</body>
+</html>
