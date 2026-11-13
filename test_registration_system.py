@@ -232,6 +232,18 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertNotIn("window.alert(", index_html)
         self.assertIn("opacity: 0.5", index_html)
 
+        # 8. Verify Updated Success Flow & Admin View / Individual Send Message Modals
+        self.assertIn("Your registration has been submitted successfully. Thank you for registering.", index_html)
+        self.assertIn("navigateToHomePageTop", index_html)
+        self.assertIn('id="viewRegistrationModal"', index_html)
+        self.assertIn('id="sendMessageModal"', index_html)
+        self.assertIn('id="adminCustomMessageInput"', index_html)
+        self.assertIn('id="confirmSendWaBtn"', index_html)
+        self.assertIn("action-view-btn", index_html)
+        self.assertIn("action-edit-btn", index_html)
+        self.assertIn("action-delete-btn", index_html)
+        self.assertIn("action-message-btn", index_html)
+
     def test_backend_admin_auth_and_protected_routes(self):
         # 1. Unauthenticated requests to dashboard, update, and delete must be rejected with 401
         status, body, _ = http_json_request("/api/admin/dashboard", "GET")

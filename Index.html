@@ -1597,6 +1597,18 @@
       white-space: nowrap;
     }
 
+    .action-view-btn {
+      background: rgba(56, 189, 248, 0.14);
+      border: 1px solid rgba(56, 189, 248, 0.42);
+      color: #7DD3FC;
+    }
+
+    .action-view-btn:hover {
+      background: rgba(56, 189, 248, 0.28);
+      border-color: #38BDF8;
+      color: #FFFFFF;
+    }
+
     .action-edit-btn {
       background: rgba(212, 175, 55, 0.15);
       border: 1px solid rgba(212, 175, 55, 0.45);
@@ -1618,6 +1630,18 @@
     .action-delete-btn:hover {
       background: rgba(239, 68, 68, 0.28);
       border-color: #F87171;
+      color: #FFFFFF;
+    }
+
+    .action-message-btn {
+      background: rgba(37, 211, 102, 0.16);
+      border: 1px solid rgba(37, 211, 102, 0.45);
+      color: #6EE7B7;
+    }
+
+    .action-message-btn:hover {
+      background: rgba(37, 211, 102, 0.28);
+      border-color: #25D366;
       color: #FFFFFF;
     }
 
@@ -1785,6 +1809,128 @@
     .modal-btn-confirm-delete:hover:not(:disabled) {
       transform: translateY(-1px);
       box-shadow: 0 10px 22px rgba(220, 38, 38, 0.5);
+    }
+
+    .modal-btn-whatsapp {
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+      color: #FFFFFF;
+      box-shadow: 0 6px 18px rgba(37, 211, 102, 0.32);
+    }
+
+    .modal-btn-whatsapp:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(37, 211, 102, 0.45);
+    }
+
+    /* Admin View & Send Message Modal Details */
+    .view-details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 520px) {
+      .view-details-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .view-detail-item {
+      background: rgba(5, 11, 22, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 11px 14px;
+    }
+
+    .view-detail-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: #94A3B8;
+      margin-bottom: 4px;
+    }
+
+    .view-detail-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #FFFFFF;
+      word-break: break-word;
+    }
+
+    .msg-recipient-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      background: rgba(37, 211, 102, 0.09);
+      border: 1px solid rgba(37, 211, 102, 0.35);
+      border-radius: 12px;
+      padding: 13px 15px;
+      margin-bottom: 18px;
+    }
+
+    .msg-recipient-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+
+    .msg-recipient-phone {
+      font-size: 13px;
+      font-weight: 600;
+      color: #6EE7B7;
+      margin-top: 2px;
+    }
+
+    .msg-template-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .msg-template-chip {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(212, 175, 55, 0.32);
+      color: var(--gold-300);
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 5px 11px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .msg-template-chip:hover {
+      background: rgba(212, 175, 55, 0.18);
+      border-color: var(--gold-400);
+      color: #FFFFFF;
+    }
+
+    .admin-textarea {
+      width: 100%;
+      min-height: 150px;
+      padding: 13px 15px;
+      font-family: var(--font-primary);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.6;
+      color: #FFFFFF;
+      background: rgba(5, 11, 22, 0.85);
+      border: 1.5px solid rgba(212, 175, 55, 0.32);
+      border-radius: 10px;
+      outline: none;
+      resize: vertical;
+      transition: all 0.2s ease;
+    }
+
+    .admin-textarea:focus {
+      border-color: #25D366;
+      box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.18);
     }
 
     .delete-warn-icon {
@@ -2852,6 +2998,106 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             </div>
           </div>
         </div>
+
+        <!-- 4E. View Registration Details Modal Popup -->
+        <div id="viewRegistrationModal" class="admin-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="viewModalHeading">
+          <div class="admin-modal-card">
+            <div class="admin-modal-header">
+              <h3 id="viewModalHeading" class="admin-modal-title">Participant Details</h3>
+              <span id="viewModalRegIdBadge" class="admin-modal-id-pill">ID: 001</span>
+            </div>
+
+            <div class="view-details-grid">
+              <div class="view-detail-item">
+                <div class="view-detail-label">Participant Name</div>
+                <div id="viewNameVal" class="view-detail-value">-</div>
+              </div>
+              <div class="view-detail-item">
+                <div class="view-detail-label">Place</div>
+                <div id="viewPlaceVal" class="view-detail-value">-</div>
+              </div>
+              <div class="view-detail-item">
+                <div class="view-detail-label">Batch Year</div>
+                <div id="viewBatchVal" class="view-detail-value">-</div>
+              </div>
+              <div class="view-detail-item">
+                <div class="view-detail-label">WhatsApp Number</div>
+                <div id="viewPhoneVal" class="view-detail-value">-</div>
+              </div>
+              <div class="view-detail-item">
+                <div class="view-detail-label">Attendance Status</div>
+                <div id="viewParticipationVal" class="view-detail-value">-</div>
+              </div>
+              <div class="view-detail-item">
+                <div class="view-detail-label">Submitted At</div>
+                <div id="viewTimestampVal" class="view-detail-value">-</div>
+              </div>
+            </div>
+
+            <div class="admin-modal-actions">
+              <button type="button" id="closeViewModalBtn" class="modal-btn modal-btn-cancel">
+                Close
+              </button>
+              <button type="button" id="viewToEditBtn" class="modal-btn modal-btn-save">
+                ✏️ Edit
+              </button>
+              <button type="button" id="viewToSendMsgBtn" class="modal-btn modal-btn-whatsapp">
+                💬 Send Message
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4F. Individual Send WhatsApp Message Modal Popup -->
+        <div id="sendMessageModal" class="admin-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="sendMsgModalHeading">
+          <div class="admin-modal-card">
+            <div class="admin-modal-header">
+              <h3 id="sendMsgModalHeading" class="admin-modal-title">Send WhatsApp Message</h3>
+              <span id="sendMsgRegIdBadge" class="admin-modal-id-pill">ID: 001</span>
+            </div>
+
+            <div class="msg-recipient-card">
+              <div>
+                <div id="msgRecipientName" class="msg-recipient-name">Participant Name</div>
+                <div id="msgRecipientPhone" class="msg-recipient-phone">+91 00000 00000</div>
+              </div>
+              <span style="font-size: 11.5px; font-weight: 700; color: #6EE7B7; background: rgba(16, 185, 129, 0.16); padding: 4px 10px; border-radius: 999px;">
+                WhatsApp Click-to-Chat
+              </span>
+            </div>
+
+            <div id="sendMsgModalError" class="admin-login-error" role="alert"></div>
+
+            <form id="sendMessageForm" novalidate>
+              <div class="admin-field-group">
+                <label class="admin-field-label" for="adminCustomMessageInput">Message Content *</label>
+                <div class="msg-template-row">
+                  <button type="button" id="useConclaveTemplateBtn" class="msg-template-chip">Conclave Greeting</button>
+                  <button type="button" id="useReminderTemplateBtn" class="msg-template-chip">Event Reminder</button>
+                  <button type="button" id="clearCustomMsgBtn" class="msg-template-chip">Clear</button>
+                </div>
+                <textarea
+                  id="adminCustomMessageInput"
+                  class="admin-textarea"
+                  placeholder="Type or edit the WhatsApp message to send to this participant..."
+                  required
+                ></textarea>
+                <p style="font-size: 12px; color: #94A3B8; margin-top: 8px; line-height: 1.5;">
+                  Clicking <strong>Send Message</strong> opens WhatsApp with this pre-filled message so you can review and send it manually.
+                </p>
+              </div>
+
+              <div class="admin-modal-actions">
+                <button type="button" id="cancelSendMsgBtn" class="modal-btn modal-btn-cancel">
+                  Cancel
+                </button>
+                <button type="submit" id="confirmSendWaBtn" class="modal-btn modal-btn-whatsapp">
+                  💬 Send Message
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -2866,9 +3112,9 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       <button type="button" id="submissionAlertCloseIcon" class="submission-alert-close-icon" aria-label="Close alert">✕</button>
       <div id="submissionAlertIcon" class="submission-alert-icon" aria-hidden="true">✓</div>
       <div id="submissionAlertTitle" class="submission-alert-title">Registration Successful!</div>
-      <div id="submissionAlertBadge" class="submission-alert-badge">Registration ID: 001</div>
+      <div id="submissionAlertBadge" class="submission-alert-badge" style="display: none;">Registration Not Saved</div>
       <p id="submissionAlertMessage" class="submission-alert-message">
-        Thank you for registering for Aufbruch – Alumni Conclave 2026.
+        Your registration has been submitted successfully. Thank you for registering.
       </p>
       <button type="button" id="submissionAlertOkBtn" class="submission-alert-btn">
         <span>OK</span>
@@ -3262,21 +3508,25 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           google.script.run
             .withSuccessHandler(function(response) {
               if (!response || !response.success) {
+                var gasErrMsg = (response && response.error) ? response.error : 'Unable to save registration. Please try again.';
                 isSubmitting = false;
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<span>Submit Registration</span><span>✓</span>';
-                globalError.textContent = (response && response.error) ? response.error : 'Unable to save registration. Please try again.';
+                globalError.textContent = gasErrMsg;
                 globalError.style.display = 'block';
+                openSubmissionErrorModal(gasErrMsg);
                 return;
               }
               renderConfirmationView(response);
             })
             .withFailureHandler(function(err) {
+              var gasFailMsg = err && err.message ? err.message : 'Unable to save registration. Please try again.';
               isSubmitting = false;
               submitBtn.disabled = false;
               submitBtn.innerHTML = '<span>Submit Registration</span><span>✓</span>';
-              globalError.textContent = err && err.message ? err.message : 'Unable to save registration. Please try again.';
+              globalError.textContent = gasFailMsg;
               globalError.style.display = 'block';
+              openSubmissionErrorModal(gasFailMsg);
             })
             .submitRegistrationFromWebApp(payload);
           return;
@@ -3334,13 +3584,19 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       var submissionAlertOkBtn = document.getElementById('submissionAlertOkBtn');
       var submissionAlertCloseIcon = document.getElementById('submissionAlertCloseIcon');
 
+      var lastAlertWasSuccess = false;
+
       function openSubmissionAlertModal(res) {
         if (!submissionAlertModal) return;
+        lastAlertWasSuccess = true;
         if (submissionAlertBox) submissionAlertBox.classList.remove('is-error');
         if (submissionAlertIcon) submissionAlertIcon.textContent = '✓';
         submissionAlertTitle.textContent = 'Registration Successful!';
-        submissionAlertBadge.textContent = 'Registration ID: ' + (res.registrationId || 'Confirmed');
-        submissionAlertMessage.textContent = 'Thank you for registering for Aufbruch – Alumni Conclave 2026.';
+        if (submissionAlertBadge) {
+          submissionAlertBadge.textContent = '';
+          submissionAlertBadge.style.display = 'none';
+        }
+        submissionAlertMessage.textContent = 'Your registration has been submitted successfully. Thank you for registering.';
         submissionAlertModal.setAttribute('aria-hidden', 'false');
         submissionAlertModal.classList.add('active');
         setTimeout(function() {
@@ -3350,10 +3606,14 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
       function openSubmissionErrorModal(errMsg) {
         if (!submissionAlertModal) return;
+        lastAlertWasSuccess = false;
         if (submissionAlertBox) submissionAlertBox.classList.add('is-error');
         if (submissionAlertIcon) submissionAlertIcon.textContent = '✕';
         submissionAlertTitle.textContent = 'Submission Failed';
-        submissionAlertBadge.textContent = 'Registration Not Saved';
+        if (submissionAlertBadge) {
+          submissionAlertBadge.textContent = 'Registration Not Saved';
+          submissionAlertBadge.style.display = 'inline-block';
+        }
         submissionAlertMessage.textContent = errMsg || 'Unable to submit registration. Please try again.';
         submissionAlertModal.setAttribute('aria-hidden', 'false');
         submissionAlertModal.classList.add('active');
@@ -3362,10 +3622,56 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         }, 50);
       }
 
+      function resetRegistrationFormState() {
+        if (typeof form !== 'undefined' && form && form.reset) {
+          form.reset();
+        }
+        var selectedCards = document.querySelectorAll('.selected-yes, .selected-no');
+        for (var i = 0; i < selectedCards.length; i++) {
+          selectedCards[i].classList.remove('selected-yes', 'selected-no');
+        }
+        if (typeof phoneNormalizedBadge !== 'undefined' && phoneNormalizedBadge) {
+          phoneNormalizedBadge.style.display = 'none';
+        }
+        if (typeof whatsappInput !== 'undefined' && whatsappInput) {
+          whatsappInput.classList.remove('valid', 'invalid');
+        }
+        if (typeof globalError !== 'undefined' && globalError) {
+          globalError.textContent = '';
+          globalError.style.display = 'none';
+        }
+        if (typeof confirmationScreen !== 'undefined' && confirmationScreen) {
+          confirmationScreen.style.display = 'none';
+        }
+        if (typeof formContainer !== 'undefined' && formContainer) {
+          formContainer.style.display = 'block';
+        }
+      }
+
+      function navigateToHomePageTop() {
+        if (window.history && window.history.replaceState) {
+          try {
+            window.history.replaceState(null, '', window.location.pathname + window.location.search);
+          } catch (e) {}
+        } else if (window.location.hash) {
+          window.location.hash = '';
+        }
+        if (typeof showRegistrationSection === 'function') {
+          showRegistrationSection(false);
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
       function closeSubmissionAlertModal() {
         if (!submissionAlertModal) return;
+        var shouldRedirectHome = lastAlertWasSuccess;
+        lastAlertWasSuccess = false;
         submissionAlertModal.classList.remove('active');
         submissionAlertModal.setAttribute('aria-hidden', 'true');
+        if (shouldRedirectHome) {
+          resetRegistrationFormState();
+          navigateToHomePageTop();
+        }
       }
 
       if (submissionAlertOkBtn) {
@@ -3393,31 +3699,14 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<span>Submit Registration</span><span>✓</span>';
 
-        formContainer.style.display = 'none';
-        confirmationScreen.style.display = 'block';
-
-        regIdBadge.textContent = 'Registration ID: ' + (r.registrationId || 'Confirmed');
-        confirmationMessageText.textContent = r.confirmationMessage || EXACT_CONFIRMATION_MESSAGE;
-
-        showToast('✓ Registration Successful! Saved for ' + r.name);
-        openSubmissionAlertModal(r);
-
-        // Strictly generate & open WhatsApp ONLY for "പങ്കെടുക്കും", never for "സാധിക്കില്ല"
-        if (r.shouldSendWhatsApp && r.whatsAppClickToChatUrl) {
-          whatsappPanel.style.display = 'block';
-          nonPartNoticePanel.style.display = 'none';
-          waRecipientDisplay.textContent = r.formattedPhone + ' (' + r.name + ')';
-          whatsappPreviewBox.textContent = r.whatsAppMessage;
-          whatsappActionBtn.href = r.whatsAppClickToChatUrl;
-
-          try {
-            window.open(r.whatsAppClickToChatUrl, '_blank', 'noopener,noreferrer');
-          } catch (e) {}
-        } else {
-          whatsappPanel.style.display = 'none';
-          nonPartNoticePanel.style.display = 'block';
-          whatsappActionBtn.href = '#';
+        if (confirmationScreen) confirmationScreen.style.display = 'none';
+        if (formContainer) formContainer.style.display = 'block';
+        if (globalError) {
+          globalError.textContent = '';
+          globalError.style.display = 'none';
         }
+
+        openSubmissionAlertModal(r);
       }
 
       registerAnotherBtn.addEventListener('click', function() {
@@ -3454,8 +3743,12 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         document.getElementById('responsesTableBody').innerHTML = '';
         var editModalEl = document.getElementById('editRegistrationModal');
         var deleteModalEl = document.getElementById('deleteConfirmModal');
+        var viewModalEl = document.getElementById('viewRegistrationModal');
+        var sendMsgModalEl = document.getElementById('sendMessageModal');
         if (editModalEl) editModalEl.classList.remove('open');
         if (deleteModalEl) deleteModalEl.classList.remove('open');
+        if (viewModalEl) viewModalEl.classList.remove('open');
+        if (sendMsgModalEl) sendMsgModalEl.classList.remove('open');
       }
 
       function showLoginScreen(errorMsg) {
@@ -3785,8 +4078,10 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
           var actionsHtml =
             '<div class="actions-cell">' +
+              '<button type="button" class="action-btn action-view-btn" data-reg-id="' + escapeAttr(r.registrationId) + '" title="View Registration Details">👁️ View</button>' +
               '<button type="button" class="action-btn action-edit-btn" data-reg-id="' + escapeAttr(r.registrationId) + '" title="Edit Registration">✏️ Edit</button>' +
               '<button type="button" class="action-btn action-delete-btn" data-reg-id="' + escapeAttr(r.registrationId) + '" title="Delete Registration">🗑️ Delete</button>' +
+              '<button type="button" class="action-btn action-message-btn" data-reg-id="' + escapeAttr(r.registrationId) + '" title="Send WhatsApp Message">💬 Send Message</button>' +
             '</div>';
 
           tr.innerHTML =
@@ -3882,7 +4177,138 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         deleteModalError.style.display = 'none';
       }
 
+      var viewRegistrationModal = document.getElementById('viewRegistrationModal');
+      var viewModalRegIdBadge = document.getElementById('viewModalRegIdBadge');
+      var viewNameVal = document.getElementById('viewNameVal');
+      var viewPlaceVal = document.getElementById('viewPlaceVal');
+      var viewBatchVal = document.getElementById('viewBatchVal');
+      var viewPhoneVal = document.getElementById('viewPhoneVal');
+      var viewParticipationVal = document.getElementById('viewParticipationVal');
+      var viewTimestampVal = document.getElementById('viewTimestampVal');
+      var closeViewModalBtn = document.getElementById('closeViewModalBtn');
+      var viewToEditBtn = document.getElementById('viewToEditBtn');
+      var viewToSendMsgBtn = document.getElementById('viewToSendMsgBtn');
+      var activeViewRegId = '';
+
+      var sendMessageModal = document.getElementById('sendMessageModal');
+      var sendMsgRegIdBadge = document.getElementById('sendMsgRegIdBadge');
+      var msgRecipientName = document.getElementById('msgRecipientName');
+      var msgRecipientPhone = document.getElementById('msgRecipientPhone');
+      var sendMsgModalError = document.getElementById('sendMsgModalError');
+      var sendMessageForm = document.getElementById('sendMessageForm');
+      var useConclaveTemplateBtn = document.getElementById('useConclaveTemplateBtn');
+      var useReminderTemplateBtn = document.getElementById('useReminderTemplateBtn');
+      var clearCustomMsgBtn = document.getElementById('clearCustomMsgBtn');
+      var adminCustomMessageInput = document.getElementById('adminCustomMessageInput');
+      var cancelSendMsgBtn = document.getElementById('cancelSendMsgBtn');
+      var activeSendMsgRec = null;
+      var activeSendMsgWaPhone = '';
+
+      function formatPhoneForAdminWa(rec) {
+        var raw = (rec && (rec.whatsappNumber || rec.formattedPhone)) ? String(rec.whatsappNumber || rec.formattedPhone) : '';
+        var parsed = (typeof normalizeIndianPhone === 'function') ? normalizeIndianPhone(raw) : null;
+        if (parsed && parsed.isValid) {
+          return {
+            isValid: true,
+            waNumber: parsed.waNumber,
+            display: parsed.e164 || ('+' + parsed.waNumber)
+          };
+        }
+        var digits = raw.replace(/\D/g, '');
+        if (digits.length === 10) {
+          digits = '91' + digits;
+        } else if (digits.length === 11 && digits.charAt(0) === '0') {
+          digits = '91' + digits.slice(1);
+        }
+        if (digits.length >= 10 && digits.length <= 15) {
+          return {
+            isValid: true,
+            waNumber: digits,
+            display: '+' + digits
+          };
+        }
+        return {
+          isValid: false,
+          waNumber: '',
+          display: raw || 'Not provided'
+        };
+      }
+
+      function buildDefaultGreetingMessage(name) {
+        var cleanName = (name || 'Alumni').trim();
+        if (typeof buildMalayalamWhatsAppMessage === 'function') {
+          return buildMalayalamWhatsAppMessage(cleanName);
+        }
+        return 'Hello ' + cleanName + ',\n\nGreetings from Aufbruch – Alumni Conclave 2026!';
+      }
+
+      function buildReminderMessage(name) {
+        var cleanName = (name || 'Alumni').trim();
+        return 'Hello ' + cleanName + ',\n\nReminder: Aufbruch – Alumni Conclave 2026 is coming up soon! Please let us know if you need any event schedule or venue details.\n\nWarm regards,\nAufbruch Alumni Team';
+      }
+
+      function openViewModal(regId) {
+        var rec = findRegistrationById(regId);
+        if (!rec || !viewRegistrationModal) return;
+        activeViewRegId = rec.registrationId;
+        var phoneInfo = formatPhoneForAdminWa(rec);
+
+        viewModalRegIdBadge.textContent = 'ID: ' + rec.registrationId;
+        viewNameVal.textContent = rec.name || '-';
+        viewPlaceVal.textContent = rec.place || '-';
+        viewBatchVal.textContent = rec.batchYear || '-';
+        viewPhoneVal.textContent = phoneInfo.display || rec.formattedPhone || '-';
+        viewParticipationVal.textContent = rec.participation || '-';
+        viewTimestampVal.textContent = rec.timestamp || '-';
+        viewRegistrationModal.classList.add('open');
+      }
+
+      function closeViewModal() {
+        if (!viewRegistrationModal) return;
+        viewRegistrationModal.classList.remove('open');
+        activeViewRegId = '';
+      }
+
+      function openSendMessageModal(regId) {
+        var rec = findRegistrationById(regId);
+        if (!rec || !sendMessageModal) return;
+        activeSendMsgRec = rec;
+        var phoneInfo = formatPhoneForAdminWa(rec);
+        activeSendMsgWaPhone = phoneInfo.isValid ? phoneInfo.waNumber : '';
+
+        sendMsgRegIdBadge.textContent = 'ID: ' + rec.registrationId;
+        msgRecipientName.textContent = rec.name || 'Participant';
+        msgRecipientPhone.textContent = phoneInfo.display;
+
+        if (sendMsgModalError) {
+          sendMsgModalError.textContent = '';
+          sendMsgModalError.style.display = 'none';
+        }
+        adminCustomMessageInput.value = buildDefaultGreetingMessage(rec.name);
+        sendMessageModal.classList.add('open');
+        setTimeout(function() {
+          if (adminCustomMessageInput) {
+            adminCustomMessageInput.focus();
+            var len = adminCustomMessageInput.value.length;
+            adminCustomMessageInput.setSelectionRange(len, len);
+          }
+        }, 60);
+      }
+
+      function closeSendMessageModal() {
+        if (!sendMessageModal) return;
+        sendMessageModal.classList.remove('open');
+        if (sendMsgModalError) sendMsgModalError.style.display = 'none';
+        activeSendMsgRec = null;
+        activeSendMsgWaPhone = '';
+      }
+
       document.getElementById('responsesTableBody').addEventListener('click', function(e) {
+        var viewBtn = e.target.closest('.action-view-btn');
+        if (viewBtn) {
+          openViewModal(viewBtn.getAttribute('data-reg-id'));
+          return;
+        }
         var editBtn = e.target.closest('.action-edit-btn');
         if (editBtn) {
           openEditModal(editBtn.getAttribute('data-reg-id'));
@@ -3891,11 +4317,92 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         var deleteBtn = e.target.closest('.action-delete-btn');
         if (deleteBtn) {
           openDeleteModal(deleteBtn.getAttribute('data-reg-id'));
+          return;
+        }
+        var msgBtn = e.target.closest('.action-message-btn');
+        if (msgBtn) {
+          openSendMessageModal(msgBtn.getAttribute('data-reg-id'));
         }
       });
 
       cancelEditBtn.addEventListener('click', closeEditModal);
       cancelDeleteBtn.addEventListener('click', closeDeleteModal);
+      if (closeViewModalBtn) closeViewModalBtn.addEventListener('click', closeViewModal);
+      if (cancelSendMsgBtn) cancelSendMsgBtn.addEventListener('click', closeSendMessageModal);
+
+      if (viewToEditBtn) {
+        viewToEditBtn.addEventListener('click', function() {
+          var targetId = activeViewRegId;
+          closeViewModal();
+          if (targetId) openEditModal(targetId);
+        });
+      }
+
+      if (viewToSendMsgBtn) {
+        viewToSendMsgBtn.addEventListener('click', function() {
+          var targetId = activeViewRegId;
+          closeViewModal();
+          if (targetId) openSendMessageModal(targetId);
+        });
+      }
+
+      if (useConclaveTemplateBtn) {
+        useConclaveTemplateBtn.addEventListener('click', function() {
+          var name = activeSendMsgRec ? activeSendMsgRec.name : 'Alumni';
+          adminCustomMessageInput.value = buildDefaultGreetingMessage(name);
+          if (sendMsgModalError) sendMsgModalError.style.display = 'none';
+          adminCustomMessageInput.focus();
+        });
+      }
+
+      if (useReminderTemplateBtn) {
+        useReminderTemplateBtn.addEventListener('click', function() {
+          var name = activeSendMsgRec ? activeSendMsgRec.name : 'Alumni';
+          adminCustomMessageInput.value = buildReminderMessage(name);
+          if (sendMsgModalError) sendMsgModalError.style.display = 'none';
+          adminCustomMessageInput.focus();
+        });
+      }
+
+      if (clearCustomMsgBtn) {
+        clearCustomMsgBtn.addEventListener('click', function() {
+          adminCustomMessageInput.value = '';
+          if (sendMsgModalError) sendMsgModalError.style.display = 'none';
+          adminCustomMessageInput.focus();
+        });
+      }
+
+      if (sendMessageForm) {
+        sendMessageForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          if (!isAdminAuthenticated || !activeSendMsgRec) return;
+
+          if (sendMsgModalError) {
+            sendMsgModalError.textContent = '';
+            sendMsgModalError.style.display = 'none';
+          }
+
+          var msgText = (adminCustomMessageInput.value || '').trim();
+          if (!msgText) {
+            sendMsgModalError.textContent = 'Please type a message before opening WhatsApp.';
+            sendMsgModalError.style.display = 'block';
+            adminCustomMessageInput.focus();
+            return;
+          }
+
+          if (!activeSendMsgWaPhone) {
+            sendMsgModalError.textContent = 'This participant does not have a valid WhatsApp number.';
+            sendMsgModalError.style.display = 'block';
+            return;
+          }
+
+          var waUrl = 'https://wa.me/' + encodeURIComponent(activeSendMsgWaPhone) + '?text=' + encodeURIComponent(msgText);
+          var recipientLabel = activeSendMsgRec.name || 'participant';
+          window.open(waUrl, '_blank', 'noopener,noreferrer');
+          closeSendMessageModal();
+          showToast('WhatsApp opened for ' + recipientLabel);
+        });
+      }
 
       editRegistrationModal.addEventListener('click', function(e) {
         if (e.target === editRegistrationModal) closeEditModal();
@@ -3904,6 +4411,18 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       deleteConfirmModal.addEventListener('click', function(e) {
         if (e.target === deleteConfirmModal) closeDeleteModal();
       });
+
+      if (viewRegistrationModal) {
+        viewRegistrationModal.addEventListener('click', function(e) {
+          if (e.target === viewRegistrationModal) closeViewModal();
+        });
+      }
+
+      if (sendMessageModal) {
+        sendMessageModal.addEventListener('click', function(e) {
+          if (e.target === sendMessageModal) closeSendMessageModal();
+        });
+      }
 
       editRegistrationForm.addEventListener('submit', function(e) {
         e.preventDefault();
