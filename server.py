@@ -370,6 +370,12 @@ def enrich_registration(rec: dict) -> dict:
 
     place_str = str(rec.get("place", "")).strip().title()
     raw_id = str(rec.get("registrationId") or "001").replace("AUF-2026-0", "").replace("AUF-2026-", "")
+    wa_sent = bool(rec.get("whatsappSent", False))
+    wa_sent_at = str(rec.get("whatsappSentAt") or "").strip() if wa_sent else ""
+    try:
+        wa_sent_count = int(rec.get("whatsappSentCount") or (1 if wa_sent else 0)) if wa_sent else 0
+    except (ValueError, TypeError):
+        wa_sent_count = 1 if wa_sent else 0
     return {
         "registrationId": raw_id,
         "timestamp": rec.get("timestamp") or datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -383,6 +389,9 @@ def enrich_registration(rec: dict) -> dict:
         "shouldSendWhatsApp": should_send,
         "whatsAppMessage": msg,
         "whatsAppClickToChatUrl": wa_url,
+        "whatsappSent": wa_sent,
+        "whatsappSentAt": wa_sent_at,
+        "whatsappSentCount": wa_sent_count,
     }
 
 
@@ -940,7 +949,8 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                 self._send_json(404, {"success": False, "error": f"Registration '{reg_id}' not found."})
                 return
 
-            existing_ts = records[found_index].get("timestamp") or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            existing_rec = records[found_index]
+            existing_ts = existing_rec.get("timestamp") or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             updated_rec = enrich_registration(
                 {
                     "registrationId": reg_id,
@@ -950,6 +960,9 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                     "batchYear": batch_year,
                     "whatsappNumber": whatsapp_number,
                     "participation": participation,
+                    "whatsappSent": existing_rec.get("whatsappSent", False),
+                    "whatsappSentAt": existing_rec.get("whatsappSentAt", ""),
+                    "whatsappSentCount": existing_rec.get("whatsappSentCount", 0),
                 }
             )
             records[found_index] = updated_rec
@@ -958,6 +971,56 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
             payload = build_dashboard_payload()
             payload["updatedRecord"] = updated_rec
             payload["message"] = f"Registration #{reg_id} updated successfully."
+            self._send_json(200, payload)
+            return
+
+        # 4B. Protected Admin Update WhatsApp Message Sent Status Route
+        if route == "/api/admin/whatsapp-status":
+            sess = get_valid_session(self)
+            if not sess:
+                self._send_json(
+                    401,
+                    {
+                        "success": False,
+                        "error": "Unauthorized access. Valid administrator session required.",
+                    },
+                )
+                return
+
+            reg_id = str(body.get("registrationId", "")).strip()
+            if not reg_id:
+                self._send_json(400, {"success": False, "error": "Registration ID is required."})
+                return
+
+            wa_sent = bool(body.get("whatsappSent", True))
+            records = load_db()
+            found_index = -1
+            for idx, r in enumerate(records):
+                if str(r.get("registrationId", "")).strip() == reg_id:
+                    found_index = idx
+                    break
+
+            if found_index == -1:
+                self._send_json(404, {"success": False, "error": f"Registration '{reg_id}' not found."})
+                return
+
+            existing_rec = dict(records[found_index])
+            prev_count = int(existing_rec.get("whatsappSentCount") or 0)
+            existing_rec["whatsappSent"] = wa_sent
+            if wa_sent:
+                existing_rec["whatsappSentAt"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                existing_rec["whatsappSentCount"] = prev_count + 1
+            else:
+                existing_rec["whatsappSentAt"] = ""
+                existing_rec["whatsappSentCount"] = 0
+
+            updated_rec = enrich_registration(existing_rec)
+            records[found_index] = updated_rec
+            save_db(records)
+
+            payload = build_dashboard_payload()
+            payload["updatedRecord"] = updated_rec
+            payload["message"] = f"WhatsApp message status saved for registration #{reg_id}."
             self._send_json(200, payload)
             return
 

@@ -1506,14 +1506,14 @@
       font-weight: 700;
       font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      padding: 13px 12px;
+      letter-spacing: 0.4px;
+      padding: 12px 10px;
       border-bottom: 1px solid rgba(212, 175, 55, 0.25);
       white-space: nowrap;
     }
 
     .resp-table td {
-      padding: 13px 12px;
+      padding: 12px 10px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.07);
       color: #E2E8F0;
       vertical-align: middle;
@@ -1580,17 +1580,17 @@
     .actions-cell {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       white-space: nowrap;
     }
 
     .action-btn {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      font-size: 12px;
+      gap: 4px;
+      font-size: 11.5px;
       font-weight: 700;
-      padding: 6px 12px;
+      padding: 6px 10px;
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.15s ease;
@@ -1637,12 +1637,59 @@
       background: rgba(37, 211, 102, 0.16);
       border: 1px solid rgba(37, 211, 102, 0.45);
       color: #6EE7B7;
+      opacity: 1;
     }
 
     .action-message-btn:hover {
       background: rgba(37, 211, 102, 0.28);
       border-color: #25D366;
       color: #FFFFFF;
+    }
+
+    .action-message-btn.wa-sent {
+      opacity: 0.45;
+    }
+
+    .action-message-btn.wa-sent:hover {
+      opacity: 0.48;
+      background: rgba(37, 211, 102, 0.24);
+      border-color: #25D366;
+      color: #FFFFFF;
+    }
+
+    .wa-delivery-confirm-box {
+      display: none;
+      margin-top: 16px;
+      padding: 14px 16px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1.5px solid rgba(37, 211, 102, 0.48);
+      border-radius: 12px;
+    }
+
+    .wa-delivery-confirm-box.active {
+      display: block;
+    }
+
+    .wa-delivery-confirm-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #6EE7B7;
+      margin-bottom: 5px;
+    }
+
+    .wa-delivery-confirm-desc {
+      font-size: 12.5px;
+      color: #CBD5E1;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .wa-delivery-confirm-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     /* Admin Edit & Delete Confirmation Modals */
@@ -2883,7 +2930,6 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
                   <th>Batch Year</th>
                   <th>WhatsApp (+91)</th>
                   <th>അലുംനി സംഗമത്തിൽ പങ്കെടുക്കുമോ...?</th>
-                  <th>WhatsApp Confirmation Action</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -3061,7 +3107,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
                 <div id="msgRecipientName" class="msg-recipient-name">Participant Name</div>
                 <div id="msgRecipientPhone" class="msg-recipient-phone">+91 00000 00000</div>
               </div>
-              <span style="font-size: 11.5px; font-weight: 700; color: #6EE7B7; background: rgba(16, 185, 129, 0.16); padding: 4px 10px; border-radius: 999px;">
+              <span id="sendMsgStatusBadge" style="font-size: 11.5px; font-weight: 700; color: #6EE7B7; background: rgba(16, 185, 129, 0.16); padding: 4px 10px; border-radius: 999px;">
                 WhatsApp Click-to-Chat
               </span>
             </div>
@@ -3087,7 +3133,22 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
                 </p>
               </div>
 
-              <div class="admin-modal-actions">
+              <div id="waDeliveryConfirmBox" class="wa-delivery-confirm-box" role="region" aria-label="Confirm WhatsApp message delivery">
+                <div class="wa-delivery-confirm-title">📲 WhatsApp Opened — Confirm Message Sent?</div>
+                <div class="wa-delivery-confirm-desc">
+                  Mark this participant as sent only after you have confirmed sending the message in WhatsApp.
+                </div>
+                <div class="wa-delivery-confirm-actions">
+                  <button type="button" id="cancelWaDeliveredBtn" class="modal-btn modal-btn-cancel">
+                    Not Sent Yet
+                  </button>
+                  <button type="button" id="confirmWaDeliveredBtn" class="modal-btn modal-btn-whatsapp">
+                    ✓ Confirm Sent
+                  </button>
+                </div>
+              </div>
+
+              <div id="sendMessageModalFooter" class="admin-modal-actions">
                 <button type="button" id="cancelSendMsgBtn" class="modal-btn modal-btn-cancel">
                   Cancel
                 </button>
@@ -3158,6 +3219,42 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       function safeStorageRemove(key) {
         try {
           if (window.sessionStorage) window.sessionStorage.removeItem(key);
+        } catch (e) {}
+      }
+
+      var WA_SENT_STORAGE_KEY = 'AUFBRUCH_WA_SENT_STATUS_MAP';
+
+      function getLocalWaSentMap() {
+        try {
+          if (!window.localStorage) return {};
+          var raw = window.localStorage.getItem(WA_SENT_STORAGE_KEY);
+          if (!raw) return {};
+          var parsed = JSON.parse(raw);
+          return (parsed && typeof parsed === 'object') ? parsed : {};
+        } catch (e) {
+          return {};
+        }
+      }
+
+      function isLocalWaSent(regId) {
+        var key = String(regId || '').trim();
+        if (!key) return false;
+        var map = getLocalWaSentMap();
+        return Boolean(map[key]);
+      }
+
+      function setLocalWaSent(regId, isSent) {
+        var key = String(regId || '').trim();
+        if (!key) return;
+        try {
+          if (!window.localStorage) return;
+          var map = getLocalWaSentMap();
+          if (isSent) {
+            map[key] = true;
+          } else {
+            delete map[key];
+          }
+          window.localStorage.setItem(WA_SENT_STORAGE_KEY, JSON.stringify(map));
         } catch (e) {}
       }
 
@@ -3336,7 +3433,8 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             '/api/admin/session': 'adminSession',
             '/api/admin/dashboard': 'dashboard',
             '/api/admin/update': 'adminUpdate',
-            '/api/admin/delete': 'adminDelete'
+            '/api/admin/delete': 'adminDelete',
+            '/api/admin/whatsapp-status': 'adminWhatsappStatus'
           };
           var gasBody = {};
           if (fetchOpts.body && typeof fetchOpts.body === 'string') {
@@ -3967,8 +4065,13 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         var r = (item && typeof item === 'object') ? item : {};
         var fallbackId = String(index + 1);
         while (fallbackId.length < 3) fallbackId = '0' + fallbackId;
+        var regId = safeDisplayText(r.registrationId, fallbackId);
+        var backendSent = Boolean(r.whatsappSent);
+        if (backendSent) {
+          setLocalWaSent(regId, true);
+        }
         return {
-          registrationId: safeDisplayText(r.registrationId, fallbackId),
+          registrationId: regId,
           timestamp: safeDisplayText(r.timestamp, '-'),
           name: safeDisplayText(r.name, '-'),
           place: safeDisplayText(r.place, '-'),
@@ -3979,7 +4082,10 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           participation: safeDisplayText(r.participation, '-'),
           shouldSendWhatsApp: Boolean(r.shouldSendWhatsApp),
           whatsAppMessage: safeDisplayText(r.whatsAppMessage, ''),
-          whatsAppClickToChatUrl: safeDisplayText(r.whatsAppClickToChatUrl, '')
+          whatsAppClickToChatUrl: safeDisplayText(r.whatsAppClickToChatUrl, ''),
+          whatsappSent: Boolean(backendSent || isLocalWaSent(regId)),
+          whatsappSentAt: safeDisplayText(r.whatsappSentAt, ''),
+          whatsappSentCount: Number(r.whatsappSentCount || 0)
         };
       }
 
@@ -4310,7 +4416,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         if (filtered.length === 0) {
           var emptyTr = document.createElement('tr');
           emptyTr.innerHTML =
-            '<td colspan="9" style="text-align: center; padding: 28px; color: #94A3B8;">' +
+            '<td colspan="8" style="text-align: center; padding: 28px; color: #94A3B8;">' +
               'No registration responses match your current filter.' +
             '</td>';
           tbody.appendChild(emptyTr);
@@ -4324,16 +4430,18 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             ? '<span class="badge-yes">✓ പങ്കെടുക്കും</span>'
             : '<span class="badge-no">✕ സാധിക്കില്ല</span>';
 
-          var waActionHtml = (r.shouldSendWhatsApp && r.whatsAppClickToChatUrl)
-            ? '<a href="' + escapeAttr(r.whatsAppClickToChatUrl) + '" target="_blank" rel="noopener noreferrer" class="table-wa-btn">📲 Send WhatsApp to ' + escapeHtml(r.name) + '</a>'
-            : '<span class="table-wa-disabled">🚫 No WhatsApp Sent (സാധിക്കില്ല)</span>';
+          var isWaSent = Boolean(r.whatsappSent);
+          var msgBtnClass = 'action-btn action-message-btn' + (isWaSent ? ' wa-sent' : '');
+          var msgBtnTitle = isWaSent
+            ? 'WhatsApp Message Sent — Click to send reminder'
+            : 'Send WhatsApp Message';
 
           var actionsHtml =
             '<div class="actions-cell">' +
               '<button type="button" class="action-btn action-view-btn" data-reg-id="' + escapeAttr(r.registrationId) + '" title="View Registration Details">👁️ View</button>' +
               '<button type="button" class="action-btn action-edit-btn" data-reg-id="' + escapeAttr(r.registrationId) + '" title="Edit Registration">✏️ Edit</button>' +
               '<button type="button" class="action-btn action-delete-btn" data-reg-id="' + escapeAttr(r.registrationId) + '" title="Delete Registration">🗑️ Delete</button>' +
-              '<button type="button" class="action-btn action-message-btn" data-reg-id="' + escapeAttr(r.registrationId) + '" title="Send WhatsApp Message">💬 Send Message</button>' +
+              '<button type="button" class="' + msgBtnClass + '" data-reg-id="' + escapeAttr(r.registrationId) + '" data-wa-sent="' + (isWaSent ? 'true' : 'false') + '" title="' + escapeAttr(msgBtnTitle) + '">💬 Send Message</button>' +
             '</div>';
 
           tr.innerHTML =
@@ -4344,7 +4452,6 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             '<td style="font-weight: 600;">' + escapeHtml(r.batchYear) + '</td>' +
             '<td style="white-space: nowrap; font-weight: 600; font-size: 13px;">' + escapeHtml(r.formattedPhone) + '</td>' +
             '<td>' + badgeHtml + '</td>' +
-            '<td>' + waActionHtml + '</td>' +
             '<td>' + actionsHtml + '</td>';
           tbody.appendChild(tr);
         });
@@ -4446,6 +4553,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       var sendMsgRegIdBadge = document.getElementById('sendMsgRegIdBadge');
       var msgRecipientName = document.getElementById('msgRecipientName');
       var msgRecipientPhone = document.getElementById('msgRecipientPhone');
+      var sendMsgStatusBadge = document.getElementById('sendMsgStatusBadge');
       var sendMsgModalError = document.getElementById('sendMsgModalError');
       var sendMessageForm = document.getElementById('sendMessageForm');
       var useConclaveTemplateBtn = document.getElementById('useConclaveTemplateBtn');
@@ -4453,6 +4561,9 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       var clearCustomMsgBtn = document.getElementById('clearCustomMsgBtn');
       var adminCustomMessageInput = document.getElementById('adminCustomMessageInput');
       var cancelSendMsgBtn = document.getElementById('cancelSendMsgBtn');
+      var waDeliveryConfirmBox = document.getElementById('waDeliveryConfirmBox');
+      var confirmWaDeliveredBtn = document.getElementById('confirmWaDeliveredBtn');
+      var cancelWaDeliveredBtn = document.getElementById('cancelWaDeliveredBtn');
       var activeSendMsgRec = null;
       var activeSendMsgWaPhone = '';
 
@@ -4531,6 +4642,12 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         sendMsgRegIdBadge.textContent = 'ID: ' + rec.registrationId;
         msgRecipientName.textContent = rec.name || 'Participant';
         msgRecipientPhone.textContent = phoneInfo.display;
+        if (sendMsgStatusBadge) {
+          sendMsgStatusBadge.textContent = rec.whatsappSent ? '✓ Message Sent' : 'WhatsApp Click-to-Chat';
+        }
+        if (waDeliveryConfirmBox) {
+          waDeliveryConfirmBox.classList.remove('active');
+        }
 
         if (sendMsgModalError) {
           sendMsgModalError.textContent = '';
@@ -4551,8 +4668,82 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         if (!sendMessageModal) return;
         sendMessageModal.classList.remove('open');
         if (sendMsgModalError) sendMsgModalError.style.display = 'none';
+        if (waDeliveryConfirmBox) waDeliveryConfirmBox.classList.remove('active');
         activeSendMsgRec = null;
         activeSendMsgWaPhone = '';
+      }
+
+      function persistWhatsAppSentStatus(regId, recipientLabel) {
+        var targetId = String(regId || '').trim();
+        if (!targetId) return;
+
+        setLocalWaSent(targetId, true);
+        var localRec = findRegistrationById(targetId);
+        if (localRec) {
+          localRec.whatsappSent = true;
+          localRec.whatsappSentCount = Number(localRec.whatsappSentCount || 0) + 1;
+        }
+        renderResponsesTable();
+
+        // 1. Google Apps Script Backend Mode
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          if (confirmWaDeliveredBtn) {
+            confirmWaDeliveredBtn.disabled = true;
+            confirmWaDeliveredBtn.textContent = 'Saving...';
+          }
+          google.script.run
+            .withSuccessHandler(function(data) {
+              if (confirmWaDeliveredBtn) {
+                confirmWaDeliveredBtn.disabled = false;
+                confirmWaDeliveredBtn.textContent = '✓ Confirm Sent';
+              }
+              closeSendMessageModal();
+              if (data && data.success) {
+                showAuthenticatedDashboard(data);
+              }
+              showToast('✓ WhatsApp message marked as sent for ' + (recipientLabel || ('#' + targetId)) + '.');
+            })
+            .withFailureHandler(function() {
+              if (confirmWaDeliveredBtn) {
+                confirmWaDeliveredBtn.disabled = false;
+                confirmWaDeliveredBtn.textContent = '✓ Confirm Sent';
+              }
+              closeSendMessageModal();
+              showToast('✓ WhatsApp message marked as sent for ' + (recipientLabel || ('#' + targetId)) + '.');
+            })
+            .updateWhatsAppStatusFromAdmin(adminSessionToken, targetId, true);
+          return;
+        }
+
+        // 2. Backend HTTP Server Mode (/api/admin/whatsapp-status)
+        if (confirmWaDeliveredBtn) {
+          confirmWaDeliveredBtn.disabled = true;
+          confirmWaDeliveredBtn.textContent = 'Saving...';
+        }
+        apiFetchJson('/api/admin/whatsapp-status', {
+          method: 'POST',
+          headers: getAuthHeaders(true),
+          body: JSON.stringify({ registrationId: targetId, whatsappSent: true })
+        })
+          .then(function(result) {
+            if (confirmWaDeliveredBtn) {
+              confirmWaDeliveredBtn.disabled = false;
+              confirmWaDeliveredBtn.textContent = '✓ Confirm Sent';
+            }
+            if (result.status === 200 && result.data && result.data.success) {
+              showAuthenticatedDashboard(result.data);
+            }
+            closeSendMessageModal();
+            showToast('✓ WhatsApp message marked as sent for ' + (recipientLabel || ('#' + targetId)) + '.');
+          })
+          .catch(function() {
+            if (confirmWaDeliveredBtn) {
+              confirmWaDeliveredBtn.disabled = false;
+              confirmWaDeliveredBtn.textContent = '✓ Confirm Sent';
+            }
+            closeSendMessageModal();
+            showToast('✓ WhatsApp message marked as sent for ' + (recipientLabel || ('#' + targetId)) + '.');
+          });
       }
 
       document.getElementById('responsesTableBody').addEventListener('click', function(e) {
@@ -4651,8 +4842,24 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           var waUrl = 'https://wa.me/' + encodeURIComponent(activeSendMsgWaPhone) + '?text=' + encodeURIComponent(msgText);
           var recipientLabel = activeSendMsgRec.name || 'participant';
           window.open(waUrl, '_blank', 'noopener,noreferrer');
+          if (waDeliveryConfirmBox) {
+            waDeliveryConfirmBox.classList.add('active');
+            if (confirmWaDeliveredBtn) confirmWaDeliveredBtn.focus();
+          }
+          showToast('📲 WhatsApp opened for ' + recipientLabel + '. Confirm in the dialog once sent.');
+        });
+      }
+
+      if (confirmWaDeliveredBtn) {
+        confirmWaDeliveredBtn.addEventListener('click', function() {
+          if (!isAdminAuthenticated || !activeSendMsgRec) return;
+          persistWhatsAppSentStatus(activeSendMsgRec.registrationId, activeSendMsgRec.name || 'participant');
+        });
+      }
+
+      if (cancelWaDeliveredBtn) {
+        cancelWaDeliveredBtn.addEventListener('click', function() {
           closeSendMessageModal();
-          showToast('WhatsApp opened for ' + recipientLabel);
         });
       }
 
@@ -4906,7 +5113,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             r.formattedPhone,
             r.participation,
             r.whatsAppClickToChatUrl || 'N/A (Selected സാധിക്കില്ല)',
-            r.shouldSendWhatsApp ? 'Click-to-Chat Link Ready' : 'Skipped – Not Participating (സാധിക്കില്ല)'
+            r.whatsappSent ? 'Sent (Confirmed)' : (r.shouldSendWhatsApp ? 'Click-to-Chat Link Ready' : 'Skipped – Not Participating (സാധിക്കില്ല)')
           ].map(function(cell) {
             return '"' + String(cell || '').replace(/"/g, '""') + '"';
           });

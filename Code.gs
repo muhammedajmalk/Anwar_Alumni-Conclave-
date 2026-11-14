@@ -1344,6 +1344,12 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
+    if (action === 'adminWhatsappStatus') {
+      var waStatRes = updateWhatsAppStatusFromAdmin(body.sessionToken, body.registrationId, body.whatsappSent);
+      return ContentService.createTextOutput(JSON.stringify(waStatRes))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
     var result = submitRegistrationFromWebApp(body);
     return ContentService.createTextOutput(JSON.stringify(result))
       .setMimeType(ContentService.MimeType.JSON);
@@ -1435,6 +1441,9 @@ function getDashboardDataFromWebApp(sessionToken) {
       placeMap[pKey].total++;
       if (isYes) placeMap[pKey].yes++; else placeMap[pKey].no++;
 
+      var rawWaStatus = String(r[11] || (waData.shouldSend ? 'Click-to-Chat Ready' : 'Skipped (സാധിക്കില്ല)'));
+      var isWaSent = /^sent\b/i.test(rawWaStatus.trim()) || rawWaStatus.indexOf('Confirmed Sent') !== -1;
+
       registrations.push({
         registrationId: regId,
         timestamp: ts,
@@ -1448,7 +1457,8 @@ function getDashboardDataFromWebApp(sessionToken) {
         shouldSendWhatsApp: waData.shouldSend,
         whatsAppMessage: waData.message,
         whatsAppClickToChatUrl: waData.clickToChatUrl,
-        whatsappStatus: String(r[11] || (waData.shouldSend ? 'Click-to-Chat Ready' : 'Skipped (സാധിക്കില്ല)'))
+        whatsappStatus: rawWaStatus,
+        whatsappSent: isWaSent
       });
     }
   }
@@ -1610,6 +1620,60 @@ function deleteRegistrationFromAdmin(sessionToken, registrationId) {
     sheet.deleteRow(targetRow);
     updateDashboardTablesAndCharts(ss);
     logSystemEvent(ss, 'ADMIN_DELETE_REGISTRATION', 'SUCCESS', 'Deleted registration #' + targetRegId, JSON.stringify({ deletedId: targetRegId }));
+
+    return getDashboardDataFromWebApp(sessionToken);
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/**
+ * Updates the WhatsApp confirmation message status for a registration row
+ * in Google Sheets (Form Responses 1, Column L).
+ */
+function updateWhatsAppStatusFromAdmin(sessionToken, registrationId, whatsappSent) {
+  if (!isValidAdminSessionToken(sessionToken)) {
+    throw new Error('Unauthorized access. Valid administrator session required.');
+  }
+
+  var targetRegId = String(registrationId || '').trim();
+  if (!targetRegId) {
+    throw new Error('Registration ID is required.');
+  }
+
+  var props = PropertiesService.getScriptProperties();
+  var sheetId = props.getProperty('SPREADSHEET_ID');
+  if (!sheetId) {
+    throw new Error('Google Spreadsheet not initialized yet.');
+  }
+
+  var lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    var ss = SpreadsheetApp.openById(sheetId);
+    var sheet = initializeResponsesSheet(ss);
+    var lastRow = sheet.getLastRow();
+    var targetRow = -1;
+
+    if (lastRow >= 2) {
+      var regIds = sheet.getRange(2, 7, lastRow - 1, 1).getValues();
+      for (var i = 0; i < regIds.length; i++) {
+        var rowRegId = String(regIds[i][0] || ('000' + (i + 1)).slice(-3)).trim();
+        if (rowRegId === targetRegId) {
+          targetRow = i + 2;
+          break;
+        }
+      }
+    }
+
+    if (targetRow === -1) {
+      throw new Error('Registration #' + targetRegId + ' not found in Google Sheets.');
+    }
+
+    var isSent = (whatsappSent !== false);
+    var statusText = isSent ? 'Sent (Confirmed by Admin)' : 'Click-to-Chat Ready';
+    sheet.getRange(targetRow, 12).setValue(statusText);
+    logSystemEvent(ss, 'ADMIN_WHATSAPP_STATUS', 'SUCCESS', 'Updated WhatsApp status for #' + targetRegId + ': ' + statusText, JSON.stringify({ registrationId: targetRegId, whatsappSent: isSent }));
 
     return getDashboardDataFromWebApp(sessionToken);
   } finally {

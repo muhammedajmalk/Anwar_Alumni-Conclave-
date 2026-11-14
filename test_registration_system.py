@@ -240,10 +240,18 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertIn('id="sendMessageModal"', index_html)
         self.assertIn('id="adminCustomMessageInput"', index_html)
         self.assertIn('id="confirmSendWaBtn"', index_html)
+        self.assertIn('id="waDeliveryConfirmBox"', index_html)
+        self.assertIn('id="confirmWaDeliveredBtn"', index_html)
+        self.assertIn('id="cancelWaDeliveredBtn"', index_html)
         self.assertIn("action-view-btn", index_html)
         self.assertIn("action-edit-btn", index_html)
         self.assertIn("action-delete-btn", index_html)
         self.assertIn("action-message-btn", index_html)
+        self.assertIn(".action-message-btn.wa-sent", index_html)
+        self.assertIn("opacity: 0.45", index_html)
+        self.assertIn("/api/admin/whatsapp-status", index_html)
+        self.assertNotIn("Send WhatsApp to ", index_html)
+        self.assertNotIn("<th>WhatsApp Confirmation Action</th>", index_html)
 
         # 9. Verify Object/JSON Display Guards, Session Endpoint Integration, Routing & Deployment Files
         self.assertIn("extractReadableMessage", index_html)
@@ -295,6 +303,13 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
             {"registrationId": "001"},
         )
         self.assertEqual(status_del_unauth, 401)
+
+        status_wa_unauth, _, _ = http_json_request(
+            "/api/admin/whatsapp-status",
+            "POST",
+            {"registrationId": "001", "whatsappSent": True},
+        )
+        self.assertEqual(status_wa_unauth, 401)
 
         # 2. Invalid login attempt must be rejected with 401
         status, body, _ = http_json_request(
@@ -388,7 +403,31 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertIn("application/json", method_headers.get("Content-Type", ""))
         self.assertFalse(method_res.get("success", True))
 
-        # 5A. Edit the registration via /api/admin/update
+        # 5A. Verify initial whatsappSent is False, then mark as sent via /api/admin/whatsapp-status
+        self.assertFalse(reg_res["data"].get("whatsappSent", True))
+        wa_status, wa_body, _ = http_json_request(
+            "/api/admin/whatsapp-status",
+            "POST",
+            {"registrationId": created_id, "whatsappSent": True},
+            headers=auth_headers,
+        )
+        self.assertEqual(wa_status, 200)
+        self.assertTrue(wa_body.get("success"))
+        self.assertTrue(wa_body["updatedRecord"]["whatsappSent"])
+        self.assertEqual(wa_body["updatedRecord"]["whatsappSentCount"], 1)
+
+        # Reminder send increments count while keeping whatsappSent True
+        wa_status2, wa_body2, _ = http_json_request(
+            "/api/admin/whatsapp-status",
+            "POST",
+            {"registrationId": created_id, "whatsappSent": True},
+            headers=auth_headers,
+        )
+        self.assertEqual(wa_status2, 200)
+        self.assertTrue(wa_body2["updatedRecord"]["whatsappSent"])
+        self.assertEqual(wa_body2["updatedRecord"]["whatsappSentCount"], 2)
+
+        # 5B. Edit the registration via /api/admin/update and confirm whatsappSent is preserved
         upd_status, upd_body, _ = http_json_request(
             "/api/admin/update",
             "POST",
@@ -409,8 +448,10 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertEqual(upd_body["updatedRecord"]["batchYear"], "2021")
         self.assertEqual(upd_body["updatedRecord"]["participation"], "സാധിക്കില്ല")
         self.assertFalse(upd_body["updatedRecord"]["shouldSendWhatsApp"])
+        self.assertTrue(upd_body["updatedRecord"]["whatsappSent"])
+        self.assertEqual(upd_body["updatedRecord"]["whatsappSentCount"], 2)
 
-        # 5B. Delete the registration via /api/admin/delete
+        # 5C. Delete the registration via /api/admin/delete
         del_status, del_body, _ = http_json_request(
             "/api/admin/delete",
             "POST",
