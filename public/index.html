@@ -3020,7 +3020,7 @@
             <div id="editNameBox" class="edit-name-box">
               <div id="originalExcelNameBadge" class="orig-excel-pill">Original Excel Record: Not selected</div>
               <label class="field-label" for="nameInput" style="font-size: 13px; margin-bottom: 5px;">
-                <span>Corrected / Full Name <span class="req">*</span></span>
+                <span>Corrected / Full Name ( In English Only) <span class="req">*</span></span>
               </label>
               <input
                 type="text"
@@ -4525,9 +4525,8 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         studentSelect.disabled = false;
         if (studentSearchInput) studentSearchInput.disabled = false;
 
-        var offTot = officialBatchTotalsMap[cleanBatch] || batchStudents.length;
         if (batchStudentCountHint) {
-          batchStudentCountHint.textContent = 'Batch ' + cleanBatch + ': ' + batchStudents.length + ' student names in Excel list (Official Batch Total: ' + (offTot < 10 ? '0' + offTot : offTot) + ')';
+          batchStudentCountHint.textContent = '';
         }
 
         var placeholderOpt = document.createElement('option');
