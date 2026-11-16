@@ -4518,12 +4518,13 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
               <span id="ticketPassHeaderId" class="event-pass-id-chip">ANWAR 001</span>
             </div>
             <div class="event-pass-brand-row">
-              <div class="event-pass-artwork-frame">
-                <img
-                  src="/aufbruch_poster.png"
-                  alt="Aufbruch Alumni Conclave 2026 Crest"
-                  class="event-pass-artwork-img"
-                />
+              <div class="event-pass-artwork-frame" style="background: linear-gradient(145deg, #091930 0%, #132C52 100%); display: flex; align-items: center; justify-content: center;">
+                <svg viewBox="0 0 64 64" width="54" height="54" role="img" aria-label="Aufbruch 2026 Crest">
+                  <circle cx="32" cy="32" r="28" fill="none" stroke="#D4AF37" stroke-width="2" />
+                  <circle cx="32" cy="32" r="23" fill="none" stroke="rgba(243,208,102,0.45)" stroke-width="1" stroke-dasharray="2.5 2.5" />
+                  <text x="32" y="34" text-anchor="middle" fill="#F3D066" font-family="Cinzel, Georgia, serif" font-weight="800" font-size="24">A</text>
+                  <text x="32" y="48" text-anchor="middle" fill="#E2E8F0" font-family="Sora, sans-serif" font-weight="800" font-size="8" letter-spacing="1.4">2026</text>
+                </svg>
               </div>
               <div>
                 <div class="event-pass-org">Majmau Ssaqafathil Islamiyya – Da'wa College Alumni</div>
@@ -5876,8 +5877,13 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
                 '<span class="event-pass-id-chip">' + escapeHtml(tId) + '</span>' +
               '</div>' +
               '<div class="event-pass-brand-row">' +
-                '<div class="event-pass-artwork-frame">' +
-                  '<img src="/aufbruch_poster.png" alt="Aufbruch Alumni Conclave 2026 Crest" class="event-pass-artwork-img" />' +
+                '<div class="event-pass-artwork-frame" style="background: linear-gradient(145deg, #091930 0%, #132C52 100%); display: flex; align-items: center; justify-content: center;">' +
+                  '<svg viewBox="0 0 64 64" width="54" height="54" role="img" aria-label="Aufbruch 2026 Crest">' +
+                    '<circle cx="32" cy="32" r="28" fill="none" stroke="#D4AF37" stroke-width="2" />' +
+                    '<circle cx="32" cy="32" r="23" fill="none" stroke="rgba(243,208,102,0.45)" stroke-width="1" stroke-dasharray="2.5 2.5" />' +
+                    '<text x="32" y="34" text-anchor="middle" fill="#F3D066" font-family="Cinzel, Georgia, serif" font-weight="800" font-size="24">A</text>' +
+                    '<text x="32" y="48" text-anchor="middle" fill="#E2E8F0" font-family="Sora, sans-serif" font-weight="800" font-size="8" letter-spacing="1.4">2026</text>' +
+                  '</svg>' +
                 '</div>' +
                 '<div>' +
                   '<div class="event-pass-org">Majmau Ssaqafathil Islamiyya – Da\'wa College Alumni</div>' +
@@ -6022,28 +6028,49 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         ctx.textAlign = 'center';
         ctx.fillText(tId, chipX + chipW / 2, cardY + 78);
 
-        // Poster Crest Frame + Brand Copy
+        // Gold Monogram Crest Seal + Brand Copy
         var artX = cardX + 46;
         var artY = cardY + 132;
         var artSize = 230;
+        var cxSeal = artX + artSize / 2;
+        var cySeal = artY + artSize / 2;
         ctx.save();
-        drawRoundedRectPath(ctx, artX, artY, artSize, artSize, 28);
+        drawRoundedRectPath(ctx, artX, artY, artSize, artSize, 32);
+        var sealGrad = ctx.createLinearGradient(artX, artY, artX + artSize, artY + artSize);
+        sealGrad.addColorStop(0, '#091930');
+        sealGrad.addColorStop(1, '#132C52');
+        ctx.fillStyle = sealGrad;
+        ctx.fill();
         ctx.clip();
-        if (posterImg && posterImg.complete && posterImg.naturalWidth > 0) {
-          ctx.drawImage(posterImg, artX, artY, artSize, artSize);
-        } else {
-          ctx.fillStyle = '#4A0E17';
-          ctx.fillRect(artX, artY, artSize, artSize);
-          ctx.fillStyle = '#F3D066';
-          ctx.textAlign = 'center';
-          ctx.font = '800 32px Sora, sans-serif';
-          ctx.fillText('AUFBRUCH', artX + artSize / 2, artY + 125);
-        }
+
+        ctx.strokeStyle = '#D4AF37';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(cxSeal, cySeal, 84, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.save();
+        ctx.setLineDash([6, 6]);
+        ctx.strokeStyle = 'rgba(243, 208, 102, 0.55)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(cxSeal, cySeal, 68, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.fillStyle = '#F3D066';
+        ctx.textAlign = 'center';
+        ctx.font = '800 84px Cinzel, Georgia, serif';
+        ctx.fillText('A', cxSeal, cySeal + 14);
+
+        ctx.fillStyle = '#E2E8F0';
+        ctx.font = '800 24px Sora, sans-serif';
+        ctx.fillText('2026', cxSeal, cySeal + 52);
         ctx.restore();
 
         ctx.strokeStyle = '#F3D066';
         ctx.lineWidth = 4;
-        drawRoundedRectPath(ctx, artX, artY, artSize, artSize, 28);
+        drawRoundedRectPath(ctx, artX, artY, artSize, artSize, 32);
         ctx.stroke();
 
         var textX = artX + artSize + 36;
