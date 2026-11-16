@@ -10,7 +10,8 @@
   <meta property="og:image" content="/aufbruch_poster.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@100;200;300;400;500;600;700;800&family=Noto+Sans+Malayalam:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Sora:wght@100;200;300;400;500;600;700;800&family=Noto+Sans+Malayalam:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="/vendor/jsQR.js"></script>
   <style>
     /* =========================================================================
        0. SORA FONT FAMILY (@font-face local + webfont)
@@ -2465,9 +2466,11 @@
       font-weight: 600;
     }
 
-    /* Official QR Ticket Pass inside Submission Alert Modal (Reference Two-Tone Design) */
+    /* =========================================================================
+       PREMIUM OFFICIAL EVENT ENTRY PASS (AUFBRUCH ALUMNI CONCLAVE 2026)
+       ========================================================================= */
     .submission-alert-box.has-ticket {
-      max-width: 440px;
+      max-width: 490px;
       max-height: 94vh;
       overflow-y: auto;
       padding: 20px 18px 18px;
@@ -2475,254 +2478,444 @@
 
     .ticket-pass-card {
       display: none;
-      margin: 10px auto 14px;
-      max-width: 368px;
-      text-align: center;
+      margin: 12px auto 14px;
+      max-width: 416px;
+      text-align: left;
     }
 
     .ticket-pass-card.visible {
       display: block;
     }
 
-    .ticket-ref-shell {
-      border-radius: 26px;
-      overflow: hidden;
-      box-shadow: 0 22px 48px rgba(0, 0, 0, 0.48);
-      background: #FFFFFF;
+    .event-pass-shell {
       position: relative;
-      border: 1px solid rgba(226, 232, 240, 0.9);
-    }
-
-    .ticket-ref-top {
-      background: #FFFFFF;
-      padding: 20px 20px 14px;
+      border-radius: 22px;
+      overflow: hidden;
+      background: #FAF8F3;
+      border: 2px solid #D4AF37;
+      box-shadow: 0 24px 52px rgba(3, 7, 18, 0.58), 0 0 0 1px rgba(243, 208, 102, 0.25);
       color: #0F172A;
     }
 
-    .ticket-ref-header-row {
+    /* Executive Sapphire & Gold Header Banner */
+    .event-pass-header {
+      position: relative;
+      background: linear-gradient(135deg, #071426 0%, #0E2342 58%, #16325C 100%);
+      padding: 18px 18px 16px;
+      color: #FFFFFF;
+      border-bottom: 3px solid #D4AF37;
+      overflow: hidden;
+    }
+
+    .event-pass-header::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 88% 18%, rgba(212, 175, 55, 0.22) 0%, transparent 55%);
+      pointer-events: none;
+    }
+
+    .event-pass-top-bar {
+      position: relative;
+      z-index: 1;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      padding-bottom: 12px;
-      margin-bottom: 14px;
-      border-bottom: 1px solid #F1F5F9;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
     }
 
-    .ticket-ref-badge-left {
+    .event-pass-status-pill {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 6px 13px;
+      gap: 5px;
+      padding: 4px 10px;
       border-radius: 999px;
-      background: #F8FAFC;
-      border: 1px solid #E2E8F0;
-      font-size: 10.5px;
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(52, 211, 153, 0.65);
+      color: #6EE7B7;
+      font-size: 10px;
       font-weight: 800;
-      color: #1E293B;
-      letter-spacing: 0.6px;
+      letter-spacing: 0.7px;
       text-transform: uppercase;
     }
 
-    .ticket-ref-badge-right {
+    .event-pass-status-pill.is-confirmed {
+      background: rgba(212, 175, 55, 0.22);
+      border-color: #F3D066;
+      color: #FDE68A;
+    }
+
+    .event-pass-id-chip {
       display: inline-flex;
       align-items: center;
-      padding: 5px 11px;
+      gap: 6px;
+      padding: 4px 11px;
       border-radius: 8px;
-      background: #F8FAFC;
-      border: 1px solid #E2E8F0;
+      background: linear-gradient(135deg, #D4AF37 0%, #F3D066 100%);
+      color: #071426;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: 12px;
-      font-weight: 800;
-      color: #1E293B;
+      font-weight: 900;
       letter-spacing: 0.8px;
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.35);
     }
 
-    .ticket-ref-poster-wrap {
-      width: 100%;
-      border-radius: 16px;
+    .event-pass-brand-row {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .event-pass-artwork-frame {
+      width: 68px;
+      height: 68px;
+      border-radius: 14px;
       overflow: hidden;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
-      margin-bottom: 14px;
+      border: 2px solid rgba(243, 208, 102, 0.8);
       background: #4A0E17;
-      border: 1px solid #F1F5F9;
+      flex-shrink: 0;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
     }
 
-    .ticket-ref-poster-img {
+    .event-pass-artwork-img {
       width: 100%;
-      height: 220px;
+      height: 100%;
       object-fit: cover;
       display: block;
     }
 
-    .ticket-ref-meta-rows {
-      text-align: left;
-      font-size: 13px;
+    .event-pass-org {
+      font-size: 10px;
+      font-weight: 700;
+      color: #F3D066;
+      letter-spacing: 0.65px;
+      text-transform: uppercase;
+      line-height: 1.35;
+      margin-bottom: 3px;
     }
 
-    .ticket-ref-meta-row {
+    .event-pass-title {
+      font-family: 'Cinzel', 'Sora', Georgia, serif;
+      font-size: 17px;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: 0.5px;
+      line-height: 1.22;
+      margin-bottom: 4px;
+    }
+
+    .event-pass-venue {
+      font-size: 11px;
+      font-weight: 500;
+      color: #CBD5E1;
+      line-height: 1.35;
+    }
+
+    /* Pass Body (Participant Details) */
+    .event-pass-body {
+      background: #FFFFFF;
+      padding: 16px 18px 14px;
+    }
+
+    .event-pass-holder-row {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       gap: 10px;
-      padding: 8px 2px;
-      border-top: 1px solid #F1F5F9;
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #E2E8F0;
     }
 
-    .ticket-ref-meta-row:last-child {
-      border-bottom: 1px solid #F1F5F9;
-    }
-
-    .ticket-ref-meta-label {
-      color: #94A3B8;
-      font-weight: 600;
-      font-size: 12.5px;
-    }
-
-    .ticket-ref-meta-val {
-      color: #1E293B;
+    .event-pass-field-label {
+      font-size: 10px;
       font-weight: 800;
-      font-size: 13px;
-      text-align: right;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: #64748B;
+      margin-bottom: 3px;
     }
 
-    /* Perforated Cutout Divider between Top White & Bottom Crimson Stub */
-    .ticket-ref-cutout-wrap {
+    .event-pass-holder-name {
+      font-size: 18px;
+      font-weight: 800;
+      color: #071426;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      line-height: 1.25;
+      word-break: break-word;
+    }
+
+    .event-pass-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .event-pass-meta-cell {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 8px 10px;
+    }
+
+    .event-pass-meta-val {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #0F172A;
+      line-height: 1.25;
+      word-break: break-word;
+    }
+
+    /* Perforated Ticket Stub Tear Line */
+    .event-pass-perforation {
       position: relative;
-      height: 24px;
-      background: linear-gradient(180deg, #FFFFFF 50%, #E11D48 50%);
+      height: 26px;
+      background: linear-gradient(180deg, #FFFFFF 50%, #F1F5F9 50%);
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
     }
 
-    .ticket-ref-dashed-line {
-      width: calc(100% - 36px);
-      border-top: 2px dashed #CBD5E1;
-    }
-
-    .ticket-ref-notch {
+    .event-pass-perforation::before,
+    .event-pass-perforation::after {
+      content: "";
       position: absolute;
       top: 50%;
       width: 24px;
       height: 24px;
       border-radius: 50%;
       background: #0D1B2A;
+      border: 2px solid #D4AF37;
       transform: translateY(-50%);
       z-index: 2;
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35);
     }
 
-    .ticket-ref-notch.left {
-      left: -12px;
+    .event-pass-perforation::before {
+      left: -13px;
     }
 
-    .ticket-ref-notch.right {
-      right: -12px;
+    .event-pass-perforation::after {
+      right: -13px;
     }
 
-    .ticket-ref-bottom {
-      position: relative;
-      background: linear-gradient(180deg, #E11D48 0%, #BE123C 100%);
-      padding: 22px 20px 30px;
-      color: #FFFFFF;
+    .event-pass-tear-line {
+      width: calc(100% - 34px);
+      border-top: 2px dashed #CBD5E1;
+    }
+
+    /* Dedicated QR Stub Section */
+    .event-pass-qr-stub {
+      background: linear-gradient(180deg, #F1F5F9 0%, #E2E8F0 100%);
+      padding: 14px 18px 18px;
       text-align: center;
-      overflow: hidden;
     }
 
-    .ticket-ref-bottom::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      opacity: 0.12;
-      background-image: radial-gradient(#FFFFFF 1.5px, transparent 1.5px);
-      background-size: 16px 16px;
-      pointer-events: none;
-    }
-
-    .ticket-pass-qr-box {
-      position: relative;
-      z-index: 1;
+    .event-pass-qr-dock {
       display: inline-flex;
       flex-direction: column;
       align-items: center;
       background: #FFFFFF;
-      padding: 15px;
-      border-radius: 22px;
-      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.25);
-      margin-bottom: 16px;
+      padding: 12px;
+      border-radius: 16px;
+      border: 2px solid #0E2342;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
+      margin-bottom: 10px;
     }
 
-    .ticket-ref-part-name {
-      position: relative;
-      z-index: 1;
-      font-size: 19px;
-      font-weight: 800;
-      color: #FFFFFF;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      line-height: 1.25;
-      margin-bottom: 4px;
-      word-break: break-word;
-    }
-
-    .ticket-ref-part-id {
-      position: relative;
-      z-index: 1;
-      font-size: 27px;
+    .event-pass-stub-id {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 20px;
       font-weight: 900;
-      color: #FFFFFF;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      line-height: 1.15;
+      color: #071426;
+      letter-spacing: 1.8px;
+      margin-bottom: 3px;
     }
 
-    .ticket-ref-scallop-edge {
-      position: absolute;
-      bottom: -8px;
-      left: 0;
-      right: 0;
-      height: 16px;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 0 10px;
-      z-index: 2;
-      pointer-events: none;
+    .event-pass-stub-note {
+      font-size: 11px;
+      font-weight: 700;
+      color: #475569;
+      letter-spacing: 0.25px;
     }
 
-    .ticket-ref-scallop-dot {
-      width: 18px;
-      height: 16px;
-      border-radius: 50%;
-      background: #0D1B2A;
-      flex-shrink: 0;
+    /* 3 Ticket Action Buttons Row */
+    .ticket-actions-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
     }
 
-    .ticket-download-btn {
+    @media (max-width: 440px) {
+      .ticket-actions-bar {
+        grid-template-columns: 1fr;
+      }
+      .event-pass-meta-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .ticket-download-btn,
+    .ticket-action-secondary-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      width: 100%;
-      padding: 12px 18px;
-      border-radius: 12px;
+      gap: 6px;
+      padding: 10px 10px;
+      border-radius: 10px;
+      font-family: var(--font-primary);
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .ticket-download-btn {
       border: 1.5px solid #10B981;
       background: linear-gradient(135deg, #10B981 0%, #059669 100%);
       color: #FFFFFF;
-      font-family: var(--font-primary);
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      margin-top: 12px;
-      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
-      transition: all 0.15s ease;
+      box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
     }
 
     .ticket-download-btn:hover {
       filter: brightness(1.06);
       transform: translateY(-1px);
+    }
+
+    .ticket-action-secondary-btn {
+      border: 1.5px solid rgba(212, 175, 55, 0.55);
+      background: rgba(15, 31, 58, 0.9);
+      color: #FDE68A;
+    }
+
+    .ticket-action-secondary-btn:hover {
+      background: rgba(212, 175, 55, 0.2);
+      border-color: var(--gold-400);
+    }
+
+    /* Dedicated Print Target Layer */
+    #printTicketArea {
+      display: none;
+    }
+
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #printTicketArea,
+      #printTicketArea * {
+        visibility: visible !important;
+      }
+      #printTicketArea {
+        display: flex !important;
+        position: fixed;
+        inset: 0;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 20mm 10mm;
+        background: #FFFFFF !important;
+        z-index: 99999;
+      }
+      .event-pass-shell {
+        box-shadow: none !important;
+        max-width: 420px;
+        width: 100%;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .event-pass-perforation::before,
+      .event-pass-perforation::after {
+        background: #FFFFFF !important;
+      }
+    }
+
+    /* Camera Reticle & WhatsApp Config Cards */
+    .camera-reticle-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .camera-stage.active .camera-reticle-overlay {
+      display: flex;
+    }
+
+    .camera-reticle-frame {
+      width: 190px;
+      height: 190px;
+      border-radius: 16px;
+      border: 2.5px solid rgba(52, 211, 153, 0.9);
+      box-shadow: 0 0 0 999px rgba(3, 7, 18, 0.36);
+      position: relative;
+    }
+
+    .wa-cloud-banner {
+      border-radius: 12px;
+      padding: 12px 15px;
+      margin-bottom: 18px;
+      font-size: 12.5px;
+      line-height: 1.5;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .wa-cloud-banner.is-configured {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #D1FAE5;
+    }
+
+    .wa-cloud-banner.is-missing {
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      color: #FDE68A;
+    }
+
+    .wa-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .wa-status-pill.sent {
+      background: rgba(16, 185, 129, 0.2);
+      color: #6EE7B7;
+      border: 1px solid rgba(16, 185, 129, 0.45);
+    }
+
+    .wa-status-pill.failed {
+      background: rgba(239, 68, 68, 0.2);
+      color: #FCA5A5;
+      border: 1px solid rgba(239, 68, 68, 0.45);
+    }
+
+    .wa-status-pill.not-configured {
+      background: rgba(245, 158, 11, 0.2);
+      color: #FDE68A;
+      border: 1px solid rgba(245, 158, 11, 0.45);
+    }
+
+    .wa-status-pill.pending {
+      background: rgba(148, 163, 184, 0.16);
+      color: #CBD5E1;
+      border: 1px solid rgba(148, 163, 184, 0.35);
     }
 
     /* QR Scanner Top Notification Toast Banner */
@@ -3754,22 +3947,32 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             </div>
           </div>
 
-          <!-- Check-in KPI Cards -->
-          <div class="kpi-grid" style="margin-bottom: 22px;">
+          <!-- Check-in & WhatsApp KPI Cards -->
+          <div class="kpi-grid" style="margin-bottom: 16px;">
             <div class="kpi-card total-card">
               <div class="kpi-label">Total Registered Participants</div>
               <div class="kpi-value" id="checkinKpiTotal">0</div>
               <div class="kpi-sub">Eligible for event entry</div>
             </div>
             <div class="kpi-card yes-card">
-              <div class="kpi-label">Total Confirmed Check-ins</div>
+              <div class="kpi-label">Total Confirmed Entries</div>
               <div class="kpi-value" id="checkinKpiConfirmed" style="color: #34D399;">0</div>
-              <div class="kpi-sub">Checked in at venue</div>
+              <div class="kpi-sub">CONFIRMED / CHECKED IN</div>
             </div>
             <div class="kpi-card no-card">
-              <div class="kpi-label">Pending Check-ins</div>
+              <div class="kpi-label">Pending Entries</div>
               <div class="kpi-value" id="checkinKpiPending" style="color: #FBBF24;">0</div>
-              <div class="kpi-sub">Awaiting arrival</div>
+              <div class="kpi-sub">Awaiting venue arrival</div>
+            </div>
+            <div class="kpi-card yes-card" style="border-top-color: #25D366;">
+              <div class="kpi-label">WhatsApp Messages Sent</div>
+              <div class="kpi-value" id="checkinKpiWaSent" style="color: #25D366;">0</div>
+              <div class="kpi-sub">Cloud API check-in confirmations</div>
+            </div>
+            <div class="kpi-card no-card">
+              <div class="kpi-label">WhatsApp Message Failures</div>
+              <div class="kpi-value" id="checkinKpiWaFailed" style="color: #FCA5A5;">0</div>
+              <div class="kpi-sub">Failed Cloud API deliveries</div>
             </div>
             <div class="kpi-card rate-card">
               <div class="kpi-label">Batch-wise Check-in Summary</div>
@@ -3779,11 +3982,25 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             </div>
           </div>
 
+          <!-- WhatsApp Business Cloud API Integration Status Banner -->
+          <div id="waCloudApiConfigBanner" class="wa-cloud-banner is-missing" role="status">
+            <div>
+              <strong id="waCloudBannerTitle">Checking WhatsApp Business Cloud API Configuration...</strong>
+              <div id="waCloudBannerDesc" style="margin-top: 3px; opacity: 0.92;">
+                Verifying server-side WhatsApp Cloud API environment configuration.
+              </div>
+            </div>
+            <span id="waCloudBannerPill" class="wa-status-pill not-configured">Checking...</span>
+          </div>
+
           <div class="scanner-layout-grid">
-            <!-- Left: Camera Viewport + Image Upload + Manual Token Scanner Input -->
+            <!-- Left: Camera Viewport + Camera Device Switcher + Image Upload + Manual Token Scanner Input -->
             <div class="scanner-box">
               <div id="qrCameraStage" class="camera-stage">
-                <video id="qrScannerVideo" playsinline muted></video>
+                <video id="qrScannerVideo" playsinline autoplay muted></video>
+                <div class="camera-reticle-overlay" aria-hidden="true">
+                  <div class="camera-reticle-frame"></div>
+                </div>
                 <canvas id="qrScannerCanvas" style="display: none;"></canvas>
                 <div id="qrCameraPlaceholder" style="text-align: center; padding: 24px;">
                   <div style="font-size: 36px; margin-bottom: 8px;">📷</div>
@@ -3791,11 +4008,16 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
                     Camera QR Scanner Ready
                   </div>
                   <div style="font-size: 12px; color: #94A3B8;">
-                    Click <strong>Scan QR Code</strong> to open device camera, upload a ticket PNG below, or scan/enter a ticket token.
+                    Click <strong>Scan QR Code</strong> to open rear/webcam camera, upload a ticket PNG below, or scan/enter a ticket token.
                   </div>
                 </div>
               </div>
-              <div id="qrCameraErrorMsg" style="display: none; color: #FCA5A5; font-size: 12.5px; font-weight: 600; margin-bottom: 10px;"></div>
+
+              <div id="qrCameraDeviceBar" style="display: none; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
+                <label for="qrCameraSelect" style="font-size: 12px; font-weight: 700; color: #CBD5E1;">Camera:</label>
+                <select id="qrCameraSelect" class="filter-select" style="flex: 1; min-width: 170px; font-size: 12px; padding: 6px 10px;"></select>
+              </div>
+              <div id="qrCameraErrorMsg" style="display: none; color: #FCA5A5; font-size: 12.5px; font-weight: 600; margin-bottom: 10px; line-height: 1.45;"></div>
 
               <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
                 <input
@@ -3815,7 +4037,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
                   <span>🖼️ Scan from Ticket Image (PNG/JPG)</span>
                 </label>
                 <input type="file" id="qrTicketImageInput" accept="image/*" style="display: none;" />
-                <span style="font-size: 11.5px; color: #94A3B8;">Supports mobile & desktop cameras</span>
+                <span style="font-size: 11.5px; color: #94A3B8;">Works on Android, iPhone Safari & Desktop</span>
               </div>
             </div>
 
@@ -3826,13 +4048,14 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
                   AWAITING QR TICKET SCAN
                 </div>
                 <div id="scanResultSubtext" style="font-size: 13px; color: #94A3B8; margin-bottom: 12px;">
-                  Scan a participant's QR Code ticket to view registration details and confirm one-time entry.
+                  Scan a participant's QR Code ticket to inspect details and confirm one-time entry.
                 </div>
 
                 <div id="scanParticipantDetailsBox" style="display: none; background: rgba(5, 11, 22, 0.72); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 12px 14px; font-size: 13.5px; line-height: 1.7;">
                   <div>Participant Name: <strong id="scanPartName" style="color: #FFFFFF;">-</strong></div>
-                  <div>ID Number: <strong id="scanPartId" style="color: var(--gold-300);">-</strong></div>
+                  <div>Ticket ID: <strong id="scanPartId" style="color: var(--gold-300);">-</strong></div>
                   <div>Batch Year: <strong id="scanPartBatch" style="color: #FFFFFF;">-</strong></div>
+                  <div>WhatsApp Number: <strong id="scanPartPhone" style="color: #93C5FD;">-</strong></div>
                   <div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255, 255, 255, 0.08);">
                     Registration Status: <strong id="scanRegStatus" style="color: #34D399;">REGISTERED</strong>
                   </div>
@@ -3852,22 +4075,30 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           <!-- Check-in Management Search & Filter Bar -->
           <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
             <h4 style="font-size: 15px; font-weight: 700; color: var(--gold-300);">
-              Check-in Management & Participant Verification List
+              Check-in Management &amp; Participant Verification List
             </h4>
             <div class="table-filters">
               <input
                 type="search"
                 id="searchCheckinInput"
                 class="filter-input"
-                placeholder="Search by Name or ID Number (ANWAR 001)..."
+                placeholder="Search Name, Ticket ID, Batch, Phone..."
               />
               <select id="filterCheckinBatchSelect" class="filter-select">
                 <option value="ALL">All Batches (2001–2026)</option>
               </select>
               <select id="filterCheckinStatusSelect" class="filter-select">
                 <option value="ALL">All Check-in Statuses</option>
-                <option value="CHECKED IN">CHECKED IN</option>
+                <option value="CHECKED IN">CONFIRMED / CHECKED IN</option>
                 <option value="NOT CHECKED IN">NOT CHECKED IN</option>
+              </select>
+              <select id="filterCheckinWaStatusSelect" class="filter-select">
+                <option value="ALL">All WhatsApp Statuses</option>
+                <option value="SENT">WhatsApp Sent (Cloud API)</option>
+                <option value="FAILED">WhatsApp Failed</option>
+                <option value="NOT_CONFIGURED">Cloud API Not Configured</option>
+                <option value="MANUAL_FALLBACK">Manual Fallback</option>
+                <option value="PENDING">Pending Check-in</option>
               </select>
             </div>
           </div>
@@ -3876,14 +4107,14 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             <table class="resp-table">
               <thead>
                 <tr>
-                  <th>ID Number</th>
+                  <th>Ticket ID</th>
                   <th>Participant Name</th>
-                  <th>Batch Year</th>
-                  <th>Place</th>
-                  <th>Registration Status</th>
+                  <th>Batch</th>
+                  <th>WhatsApp Number</th>
                   <th>Check-in Status</th>
-                  <th>Check-in Date & Time</th>
-                  <th>Check-in Action</th>
+                  <th>Check-in Date &amp; Time</th>
+                  <th>WhatsApp Message Status</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody id="checkinManagementTableBody"></tbody>
@@ -4146,12 +4377,18 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
               </div>
             </div>
 
-            <div class="admin-modal-actions">
+            <div class="admin-modal-actions" style="flex-wrap: wrap;">
               <button type="button" id="closeViewModalBtn" class="modal-btn modal-btn-cancel">
                 Close
               </button>
+              <button type="button" id="viewOpenTicketBtn" class="modal-btn" style="background: rgba(212, 175, 55, 0.16); border: 1px solid var(--gold-400); color: #FDE68A;">
+                🎟️ View Ticket
+              </button>
               <button type="button" id="viewDownloadTicketBtn" class="modal-btn" style="background: rgba(16, 185, 129, 0.18); border: 1px solid #10B981; color: #6EE7B7;">
-                🎫 Download Ticket
+                ⬇ Download Ticket
+              </button>
+              <button type="button" id="viewPrintTicketBtn" class="modal-btn" style="background: rgba(59, 130, 246, 0.18); border: 1px solid #60A5FA; color: #BFDBFE;">
+                🖨️ Print Ticket
               </button>
               <button type="button" id="viewToEditBtn" class="modal-btn modal-btn-save">
                 ✏️ Edit
@@ -4272,81 +4509,200 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         Your registration has been submitted successfully. Thank you for registering.
       </p>
 
-      <!-- Automatic QR Code Ticket Pass (Reference Two-Part Event Ticket Layout) -->
+      <!-- Automatic QR Code Event Pass (Redesigned Executive Entry Ticket) -->
       <div id="successTicketPassWrap" class="ticket-pass-card">
-        <div class="ticket-ref-shell">
-          <!-- Top White Card Section -->
-          <div class="ticket-ref-top">
-            <div class="ticket-ref-header-row">
-              <span class="ticket-ref-badge-left">
-                <span style="color: #F59E0B;">✨</span>
-                <span>EVENT TICKET</span>
-              </span>
-              <span id="ticketPassHeaderId" class="ticket-ref-badge-right">ANWAR 001</span>
+        <div class="event-pass-shell">
+          <div class="event-pass-header">
+            <div class="event-pass-top-bar">
+              <span id="ticketPassStatus" class="event-pass-status-pill">✓ VALID ENTRY PASS</span>
+              <span id="ticketPassHeaderId" class="event-pass-id-chip">ANWAR 001</span>
             </div>
-
-            <div class="ticket-ref-poster-wrap">
-              <img
-                src="/aufbruch_poster.png"
-                alt="Aufbruch – Alumni Conclave 2026 Official Ticket Poster"
-                class="ticket-ref-poster-img"
-              />
-            </div>
-
-            <div class="ticket-ref-meta-rows">
-              <div class="ticket-ref-meta-row">
-                <span class="ticket-ref-meta-label">Batch Year:</span>
-                <strong id="ticketPassBatch" class="ticket-ref-meta-val">-</strong>
+            <div class="event-pass-brand-row">
+              <div class="event-pass-artwork-frame">
+                <img
+                  src="/aufbruch_poster.png"
+                  alt="Aufbruch Alumni Conclave 2026 Crest"
+                  class="event-pass-artwork-img"
+                />
               </div>
-              <div class="ticket-ref-meta-row">
-                <span class="ticket-ref-meta-label">Place / Locality:</span>
-                <strong id="ticketPassPlace" class="ticket-ref-meta-val">-</strong>
+              <div>
+                <div class="event-pass-org">Majmau Ssaqafathil Islamiyya – Da'wa College Alumni</div>
+                <div class="event-pass-title">AUFBRUCH ALUMNI CONCLAVE 2026</div>
+                <div class="event-pass-venue">Thu, Dec 10, 2026 • Majmau Academy, Nilambur</div>
               </div>
             </div>
           </div>
 
-          <!-- Perforated Cutout Divider -->
-          <div class="ticket-ref-cutout-wrap">
-            <span class="ticket-ref-notch left"></span>
-            <div class="ticket-ref-dashed-line"></div>
-            <span class="ticket-ref-notch right"></span>
+          <div class="event-pass-body">
+            <div class="event-pass-holder-row">
+              <div>
+                <div class="event-pass-field-label">Participant Name</div>
+                <div id="ticketPassName" class="event-pass-holder-name">-</div>
+              </div>
+            </div>
+
+            <div class="event-pass-meta-grid">
+              <div class="event-pass-meta-cell">
+                <div class="event-pass-field-label">Ticket ID</div>
+                <div id="ticketPassId" class="event-pass-meta-val" style="color: #B45309; font-family: monospace;">ANWAR 001</div>
+              </div>
+              <div class="event-pass-meta-cell">
+                <div class="event-pass-field-label">Batch Year</div>
+                <div id="ticketPassBatch" class="event-pass-meta-val">-</div>
+              </div>
+              <div class="event-pass-meta-cell">
+                <div class="event-pass-field-label">Place</div>
+                <div id="ticketPassPlace" class="event-pass-meta-val">-</div>
+              </div>
+            </div>
           </div>
 
-          <!-- Bottom Crimson Stub Section with QR Code, Participant Name & ID -->
-          <div class="ticket-ref-bottom">
-            <div class="ticket-pass-qr-box">
+          <div class="event-pass-perforation" aria-hidden="true">
+            <div class="event-pass-tear-line"></div>
+          </div>
+
+          <div class="event-pass-qr-stub">
+            <div class="event-pass-qr-dock">
               <canvas id="ticketQrCanvas" width="184" height="184"></canvas>
               <span id="ticketPassTokenLabel" style="display: none;"></span>
             </div>
-            <div id="ticketPassName" class="ticket-ref-part-name">-</div>
-            <div id="ticketPassId" class="ticket-ref-part-id">ANWAR 001</div>
-
-            <div class="ticket-ref-scallop-edge" aria-hidden="true">
-              <span class="ticket-ref-scallop-dot"></span>
-              <span class="ticket-ref-scallop-dot"></span>
-              <span class="ticket-ref-scallop-dot"></span>
-              <span class="ticket-ref-scallop-dot"></span>
-              <span class="ticket-ref-scallop-dot"></span>
-              <span class="ticket-ref-scallop-dot"></span>
-              <span class="ticket-ref-scallop-dot"></span>
-              <span class="ticket-ref-scallop-dot"></span>
-              <span class="ticket-ref-scallop-dot"></span>
-              <span class="ticket-ref-scallop-dot"></span>
-              <span class="ticket-ref-scallop-dot"></span>
-            </div>
+            <div id="ticketPassStubId" class="event-pass-stub-id">ANWAR 001</div>
+            <div class="event-pass-stub-note">Present this pass at the entrance • One-time QR entry</div>
           </div>
         </div>
 
-        <button type="button" id="downloadTicketPngBtn" class="ticket-download-btn">
-          <span>⬇ Download QR Code</span>
-        </button>
+        <div class="ticket-actions-bar">
+          <button type="button" id="downloadTicketPngBtn" class="ticket-download-btn">
+            <span>⬇ Download Ticket</span>
+          </button>
+          <button type="button" id="viewTicketBtn" class="ticket-action-secondary-btn">
+            <span>🎟️ View Ticket</span>
+          </button>
+          <button type="button" id="printTicketBtn" class="ticket-action-secondary-btn">
+            <span>🖨️ Print Ticket</span>
+          </button>
+        </div>
       </div>
 
       <button type="button" id="submissionAlertOkBtn" class="submission-alert-btn">
-        <span>OK</span>
+        <span>Done</span>
       </button>
     </div>
   </div>
+
+  <!-- Full Event Pass Viewer Modal ("View Ticket") -->
+  <div id="fullTicketViewerModal" class="admin-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="fullTicketViewerHeading" style="z-index: 12500;">
+    <div class="admin-modal-card" style="max-width: 470px; padding: 18px;">
+      <div class="admin-modal-header" style="margin-bottom: 10px;">
+        <h3 id="fullTicketViewerHeading" class="admin-modal-title" style="font-size: 16px;">Official Event Entry Pass</h3>
+        <button type="button" id="closeFullTicketViewerBtn" class="modal-btn modal-btn-cancel" style="padding: 6px 12px; font-size: 12px;">✕ Close</button>
+      </div>
+      <div id="fullTicketViewerBody"></div>
+      <div class="ticket-actions-bar" style="grid-template-columns: 1fr 1fr; margin-top: 12px;">
+        <button type="button" id="viewerDownloadTicketBtn" class="ticket-download-btn">
+          <span>⬇ Download Ticket (PNG)</span>
+        </button>
+        <button type="button" id="viewerPrintTicketBtn" class="ticket-action-secondary-btn">
+          <span>🖨️ Print Ticket</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Ticket Check-in Confirmation Dialog ("Are you sure you want to confirm this ticket?") -->
+  <div id="qrConfirmModal" class="admin-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="qrConfirmModalTitle" style="z-index: 12600;">
+    <div class="admin-modal-card" style="max-width: 470px;">
+      <div class="admin-modal-header">
+        <h3 id="qrConfirmModalTitle" class="admin-modal-title" style="color: #6EE7B7;">🎫 Verify &amp; Confirm Entry Ticket</h3>
+        <span id="confirmModalHeaderId" class="admin-modal-id-pill">ANWAR 001</span>
+      </div>
+      <p style="font-size: 15px; font-weight: 800; color: #FFFFFF; margin-bottom: 14px; line-height: 1.4;">
+        Are you sure you want to confirm this ticket?
+      </p>
+      <div class="view-details-grid" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
+        <div class="view-detail-item" style="grid-column: span 2;">
+          <div class="view-detail-label">Participant Name</div>
+          <div id="confirmModalPartName" class="view-detail-value" style="color: #FFFFFF; font-size: 15px;">-</div>
+        </div>
+        <div class="view-detail-item">
+          <div class="view-detail-label">Batch Year</div>
+          <div id="confirmModalPartBatch" class="view-detail-value">-</div>
+        </div>
+        <div class="view-detail-item">
+          <div class="view-detail-label">Ticket ID</div>
+          <div id="confirmModalPartId" class="view-detail-value" style="color: var(--gold-300); font-family: monospace;">-</div>
+        </div>
+        <div class="view-detail-item">
+          <div class="view-detail-label">WhatsApp Number</div>
+          <div id="confirmModalPartPhone" class="view-detail-value" style="color: #93C5FD;">-</div>
+        </div>
+        <div class="view-detail-item">
+          <div class="view-detail-label">Current Ticket Status</div>
+          <div id="confirmModalPartStatus" class="view-detail-value" style="color: #FBBF24;">NOT CHECKED IN</div>
+        </div>
+      </div>
+      <div class="admin-modal-actions">
+        <button type="button" id="cancelQrConfirmBtn" class="modal-btn modal-btn-cancel">
+          CANCEL
+        </button>
+        <button type="button" id="submitQrConfirmBtn" class="modal-btn" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: #FFFFFF; border: 1.5px solid #34D399; font-weight: 800;">
+          ✓ CONFIRM TICKET
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Prominent Check-in Success Alert Modal (Title + Message + WhatsApp Status) -->
+  <div id="checkinSuccessModal" class="admin-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="checkinSuccessTitle" style="z-index: 12700;">
+    <div class="admin-modal-card" style="max-width: 480px; border: 2px solid #34D399;">
+      <div style="text-align: center; margin-bottom: 14px;">
+        <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(16, 185, 129, 0.2); border: 2px solid #34D399; color: #34D399; font-size: 28px; font-weight: 900; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 10px;">✓</div>
+        <h3 id="checkinSuccessTitle" style="font-size: 19px; font-weight: 900; color: #34D399; letter-spacing: 0.4px;">
+          TICKET CONFIRMED SUCCESSFULLY
+        </h3>
+        <div style="font-size: 14px; font-weight: 800; color: #FFFFFF; margin-top: 4px; background: rgba(16, 185, 129, 0.16); display: inline-block; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(52, 211, 153, 0.4);">
+          ANWAR ALUMNI SEAT CONFIRMED!
+        </div>
+      </div>
+
+      <div class="view-details-grid" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+        <div class="view-detail-item" style="grid-column: span 2;">
+          <div class="view-detail-label">Participant Name</div>
+          <div id="successModalPartName" class="view-detail-value" style="color: #FFFFFF;">-</div>
+        </div>
+        <div class="view-detail-item">
+          <div class="view-detail-label">Ticket ID</div>
+          <div id="successModalPartId" class="view-detail-value" style="color: var(--gold-300); font-family: monospace;">-</div>
+        </div>
+        <div class="view-detail-item">
+          <div class="view-detail-label">Batch Year</div>
+          <div id="successModalPartBatch" class="view-detail-value">-</div>
+        </div>
+        <div class="view-detail-item" style="grid-column: span 2;">
+          <div class="view-detail-label">Check-in Time</div>
+          <div id="successModalCheckinTime" class="view-detail-value" style="color: #6EE7B7;">-</div>
+        </div>
+      </div>
+
+      <div id="successModalWaBox" style="border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; font-size: 12.5px; line-height: 1.5; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(255, 255, 255, 0.14);">
+        <div id="successModalWaHeadline" style="font-weight: 800; margin-bottom: 4px;">WhatsApp Confirmation Status</div>
+        <div id="successModalWaDetail" style="color: #CBD5E1;">-</div>
+        <div id="successModalWaActions" style="display: none; gap: 8px; flex-wrap: wrap; margin-top: 10px;">
+          <button type="button" id="successModalRetryWaBtn" class="modal-btn modal-btn-save" style="font-size: 12px; padding: 7px 12px;">🔄 Retry Cloud API</button>
+          <a id="successModalManualWaLink" href="#" target="_blank" rel="noopener noreferrer" class="modal-btn modal-btn-whatsapp" style="font-size: 12px; padding: 7px 12px; text-decoration: none;">📲 Manual WhatsApp Fallback</a>
+        </div>
+      </div>
+
+      <div class="admin-modal-actions">
+        <button type="button" id="closeCheckinSuccessBtn" class="confirm-ticket-btn" style="margin-top: 0;">
+          ✓ Ready for Next Scan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dedicated Printable Container (Hidden on Screen, Exclusive Target in @media print) -->
+  <div id="printTicketArea" aria-hidden="true"></div>
 
   <!-- Footer -->
   <footer class="site-footer">
@@ -5432,15 +5788,27 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
       var lastAlertWasSuccess = false;
       var activeSuccessTicketRecord = null;
+      var activeViewedTicketRecord = null;
       var successTicketPassWrap = document.getElementById('successTicketPassWrap');
+      var ticketPassStatus = document.getElementById('ticketPassStatus');
       var ticketPassHeaderId = document.getElementById('ticketPassHeaderId');
       var ticketPassName = document.getElementById('ticketPassName');
       var ticketPassId = document.getElementById('ticketPassId');
       var ticketPassBatch = document.getElementById('ticketPassBatch');
       var ticketPassPlace = document.getElementById('ticketPassPlace');
+      var ticketPassStubId = document.getElementById('ticketPassStubId');
       var ticketQrCanvas = document.getElementById('ticketQrCanvas');
       var ticketPassTokenLabel = document.getElementById('ticketPassTokenLabel');
       var downloadTicketPngBtn = document.getElementById('downloadTicketPngBtn');
+      var viewTicketBtn = document.getElementById('viewTicketBtn');
+      var printTicketBtn = document.getElementById('printTicketBtn');
+
+      var fullTicketViewerModal = document.getElementById('fullTicketViewerModal');
+      var fullTicketViewerBody = document.getElementById('fullTicketViewerBody');
+      var closeFullTicketViewerBtn = document.getElementById('closeFullTicketViewerBtn');
+      var viewerDownloadTicketBtn = document.getElementById('viewerDownloadTicketBtn');
+      var viewerPrintTicketBtn = document.getElementById('viewerPrintTicketBtn');
+      var printTicketArea = document.getElementById('printTicketArea');
 
       function formatAnwarTicketId(rawId) {
         var s = String(rawId || '001').trim();
@@ -5463,10 +5831,11 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
         if (!mat) return;
         var n = mat.length;
-        var border = 2;
+        // ISO 18004 requires at least 4 modules of white quiet zone for universal scanner reliability
+        var border = 4;
         var totalMods = n + border * 2;
         var scale = dim / totalMods;
-        ctx.fillStyle = '#064E3B';
+        ctx.fillStyle = '#071426';
         for (var r = 0; r < n; r++) {
           for (var c = 0; c < n; c++) {
             if (mat[r][c]) {
@@ -5491,179 +5860,328 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         ctx.closePath();
       }
 
-      function renderReferenceTicketCanvasAndDownload(rec, posterImg) {
+      function buildStandaloneEventPassMarkup(rec, canvasId) {
+        var tId = rec.ticketId || formatAnwarTicketId(rec.registrationId || '001');
+        var pName = String(rec.name || '-').toUpperCase();
+        var pBatch = String(rec.batchYear || '-');
+        var pPlace = String(rec.place || '-');
+        var isChecked = Boolean(rec.checkedIn);
+        var statusText = isChecked ? '✓ CONFIRMED / CHECKED IN' : '✓ VALID ENTRY PASS';
+        var pillClass = 'event-pass-status-pill' + (isChecked ? ' is-confirmed' : '');
+        return (
+          '<div class="event-pass-shell" style="max-width: 416px; margin: 0 auto;">' +
+            '<div class="event-pass-header">' +
+              '<div class="event-pass-top-bar">' +
+                '<span class="' + pillClass + '">' + statusText + '</span>' +
+                '<span class="event-pass-id-chip">' + escapeHtml(tId) + '</span>' +
+              '</div>' +
+              '<div class="event-pass-brand-row">' +
+                '<div class="event-pass-artwork-frame">' +
+                  '<img src="/aufbruch_poster.png" alt="Aufbruch Alumni Conclave 2026 Crest" class="event-pass-artwork-img" />' +
+                '</div>' +
+                '<div>' +
+                  '<div class="event-pass-org">Majmau Ssaqafathil Islamiyya – Da\'wa College Alumni</div>' +
+                  '<div class="event-pass-title">AUFBRUCH ALUMNI CONCLAVE 2026</div>' +
+                  '<div class="event-pass-venue">Thu, Dec 10, 2026 • Majmau Academy, Nilambur</div>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="event-pass-body">' +
+              '<div class="event-pass-holder-row">' +
+                '<div>' +
+                  '<div class="event-pass-field-label">Participant Name</div>' +
+                  '<div class="event-pass-holder-name">' + escapeHtml(pName) + '</div>' +
+                '</div>' +
+              '</div>' +
+              '<div class="event-pass-meta-grid">' +
+                '<div class="event-pass-meta-cell">' +
+                  '<div class="event-pass-field-label">Ticket ID</div>' +
+                  '<div class="event-pass-meta-val" style="color: #B45309; font-family: monospace;">' + escapeHtml(tId) + '</div>' +
+                '</div>' +
+                '<div class="event-pass-meta-cell">' +
+                  '<div class="event-pass-field-label">Batch Year</div>' +
+                  '<div class="event-pass-meta-val">' + escapeHtml(pBatch) + '</div>' +
+                '</div>' +
+                '<div class="event-pass-meta-cell">' +
+                  '<div class="event-pass-field-label">Place</div>' +
+                  '<div class="event-pass-meta-val">' + escapeHtml(pPlace) + '</div>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="event-pass-perforation" aria-hidden="true">' +
+              '<div class="event-pass-tear-line"></div>' +
+            '</div>' +
+            '<div class="event-pass-qr-stub">' +
+              '<div class="event-pass-qr-dock">' +
+                '<canvas id="' + escapeAttr(canvasId) + '" width="200" height="200"></canvas>' +
+              '</div>' +
+              '<div class="event-pass-stub-id">' + escapeHtml(tId) + '</div>' +
+              '<div class="event-pass-stub-note">Present this pass at the entrance • One-time QR entry</div>' +
+            '</div>' +
+          '</div>'
+        );
+      }
+
+      function openFullTicketViewerModal(rec) {
+        if (!rec || !fullTicketViewerModal || !fullTicketViewerBody) return;
+        activeViewedTicketRecord = rec;
+        fullTicketViewerBody.innerHTML = buildStandaloneEventPassMarkup(rec, 'viewerTicketQrCanvas');
+        var vCanvas = document.getElementById('viewerTicketQrCanvas');
+        if (vCanvas) {
+          drawQrMatrixToCanvas(vCanvas, rec.qrMatrix, 200);
+        }
+        fullTicketViewerModal.classList.add('open');
+      }
+
+      function closeFullTicketViewerModal() {
+        if (fullTicketViewerModal) {
+          fullTicketViewerModal.classList.remove('open');
+        }
+      }
+
+      function printEventTicketPass(rec) {
+        if (!rec || !printTicketArea) return;
+        printTicketArea.innerHTML = buildStandaloneEventPassMarkup(rec, 'printTicketQrCanvas');
+        var pCanvas = document.getElementById('printTicketQrCanvas');
+        if (pCanvas) {
+          drawQrMatrixToCanvas(pCanvas, rec.qrMatrix, 220);
+        }
+        setTimeout(function() {
+          window.print();
+        }, 120);
+      }
+
+      function renderPremiumTicketCanvasAndDownload(rec, posterImg) {
         var tId = rec.ticketId || formatAnwarTicketId(rec.registrationId || '001');
         var pName = String(rec.name || 'ANWAR').toUpperCase();
-        var pBatch = String(rec.batchYear || '2020');
-        var pPlace = String(rec.place || 'Nilambur');
+        var pBatch = String(rec.batchYear || '-');
+        var pPlace = String(rec.place || '-');
         var tToken = String(rec.ticketToken || ('AUF26-' + tId.replace(/\s+/g, '')));
+        var statusBadgeText = rec.checkedIn ? 'CONFIRMED / CHECKED IN' : 'VALID ENTRY PASS';
 
-        var W = 900;
-        var H = 1920;
-        var splitY = 1040;
+        var W = 1080;
+        var H = 1720;
+        var cardX = 54;
+        var cardY = 54;
+        var cardW = W - 108;
+        var cardH = H - 108;
+        var headerH = 440;
+        var perfY = cardY + headerH + 490;
         var canvas = document.createElement('canvas');
         canvas.width = W;
         canvas.height = H;
         var ctx = canvas.getContext('2d');
 
-        // 1. Top White Card Section
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, W, splitY);
+        // Ambient Outer Backdrop
+        var outerBg = ctx.createLinearGradient(0, 0, 0, H);
+        outerBg.addColorStop(0, '#040B16');
+        outerBg.addColorStop(1, '#0B1B33');
+        ctx.fillStyle = outerBg;
+        ctx.fillRect(0, 0, W, H);
 
-        // Top Header Pills Row
-        drawRoundedRectPath(ctx, 64, 70, 290, 58, 29);
-        ctx.fillStyle = '#F8FAFC';
-        ctx.fill();
-        ctx.strokeStyle = '#E2E8F0';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        ctx.fillStyle = '#F59E0B';
-        ctx.font = '800 24px Sora, sans-serif';
-        ctx.textAlign = 'left';
-        ctx.fillText('✨', 92, 108);
-        ctx.fillStyle = '#1E293B';
-        ctx.font = '800 22px Sora, sans-serif';
-        ctx.fillText('EVENT TICKET', 132, 107);
-
-        drawRoundedRectPath(ctx, W - 64 - 230, 70, 230, 58, 16);
-        ctx.fillStyle = '#F8FAFC';
-        ctx.fill();
-        ctx.strokeStyle = '#E2E8F0';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        ctx.fillStyle = '#1E293B';
-        ctx.font = '800 24px monospace';
-        ctx.textAlign = 'center';
-        ctx.fillText(tId, W - 64 - 115, 108);
-
-        // Subtle Divider below Header
-        ctx.strokeStyle = '#F1F5F9';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(64, 158);
-        ctx.lineTo(W - 64, 158);
-        ctx.stroke();
-
-        // Event Poster Card Frame
-        var posterX = 110;
-        var posterY = 192;
-        var posterW = W - 220;
-        var posterH = 620;
+        // Clip Main Pass Card Shell
         ctx.save();
-        drawRoundedRectPath(ctx, posterX, posterY, posterW, posterH, 32);
+        drawRoundedRectPath(ctx, cardX, cardY, cardW, cardH, 42);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fill();
+        ctx.clip();
+
+        // 1. Top Executive Sapphire Header
+        var hdrGrad = ctx.createLinearGradient(cardX, cardY, cardX + cardW, cardY + headerH);
+        hdrGrad.addColorStop(0, '#071426');
+        hdrGrad.addColorStop(0.6, '#0E2342');
+        hdrGrad.addColorStop(1, '#16325C');
+        ctx.fillStyle = hdrGrad;
+        ctx.fillRect(cardX, cardY, cardW, headerH);
+
+        // Status Pill (top left inside header)
+        drawRoundedRectPath(ctx, cardX + 46, cardY + 42, 340, 52, 26);
+        ctx.fillStyle = rec.checkedIn ? 'rgba(212, 175, 55, 0.22)' : 'rgba(16, 185, 129, 0.2)';
+        ctx.fill();
+        ctx.strokeStyle = rec.checkedIn ? '#F3D066' : '#34D399';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        ctx.fillStyle = rec.checkedIn ? '#FDE68A' : '#6EE7B7';
+        ctx.font = '800 22px Sora, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('✓ ' + statusBadgeText, cardX + 46 + 170, cardY + 76);
+
+        // Gold Unique Ticket ID Chip (top right inside header)
+        var chipW = 260;
+        var chipX = cardX + cardW - 46 - chipW;
+        drawRoundedRectPath(ctx, chipX, cardY + 38, chipW, 60, 18);
+        var chipGrad = ctx.createLinearGradient(chipX, cardY + 38, chipX + chipW, cardY + 98);
+        chipGrad.addColorStop(0, '#D4AF37');
+        chipGrad.addColorStop(1, '#F3D066');
+        ctx.fillStyle = chipGrad;
+        ctx.fill();
+
+        ctx.fillStyle = '#071426';
+        ctx.font = '900 28px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(tId, chipX + chipW / 2, cardY + 78);
+
+        // Poster Crest Frame + Brand Copy
+        var artX = cardX + 46;
+        var artY = cardY + 132;
+        var artSize = 230;
+        ctx.save();
+        drawRoundedRectPath(ctx, artX, artY, artSize, artSize, 28);
         ctx.clip();
         if (posterImg && posterImg.complete && posterImg.naturalWidth > 0) {
-          ctx.drawImage(posterImg, posterX, posterY, posterW, posterH);
+          ctx.drawImage(posterImg, artX, artY, artSize, artSize);
         } else {
-          var pGrad = ctx.createLinearGradient(posterX, posterY, posterX, posterY + posterH);
-          pGrad.addColorStop(0, '#7F1D1D');
-          pGrad.addColorStop(1, '#450A0A');
-          ctx.fillStyle = pGrad;
-          ctx.fillRect(posterX, posterY, posterW, posterH);
+          ctx.fillStyle = '#4A0E17';
+          ctx.fillRect(artX, artY, artSize, artSize);
           ctx.fillStyle = '#F3D066';
           ctx.textAlign = 'center';
-          ctx.font = '800 58px Sora, sans-serif';
-          ctx.fillText('AUFBRUCH', W / 2, posterY + 280);
-          ctx.fillStyle = '#FFFFFF';
-          ctx.font = '700 34px Sora, sans-serif';
-          ctx.fillText('ALUMNI CONCLAVE 2026', W / 2, posterY + 340);
+          ctx.font = '800 32px Sora, sans-serif';
+          ctx.fillText('AUFBRUCH', artX + artSize / 2, artY + 125);
         }
         ctx.restore();
 
-        // Two-Row Metadata Table Below Poster
-        var row1Y = 860;
-        var row2Y = 935;
-        ctx.strokeStyle = '#F1F5F9';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(64, row1Y - 30);
-        ctx.lineTo(W - 64, row1Y - 30);
-        ctx.moveTo(64, row1Y + 40);
-        ctx.lineTo(W - 64, row1Y + 40);
-        ctx.moveTo(64, row2Y + 40);
-        ctx.lineTo(W - 64, row2Y + 40);
+        ctx.strokeStyle = '#F3D066';
+        ctx.lineWidth = 4;
+        drawRoundedRectPath(ctx, artX, artY, artSize, artSize, 28);
         ctx.stroke();
+
+        var textX = artX + artSize + 36;
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#F3D066';
+        ctx.font = '700 21px Sora, sans-serif';
+        ctx.fillText("MAJMAU SSAQAFATHIL ISLAMIYYA", textX, artY + 46);
+        ctx.fillText("DA'WA COLLEGE ALUMNI", textX, artY + 76);
+
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '800 40px Cinzel, Sora, Georgia, serif';
+        ctx.fillText('AUFBRUCH', textX, artY + 134);
+        ctx.font = '800 30px Cinzel, Sora, Georgia, serif';
+        ctx.fillText('ALUMNI CONCLAVE 2026', textX, artY + 174);
+
+        ctx.fillStyle = '#CBD5E1';
+        ctx.font = '500 22px Sora, sans-serif';
+        ctx.fillText('Thu, Dec 10, 2026 • Majmau Academy, Nilambur', textX, artY + 218);
+
+        // Brushed Gold Accent Line below Header
+        ctx.fillStyle = '#D4AF37';
+        ctx.fillRect(cardX, cardY + headerH - 8, cardW, 8);
+
+        // 2. Clean White Participant Body
+        var bodyTop = cardY + headerH;
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(cardX, bodyTop, cardW, perfY - bodyTop);
 
         ctx.textAlign = 'left';
-        ctx.fillStyle = '#94A3B8';
-        ctx.font = '600 24px Sora, sans-serif';
-        ctx.fillText('Batch Year:', 68, row1Y + 14);
-        ctx.fillText('Place / Locality:', 68, row2Y + 14);
+        ctx.fillStyle = '#64748B';
+        ctx.font = '800 22px Sora, sans-serif';
+        ctx.fillText('PARTICIPANT NAME', cardX + 48, bodyTop + 68);
 
-        ctx.textAlign = 'right';
-        ctx.fillStyle = '#1E293B';
-        ctx.font = '800 26px Sora, sans-serif';
-        ctx.fillText(pBatch, W - 68, row1Y + 14);
-        ctx.fillText(pPlace.substring(0, 32), W - 68, row2Y + 14);
+        // Fit participant name gracefully if long
+        ctx.fillStyle = '#071426';
+        var nameFontSize = pName.length > 26 ? 34 : 42;
+        ctx.font = '800 ' + nameFontSize + 'px Sora, sans-serif';
+        ctx.fillText(pName.substring(0, 36), cardX + 48, bodyTop + 122);
 
-        // 2. Bottom Crimson Stub Section
-        var stubGrad = ctx.createLinearGradient(0, splitY, 0, H);
-        stubGrad.addColorStop(0, '#E11D48');
-        stubGrad.addColorStop(1, '#BE123C');
-        ctx.fillStyle = stubGrad;
-        ctx.fillRect(0, splitY, W, H - splitY);
+        // Hairline divider
+        ctx.strokeStyle = '#E2E8F0';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(cardX + 48, bodyTop + 162);
+        ctx.lineTo(cardX + cardW - 48, bodyTop + 162);
+        ctx.stroke();
 
-        // Subtle Radial Dot Pattern on Bottom Stub
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-        for (var dy = splitY + 24; dy < H - 40; dy += 28) {
-          for (var dx = 24; dx < W - 20; dx += 28) {
-            ctx.beginPath();
-            ctx.arc(dx, dy, 2, 0, Math.PI * 2);
-            ctx.fill();
-          }
+        // 3 Clean Metadata Boxes: Ticket ID, Batch Year, Place
+        var gridY = bodyTop + 198;
+        var boxGap = 24;
+        var boxW = (cardW - 96 - boxGap * 2) / 3;
+        var boxH = 220;
+        var metaCells = [
+          { label: 'TICKET ID', value: tId, color: '#B45309', mono: true },
+          { label: 'BATCH YEAR', value: pBatch, color: '#0F172A', mono: false },
+          { label: 'PLACE', value: pPlace.substring(0, 18), color: '#0F172A', mono: false }
+        ];
+        for (var mc = 0; mc < metaCells.length; mc++) {
+          var cx = cardX + 48 + mc * (boxW + boxGap);
+          drawRoundedRectPath(ctx, cx, gridY, boxW, boxH, 20);
+          ctx.fillStyle = '#F8FAFC';
+          ctx.fill();
+          ctx.strokeStyle = '#E2E8F0';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          ctx.fillStyle = '#64748B';
+          ctx.font = '800 20px Sora, sans-serif';
+          ctx.fillText(metaCells[mc].label, cx + 22, gridY + 54);
+
+          ctx.fillStyle = metaCells[mc].color;
+          ctx.font = metaCells[mc].mono ? '900 32px monospace' : '800 30px Sora, sans-serif';
+          ctx.fillText(metaCells[mc].value, cx + 22, gridY + 124);
         }
 
-        // Perforated Dashed Line & Semicircular Side Cutout Notches
+        // 3. Dedicated Entry QR Stub Section
+        var stubGrad = ctx.createLinearGradient(cardX, perfY, cardX, cardY + cardH);
+        stubGrad.addColorStop(0, '#F1F5F9');
+        stubGrad.addColorStop(1, '#E2E8F0');
+        ctx.fillStyle = stubGrad;
+        ctx.fillRect(cardX, perfY, cardW, cardY + cardH - perfY);
+
+        // Perforated Dashed Line
         ctx.save();
-        ctx.setLineDash([10, 10]);
-        ctx.strokeStyle = '#CBD5E1';
+        ctx.setLineDash([14, 12]);
+        ctx.strokeStyle = '#94A3B8';
         ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.moveTo(40, splitY - 12);
-        ctx.lineTo(W - 40, splitY - 12);
+        ctx.moveTo(cardX + 36, perfY);
+        ctx.lineTo(cardX + cardW - 36, perfY);
         ctx.stroke();
         ctx.restore();
 
-        ctx.fillStyle = '#E2E8F0';
-        ctx.beginPath();
-        ctx.arc(0, splitY, 32, 0, Math.PI * 2);
-        ctx.arc(W, splitY, 32, 0, Math.PI * 2);
-        ctx.fill();
-
-        // White Rounded QR Code Frame
-        var qrFrameSize = 470;
-        var qrFrameX = (W - qrFrameSize) / 2;
-        var qrFrameY = splitY + 86;
-        drawRoundedRectPath(ctx, qrFrameX, qrFrameY, qrFrameSize, qrFrameSize, 52);
+        // Dedicated White High-Contrast QR Code Frame
+        var qrBoxSize = 440;
+        var qrBoxX = cardX + (cardW - qrBoxSize) / 2;
+        var qrBoxY = perfY + 62;
+        drawRoundedRectPath(ctx, qrBoxX, qrBoxY, qrBoxSize, qrBoxSize, 32);
         ctx.fillStyle = '#FFFFFF';
         ctx.fill();
+        ctx.strokeStyle = '#0E2342';
+        ctx.lineWidth = 5;
+        ctx.stroke();
 
         var tempQrCanvas = document.createElement('canvas');
-        drawQrMatrixToCanvas(tempQrCanvas, rec.qrMatrix, 390);
-        ctx.drawImage(tempQrCanvas, qrFrameX + 40, qrFrameY + 40, 390, 390);
+        drawQrMatrixToCanvas(tempQrCanvas, rec.qrMatrix, 396);
+        ctx.drawImage(tempQrCanvas, qrBoxX + 22, qrBoxY + 22, 396, 396);
 
-        // Participant Name & Ticket ID in Bold Uppercase White below QR Code
         ctx.textAlign = 'center';
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = '800 44px Sora, sans-serif';
-        ctx.fillText(pName.substring(0, 28), W / 2, qrFrameY + qrFrameSize + 100);
+        ctx.fillStyle = '#071426';
+        ctx.font = '900 44px monospace';
+        ctx.fillText(tId, W / 2, qrBoxY + qrBoxSize + 68);
 
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = '900 64px Sora, sans-serif';
-        ctx.fillText(tId, W / 2, qrFrameY + qrFrameSize + 185);
+        ctx.fillStyle = '#475569';
+        ctx.font = '700 22px Sora, sans-serif';
+        ctx.fillText('Present this pass at the entrance • One-time QR entry', W / 2, qrBoxY + qrBoxSize + 114);
 
-        // Scalloped Bottom Edge Cutouts
-        ctx.fillStyle = '#FFFFFF';
-        var scallopCount = 11;
-        var scallopSpacing = (W - 140) / (scallopCount - 1);
-        for (var sc = 0; sc < scallopCount; sc++) {
-          var sx = 70 + sc * scallopSpacing;
-          ctx.beginPath();
-          ctx.arc(sx, H, 28, Math.PI, 0, false);
-          ctx.fill();
-        }
+        ctx.restore();
+
+        // Outer Metallic Gold Frame + Semicircular Stub Cutouts
+        ctx.strokeStyle = '#D4AF37';
+        ctx.lineWidth = 5;
+        drawRoundedRectPath(ctx, cardX, cardY, cardW, cardH, 42);
+        ctx.stroke();
+
+        ctx.fillStyle = '#071020';
+        ctx.beginPath();
+        ctx.arc(cardX, perfY, 26, 0, Math.PI * 2);
+        ctx.arc(cardX + cardW, perfY, 26, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#D4AF37';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(cardX, perfY, 26, -Math.PI / 2, Math.PI / 2, false);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(cardX + cardW, perfY, 26, Math.PI / 2, -Math.PI / 2, false);
+        ctx.stroke();
 
         var dataUrl = canvas.toDataURL('image/png');
         var link = document.createElement('a');
@@ -5673,23 +6191,23 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        showToast('🎫 Downloaded QR Ticket (' + tId + ') as PNG.');
+        showToast('🎫 Downloaded High-Resolution Event Pass (' + tId + ') as PNG.');
       }
 
       function downloadTicketAsPng(rec) {
         if (!rec) return;
-        var domPoster = document.querySelector('.ticket-ref-poster-img');
+        var domPoster = document.querySelector('.event-pass-artwork-img');
         if (domPoster && domPoster.complete && domPoster.naturalWidth > 0) {
-          renderReferenceTicketCanvasAndDownload(rec, domPoster);
+          renderPremiumTicketCanvasAndDownload(rec, domPoster);
           return;
         }
         var img = new Image();
         img.crossOrigin = 'anonymous';
         img.onload = function() {
-          renderReferenceTicketCanvasAndDownload(rec, img);
+          renderPremiumTicketCanvasAndDownload(rec, img);
         };
         img.onerror = function() {
-          renderReferenceTicketCanvasAndDownload(rec, null);
+          renderPremiumTicketCanvasAndDownload(rec, null);
         };
         img.src = '/aufbruch_poster.png';
       }
@@ -5698,6 +6216,44 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         downloadTicketPngBtn.addEventListener('click', function() {
           if (activeSuccessTicketRecord) {
             downloadTicketAsPng(activeSuccessTicketRecord);
+          }
+        });
+      }
+      if (viewTicketBtn) {
+        viewTicketBtn.addEventListener('click', function() {
+          if (activeSuccessTicketRecord) {
+            openFullTicketViewerModal(activeSuccessTicketRecord);
+          }
+        });
+      }
+      if (printTicketBtn) {
+        printTicketBtn.addEventListener('click', function() {
+          if (activeSuccessTicketRecord) {
+            printEventTicketPass(activeSuccessTicketRecord);
+          }
+        });
+      }
+      if (closeFullTicketViewerBtn) {
+        closeFullTicketViewerBtn.addEventListener('click', closeFullTicketViewerModal);
+      }
+      if (fullTicketViewerModal) {
+        fullTicketViewerModal.addEventListener('click', function(e) {
+          if (e.target === fullTicketViewerModal) {
+            closeFullTicketViewerModal();
+          }
+        });
+      }
+      if (viewerDownloadTicketBtn) {
+        viewerDownloadTicketBtn.addEventListener('click', function() {
+          if (activeViewedTicketRecord) {
+            downloadTicketAsPng(activeViewedTicketRecord);
+          }
+        });
+      }
+      if (viewerPrintTicketBtn) {
+        viewerPrintTicketBtn.addEventListener('click', function() {
+          if (activeViewedTicketRecord) {
+            printEventTicketPass(activeViewedTicketRecord);
           }
         });
       }
@@ -5716,15 +6272,21 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           submissionAlertBadge.textContent = '';
           submissionAlertBadge.style.display = 'none';
         }
-        submissionAlertMessage.textContent = 'Your registration has been submitted successfully. Thank you for registering.';
+        submissionAlertMessage.textContent = 'Your official Aufbruch – Alumni Conclave 2026 Entry Pass is ready.';
 
         if (successTicketPassWrap && res) {
           var tId = res.ticketId || formatAnwarTicketId(res.registrationId || '001');
+          var isChecked = Boolean(res.checkedIn);
+          if (ticketPassStatus) {
+            ticketPassStatus.textContent = isChecked ? '✓ CONFIRMED / CHECKED IN' : '✓ VALID ENTRY PASS';
+            ticketPassStatus.classList.toggle('is-confirmed', isChecked);
+          }
           if (ticketPassHeaderId) ticketPassHeaderId.textContent = tId;
           if (ticketPassName) ticketPassName.textContent = String(res.name || '-').toUpperCase();
           if (ticketPassId) ticketPassId.textContent = tId;
           if (ticketPassBatch) ticketPassBatch.textContent = res.batchYear || '-';
           if (ticketPassPlace) ticketPassPlace.textContent = res.place || '-';
+          if (ticketPassStubId) ticketPassStubId.textContent = tId;
           if (ticketPassTokenLabel) ticketPassTokenLabel.textContent = res.ticketToken || '';
           if (ticketQrCanvas) {
             drawQrMatrixToCanvas(ticketQrCanvas, res.qrMatrix, 184);
@@ -6386,12 +6948,16 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       function renderCheckinManagementUI() {
         var total = dashboardRegistrations.length;
         var confirmed = 0;
+        var waSentCnt = 0;
+        var waFailedCnt = 0;
         var batchCheckinLines = [];
         var batchCheckinMap = {};
 
         for (var i = 0; i < dashboardRegistrations.length; i++) {
           var r = dashboardRegistrations[i];
           if (r.checkedIn) confirmed++;
+          if (r.checkinWhatsappSent || r.checkinWhatsappStatus === 'SENT') waSentCnt++;
+          if (r.checkinWhatsappStatus === 'FAILED') waFailedCnt++;
           var by = r.batchYear || 'Unspecified';
           if (!batchCheckinMap[by]) batchCheckinMap[by] = { reg: 0, inCount: 0 };
           batchCheckinMap[by].reg++;
@@ -6402,10 +6968,36 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         var elTot = document.getElementById('checkinKpiTotal');
         var elConf = document.getElementById('checkinKpiConfirmed');
         var elPend = document.getElementById('checkinKpiPending');
+        var elWaSent = document.getElementById('checkinKpiWaSent');
+        var elWaFailed = document.getElementById('checkinKpiWaFailed');
         var elMini = document.getElementById('checkinBatchMiniSummary');
         if (elTot) elTot.textContent = String(total);
         if (elConf) elConf.textContent = String(confirmed);
         if (elPend) elPend.textContent = String(pending);
+        if (elWaSent) elWaSent.textContent = String(waSentCnt);
+        if (elWaFailed) elWaFailed.textContent = String(waFailedCnt);
+
+        // Render Cloud API Config Banner Accurately (never falsely claim configured or sent)
+        var bannerEl = document.getElementById('waCloudApiConfigBanner');
+        var bannerTitle = document.getElementById('waCloudBannerTitle');
+        var bannerDesc = document.getElementById('waCloudBannerDesc');
+        var bannerPill = document.getElementById('waCloudBannerPill');
+        if (bannerEl && bannerTitle && bannerDesc && bannerPill) {
+          var isCfg = Boolean(dashboardWhatsappCloudApi && dashboardWhatsappCloudApi.configured);
+          bannerEl.classList.toggle('is-configured', isCfg);
+          bannerEl.classList.toggle('is-missing', !isCfg);
+          if (isCfg) {
+            bannerTitle.textContent = 'Meta WhatsApp Business Cloud API Active (Sender: ' + escapeHtml(dashboardWhatsappCloudApi.formattedSender || dashboardWhatsappCloudApi.senderNumber || 'Configured') + ')';
+            bannerDesc.textContent = 'Check-in confirmation messages are automatically delivered server-side via Meta Graph API immediately after confirming a ticket.';
+            bannerPill.className = 'wa-status-pill sent';
+            bannerPill.textContent = '✓ Auto Cloud API Active';
+          } else {
+            bannerTitle.textContent = 'WhatsApp Business Cloud API Not Configured — Manual Admin Fallback Required';
+            bannerDesc.textContent = 'To send automated check-in WhatsApp messages automatically, set WHATSAPP_CLOUD_API_TOKEN and WHATSAPP_PHONE_NUMBER_ID (and optional WHATSAPP_CONFIRM_TEMPLATE_NAME) in Vercel Environment Variables. Manual fallback buttons appear after check-in.';
+            bannerPill.className = 'wa-status-pill not-configured';
+            bannerPill.textContent = '⚠ API Not Configured';
+          }
+        }
 
         var bKeys = Object.keys(batchCheckinMap).sort();
         bKeys.forEach(function(k) {
@@ -6430,12 +7022,15 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         var searchQ = (document.getElementById('searchCheckinInput') ? document.getElementById('searchCheckinInput').value : '').trim().toLowerCase();
         var batchFilter = batchSelect ? batchSelect.value : 'ALL';
         var statusFilter = document.getElementById('filterCheckinStatusSelect') ? document.getElementById('filterCheckinStatusSelect').value : 'ALL';
+        var waStatusFilter = document.getElementById('filterCheckinWaStatusSelect') ? document.getElementById('filterCheckinWaStatusSelect').value : 'ALL';
 
         var filtered = dashboardRegistrations.filter(function(r) {
           if (batchFilter !== 'ALL' && String(r.batchYear) !== batchFilter) return false;
           if (statusFilter !== 'ALL' && r.checkInStatus !== statusFilter) return false;
+          var rWaSt = String(r.checkinWhatsappStatus || 'PENDING').toUpperCase();
+          if (waStatusFilter !== 'ALL' && rWaSt !== waStatusFilter) return false;
           if (!searchQ) return true;
-          var hay = (r.ticketId + ' ' + r.registrationId + ' ' + r.name + ' ' + r.originalExcelName + ' ' + r.batchYear + ' ' + r.place).toLowerCase();
+          var hay = (r.ticketId + ' ' + r.registrationId + ' ' + r.name + ' ' + r.originalExcelName + ' ' + r.batchYear + ' ' + r.place + ' ' + (r.formattedPhone || r.whatsappNumber || '')).toLowerCase();
           return hay.indexOf(searchQ) !== -1;
         });
 
@@ -6453,21 +7048,45 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         filtered.forEach(function(r) {
           var tr = document.createElement('tr');
           var statusBadge = r.checkedIn
-            ? '<span class="badge-yes">✓ CHECKED IN</span>'
+            ? '<span class="badge-yes">✓ CONFIRMED / CHECKED IN</span>'
             : '<span class="badge-no" style="background: rgba(245, 158, 11, 0.16); color: #FDE68A; border-color: rgba(245, 158, 11, 0.4);">⏳ NOT CHECKED IN</span>';
 
-          var actionHtml = r.checkedIn
-            ? '<span style="font-size: 12px; font-weight: 700; color: #6EE7B7;">✓ Entry Completed</span>'
-            : '<button type="button" class="action-btn action-view-btn checkin-select-ticket-btn" data-ticket-token="' + escapeAttr(r.ticketToken) + '" data-reg-id="' + escapeAttr(r.registrationId) + '">📷 Inspect / Confirm</button>';
+          var waSt = String(r.checkinWhatsappStatus || 'PENDING').toUpperCase();
+          var waBadgeHtml = '<span class="wa-status-pill pending">⏳ Pending Check-in</span>';
+          if (waSt === 'SENT') {
+            waBadgeHtml = '<span class="wa-status-pill sent" title="' + escapeAttr(r.checkinWhatsappApiResponse || 'Sent via Cloud API') + '">✓ Sent (Cloud API)</span>';
+          } else if (waSt === 'FAILED') {
+            waBadgeHtml = '<span class="wa-status-pill failed" title="' + escapeAttr(r.checkinWhatsappError || 'Delivery failed') + '">✕ Failed</span>';
+          } else if (waSt === 'NOT_CONFIGURED') {
+            waBadgeHtml = '<span class="wa-status-pill not-configured" title="' + escapeAttr(r.checkinWhatsappError || 'Cloud API credentials missing') + '">⚠ Not Configured</span>';
+          } else if (waSt === 'MANUAL_FALLBACK') {
+            waBadgeHtml = '<span class="wa-status-pill sent" style="background: rgba(59,130,246,0.18); color: #93C5FD; border-color: rgba(59,130,246,0.45);">📲 Manual Fallback</span>';
+          }
+
+          var actionHtml = '';
+          if (!r.checkedIn) {
+            actionHtml = '<button type="button" class="action-btn action-view-btn checkin-select-ticket-btn" data-ticket-token="' + escapeAttr(r.ticketToken) + '" data-reg-id="' + escapeAttr(r.registrationId) + '">📷 Scan / Confirm</button>';
+          } else {
+            actionHtml = '<div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">';
+            if (waSt === 'FAILED' || waSt === 'NOT_CONFIGURED') {
+              actionHtml += '<button type="button" class="action-btn action-edit-btn checkin-retry-wa-btn" data-reg-id="' + escapeAttr(r.registrationId) + '" title="Retry Cloud API WhatsApp">🔄 Retry WA</button>';
+              if (r.checkinWhatsappClickToChatUrl) {
+                actionHtml += '<a href="' + escapeAttr(r.checkinWhatsappClickToChatUrl) + '" target="_blank" rel="noopener noreferrer" class="action-btn action-message-btn checkin-manual-wa-link" data-reg-id="' + escapeAttr(r.registrationId) + '" style="text-decoration: none;">📲 Manual WA</a>';
+              }
+            } else {
+              actionHtml += '<span style="font-size: 12px; font-weight: 700; color: #6EE7B7;">✓ Completed</span>';
+            }
+            actionHtml += '</div>';
+          }
 
           tr.innerHTML =
             '<td style="font-weight: 800; color: var(--gold-300); white-space: nowrap;">' + escapeHtml(r.ticketId) + '</td>' +
             '<td style="font-weight: 700; color: #FFFFFF;">' + escapeHtml(r.name) + '</td>' +
             '<td style="font-weight: 600;">' + escapeHtml(r.batchYear) + '</td>' +
-            '<td>' + escapeHtml(r.place) + '</td>' +
-            '<td><span class="badge-yes">REGISTERED</span></td>' +
+            '<td style="white-space: nowrap; font-size: 12.5px; color: #93C5FD;">' + escapeHtml(r.formattedPhone || r.whatsappNumber || '-') + '</td>' +
             '<td>' + statusBadge + '</td>' +
             '<td style="white-space: nowrap; color: #94A3B8; font-size: 12.5px;">' + escapeHtml(r.checkInTimestamp || '-') + '</td>' +
+            '<td>' + waBadgeHtml + '</td>' +
             '<td>' + actionHtml + '</td>';
           tbody.appendChild(tr);
         });
@@ -7226,11 +7845,25 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       document.getElementById('searchTableInput').addEventListener('input', renderResponsesTable);
       document.getElementById('filterParticipationSelect').addEventListener('change', renderResponsesTable);
 
+      var viewOpenTicketBtn = document.getElementById('viewOpenTicketBtn');
       var viewDownloadTicketBtn = document.getElementById('viewDownloadTicketBtn');
+      var viewPrintTicketBtn = document.getElementById('viewPrintTicketBtn');
+      if (viewOpenTicketBtn) {
+        viewOpenTicketBtn.addEventListener('click', function() {
+          var rec = findRegistrationById(activeViewRegId);
+          if (rec) openFullTicketViewerModal(rec);
+        });
+      }
       if (viewDownloadTicketBtn) {
         viewDownloadTicketBtn.addEventListener('click', function() {
           var rec = findRegistrationById(activeViewRegId);
           if (rec) downloadTicketAsPng(rec);
+        });
+      }
+      if (viewPrintTicketBtn) {
+        viewPrintTicketBtn.addEventListener('click', function() {
+          var rec = findRegistrationById(activeViewRegId);
+          if (rec) printEventTicketPass(rec);
         });
       }
 
@@ -7294,7 +7927,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       }
 
       // -----------------------------------------------------------------------
-      // EVENT CHECK-IN / QR SCANNER & One-Time Confirmation Handlers
+      // EVENT CHECK-IN / QR SCANNER (jsQR + BarcodeDetector) & Auto WhatsApp Confirmation
       // -----------------------------------------------------------------------
       var startQrScannerBtn = document.getElementById('startQrScannerBtn');
       var stopQrScannerBtn = document.getElementById('stopQrScannerBtn');
@@ -7303,6 +7936,8 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       var qrScannerVideo = document.getElementById('qrScannerVideo');
       var qrScannerCanvas = document.getElementById('qrScannerCanvas');
       var qrCameraPlaceholder = document.getElementById('qrCameraPlaceholder');
+      var qrCameraDeviceBar = document.getElementById('qrCameraDeviceBar');
+      var qrCameraSelect = document.getElementById('qrCameraSelect');
       var qrCameraErrorMsg = document.getElementById('qrCameraErrorMsg');
       var qrManualTokenInput = document.getElementById('qrManualTokenInput');
       var verifyQrTokenBtn = document.getElementById('verifyQrTokenBtn');
@@ -7314,6 +7949,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       var scanPartName = document.getElementById('scanPartName');
       var scanPartId = document.getElementById('scanPartId');
       var scanPartBatch = document.getElementById('scanPartBatch');
+      var scanPartPhone = document.getElementById('scanPartPhone');
       var scanRegStatus = document.getElementById('scanRegStatus');
       var scanCheckinStatus = document.getElementById('scanCheckinStatus');
       var scanPrevCheckinInfo = document.getElementById('scanPrevCheckinInfo');
@@ -7322,12 +7958,89 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       var searchCheckinInput = document.getElementById('searchCheckinInput');
       var filterCheckinBatchSelect = document.getElementById('filterCheckinBatchSelect');
       var filterCheckinStatusSelect = document.getElementById('filterCheckinStatusSelect');
+      var filterCheckinWaStatusSelect = document.getElementById('filterCheckinWaStatusSelect');
       var checkinManagementTableBody = document.getElementById('checkinManagementTableBody');
+
+      // Confirmation Dialog & Check-in Success Alert DOM
+      var qrConfirmModal = document.getElementById('qrConfirmModal');
+      var confirmModalHeaderId = document.getElementById('confirmModalHeaderId');
+      var confirmModalPartName = document.getElementById('confirmModalPartName');
+      var confirmModalPartBatch = document.getElementById('confirmModalPartBatch');
+      var confirmModalPartId = document.getElementById('confirmModalPartId');
+      var confirmModalPartPhone = document.getElementById('confirmModalPartPhone');
+      var confirmModalPartStatus = document.getElementById('confirmModalPartStatus');
+      var cancelQrConfirmBtn = document.getElementById('cancelQrConfirmBtn');
+      var submitQrConfirmBtn = document.getElementById('submitQrConfirmBtn');
+
+      var checkinSuccessModal = document.getElementById('checkinSuccessModal');
+      var successModalPartName = document.getElementById('successModalPartName');
+      var successModalPartId = document.getElementById('successModalPartId');
+      var successModalPartBatch = document.getElementById('successModalPartBatch');
+      var successModalCheckinTime = document.getElementById('successModalCheckinTime');
+      var successModalWaBox = document.getElementById('successModalWaBox');
+      var successModalWaHeadline = document.getElementById('successModalWaHeadline');
+      var successModalWaDetail = document.getElementById('successModalWaDetail');
+      var successModalWaActions = document.getElementById('successModalWaActions');
+      var successModalRetryWaBtn = document.getElementById('successModalRetryWaBtn');
+      var successModalManualWaLink = document.getElementById('successModalManualWaLink');
+      var closeCheckinSuccessBtn = document.getElementById('closeCheckinSuccessBtn');
 
       var activeCameraStream = null;
       var qrScanTimer = null;
       var currentCameraFacing = 'environment';
+      var selectedCameraDeviceId = '';
       var activeScannedParticipant = null;
+      var activeSuccessParticipant = null;
+      var isScannerProcessing = false;
+      var lastScannedValue = '';
+      var lastScannedTimestamp = 0;
+
+      function isModalOpenForScanner() {
+        return Boolean(
+          (qrConfirmModal && qrConfirmModal.classList.contains('open')) ||
+          (checkinSuccessModal && checkinSuccessModal.classList.contains('open'))
+        );
+      }
+
+      function populateAvailableCameras(currentStream) {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices || !qrCameraSelect || !qrCameraDeviceBar) return;
+        var activeDeviceId = '';
+        try {
+          var tracks = currentStream ? currentStream.getVideoTracks() : [];
+          if (tracks.length && tracks[0].getSettings) {
+            activeDeviceId = tracks[0].getSettings().deviceId || '';
+          }
+        } catch (e) {}
+
+        navigator.mediaDevices.enumerateDevices().then(function(devices) {
+          var cams = devices.filter(function(d) { return d.kind === 'videoinput'; });
+          qrCameraSelect.innerHTML = '';
+          if (cams.length === 0) {
+            qrCameraDeviceBar.style.display = 'none';
+            return;
+          }
+          cams.forEach(function(cam, idx) {
+            var opt = document.createElement('option');
+            opt.value = cam.deviceId;
+            opt.textContent = cam.label || ('Camera ' + (idx + 1));
+            if (activeDeviceId && cam.deviceId === activeDeviceId) opt.selected = true;
+            qrCameraSelect.appendChild(opt);
+          });
+          qrCameraDeviceBar.style.display = cams.length > 0 ? 'flex' : 'none';
+        }).catch(function() {});
+      }
+
+      function decodeQrFromCanvasContext(ctx, width, height) {
+        if (!ctx || !width || !height) return null;
+        if (typeof window.jsQR === 'function') {
+          try {
+            var imgData = ctx.getImageData(0, 0, width, height);
+            var code = window.jsQR(imgData.data, width, height, { inversionAttempts: 'attemptBoth' });
+            if (code && code.data) return String(code.data).trim();
+          } catch (e) {}
+        }
+        return null;
+      }
 
       function stopQrCamera() {
         if (qrScanTimer) {
@@ -7351,57 +8064,124 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         if (flipCameraBtn) flipCameraBtn.style.display = 'none';
       }
 
-      function startQrCamera() {
+      function startQrCamera(preferredDeviceId) {
         if (!isAdminAuthenticated) return;
         if (qrCameraErrorMsg) qrCameraErrorMsg.style.display = 'none';
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+
+        var isLocal = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+        if (typeof window.isSecureContext !== 'undefined' && !window.isSecureContext && !isLocal) {
           if (qrCameraErrorMsg) {
-            qrCameraErrorMsg.textContent = 'Camera access is not supported in this browser context. You can upload a ticket image or enter a QR token below.';
+            qrCameraErrorMsg.textContent = 'Camera scanning requires a secure HTTPS connection (or localhost). Please access this portal over HTTPS.';
             qrCameraErrorMsg.style.display = 'block';
           }
           return;
         }
-        stopQrCamera();
-        navigator.mediaDevices.getUserMedia({
-          video: { facingMode: currentCameraFacing }
-        }).then(function(stream) {
-          activeCameraStream = stream;
-          if (qrScannerVideo) {
-            qrScannerVideo.srcObject = stream;
-            qrScannerVideo.play().catch(function() {});
-          }
-          if (qrCameraStage) qrCameraStage.classList.add('active');
-          if (qrCameraPlaceholder) qrCameraPlaceholder.style.display = 'none';
-          if (startQrScannerBtn) startQrScannerBtn.style.display = 'none';
-          if (stopQrScannerBtn) stopQrScannerBtn.style.display = 'inline-flex';
-          if (flipCameraBtn) flipCameraBtn.style.display = 'inline-flex';
 
-          var detector = null;
-          if (typeof window.BarcodeDetector === 'function') {
-            try { detector = new window.BarcodeDetector({ formats: ['qr_code'] }); } catch (e) {}
-          }
-          qrScanTimer = setInterval(function() {
-            if (!qrScannerVideo || qrScannerVideo.readyState < 2 || !detector) return;
-            detector.detect(qrScannerVideo).then(function(codes) {
-              if (codes && codes.length > 0 && codes[0].rawValue) {
-                verifyQrTicketOnBackend(codes[0].rawValue, false);
-              }
-            }).catch(function() {});
-          }, 500);
-        }).catch(function(err) {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
           if (qrCameraErrorMsg) {
-            qrCameraErrorMsg.textContent = 'Camera permission denied or no camera available (' + (err && err.message ? err.message : 'unavailable') + '). Use Ticket Image or QR Token input below.';
+            qrCameraErrorMsg.textContent = 'Camera API is unavailable in this browser. You can upload a ticket image (PNG/JPG) or enter a QR token below.';
             qrCameraErrorMsg.style.display = 'block';
           }
-        });
+          return;
+        }
+
+        stopQrCamera();
+        var videoConstraints = preferredDeviceId
+          ? { deviceId: { exact: preferredDeviceId }, width: { ideal: 1280 }, height: { ideal: 720 } }
+          : { facingMode: { ideal: currentCameraFacing }, width: { ideal: 1280 }, height: { ideal: 720 } };
+
+        navigator.mediaDevices.getUserMedia({ video: videoConstraints, audio: false })
+          .catch(function() {
+            // Graceful fallback on laptops / strict Safari constraints
+            return navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+          })
+          .then(function(stream) {
+            activeCameraStream = stream;
+            if (qrScannerVideo) {
+              qrScannerVideo.setAttribute('playsinline', 'true');
+              qrScannerVideo.muted = true;
+              qrScannerVideo.srcObject = stream;
+              qrScannerVideo.play().catch(function() {});
+            }
+            if (qrCameraStage) qrCameraStage.classList.add('active');
+            if (qrCameraPlaceholder) qrCameraPlaceholder.style.display = 'none';
+            if (startQrScannerBtn) startQrScannerBtn.style.display = 'none';
+            if (stopQrScannerBtn) stopQrScannerBtn.style.display = 'inline-flex';
+            if (flipCameraBtn) flipCameraBtn.style.display = 'inline-flex';
+            populateAvailableCameras(stream);
+
+            var nativeDetector = null;
+            if (typeof window.BarcodeDetector === 'function') {
+              try { nativeDetector = new window.BarcodeDetector({ formats: ['qr_code'] }); } catch (e) {}
+            }
+
+            qrScanTimer = setInterval(function() {
+              if (!qrScannerVideo || qrScannerVideo.readyState < 2) return;
+              if (isScannerProcessing || isModalOpenForScanner()) return;
+              var vw = qrScannerVideo.videoWidth;
+              var vh = qrScannerVideo.videoHeight;
+              if (!vw || !vh) return;
+
+              // Primary Universal Decoder: jsQR on offscreen canvas (Android, iPhone Safari, Desktop)
+              if (qrScannerCanvas && qrScannerCanvas.getContext) {
+                var maxDim = 720;
+                var ratio = Math.min(1, maxDim / Math.max(vw, vh));
+                var cw = Math.max(240, Math.round(vw * ratio));
+                var ch = Math.max(240, Math.round(vh * ratio));
+                qrScannerCanvas.width = cw;
+                qrScannerCanvas.height = ch;
+                var cctx = qrScannerCanvas.getContext('2d', { willReadFrequently: true });
+                cctx.drawImage(qrScannerVideo, 0, 0, cw, ch);
+                var decoded = decodeQrFromCanvasContext(cctx, cw, ch);
+                if (decoded) {
+                  handleDetectedQrPayload(decoded, false);
+                  return;
+                }
+              }
+
+              // Optional secondary fast-path via native BarcodeDetector
+              if (nativeDetector) {
+                nativeDetector.detect(qrScannerVideo).then(function(codes) {
+                  if (codes && codes.length > 0 && codes[0].rawValue) {
+                    handleDetectedQrPayload(codes[0].rawValue, false);
+                  }
+                }).catch(function() {});
+              }
+            }, 180);
+          })
+          .catch(function(err) {
+            var reason = 'Camera permission denied or no camera available.';
+            if (err && err.name === 'NotAllowedError') {
+              reason = 'Camera permission was denied. Please allow camera access in your browser settings and click Scan QR Code again.';
+            } else if (err && err.name === 'NotFoundError') {
+              reason = 'No camera device detected on this device. Please use Scan from Ticket Image or QR Token input below.';
+            } else if (err && err.name === 'NotReadableError') {
+              reason = 'Camera is currently in use by another application. Close the other app and try again.';
+            } else if (err && err.message) {
+              reason = 'Camera error: ' + err.message;
+            }
+            if (qrCameraErrorMsg) {
+              qrCameraErrorMsg.textContent = reason;
+              qrCameraErrorMsg.style.display = 'block';
+            }
+          });
       }
 
-      if (startQrScannerBtn) startQrScannerBtn.addEventListener('click', startQrCamera);
+      if (startQrScannerBtn) startQrScannerBtn.addEventListener('click', function() { startQrCamera(selectedCameraDeviceId); });
       if (stopQrScannerBtn) stopQrScannerBtn.addEventListener('click', stopQrCamera);
       if (flipCameraBtn) {
         flipCameraBtn.addEventListener('click', function() {
+          selectedCameraDeviceId = '';
           currentCameraFacing = (currentCameraFacing === 'environment') ? 'user' : 'environment';
-          startQrCamera();
+          startQrCamera('');
+        });
+      }
+      if (qrCameraSelect) {
+        qrCameraSelect.addEventListener('change', function() {
+          selectedCameraDeviceId = qrCameraSelect.value || '';
+          if (activeCameraStream) {
+            startQrCamera(selectedCameraDeviceId);
+          }
         });
       }
 
@@ -7442,7 +8222,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           if (scannerTopNotificationBanner) {
             scannerTopNotificationBanner.classList.remove('visible');
           }
-        }, 4500);
+        }, 5500);
       }
 
       if (scannerTopToastCloseBtn && scannerTopNotificationBanner) {
@@ -7450,6 +8230,98 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           if (scannerTopToastTimer) clearTimeout(scannerTopToastTimer);
           scannerTopNotificationBanner.classList.remove('visible');
         });
+      }
+
+      function openQrConfirmationModal(participant) {
+        if (!participant || !qrConfirmModal) return;
+        activeScannedParticipant = participant;
+        var tId = participant.ticketId || formatAnwarTicketId(participant.registrationId);
+        if (confirmModalHeaderId) confirmModalHeaderId.textContent = tId;
+        if (confirmModalPartName) confirmModalPartName.textContent = participant.name || '-';
+        if (confirmModalPartBatch) confirmModalPartBatch.textContent = participant.batchYear || '-';
+        if (confirmModalPartId) confirmModalPartId.textContent = tId;
+        if (confirmModalPartPhone) confirmModalPartPhone.textContent = participant.formattedPhone || participant.whatsappNumber || '-';
+        if (confirmModalPartStatus) {
+          confirmModalPartStatus.textContent = participant.checkedIn ? 'CONFIRMED / CHECKED IN' : 'REGISTERED • NOT CHECKED IN';
+          confirmModalPartStatus.style.color = participant.checkedIn ? '#34D399' : '#FBBF24';
+        }
+        if (submitQrConfirmBtn) {
+          submitQrConfirmBtn.disabled = false;
+          submitQrConfirmBtn.textContent = '✓ CONFIRM TICKET';
+        }
+        qrConfirmModal.classList.add('open');
+      }
+
+      function closeQrConfirmationModal() {
+        if (qrConfirmModal) {
+          qrConfirmModal.classList.remove('open');
+        }
+        // Reset cooldown slightly so admin can immediately scan next participant
+        lastScannedValue = '';
+      }
+
+      function openCheckinSuccessModal(data) {
+        if (!checkinSuccessModal || !data) return;
+        var p = data.participant || activeScannedParticipant || {};
+        activeSuccessParticipant = p;
+        var tId = p.ticketId || formatAnwarTicketId(p.registrationId);
+        if (successModalPartName) successModalPartName.textContent = p.name || '-';
+        if (successModalPartId) successModalPartId.textContent = tId;
+        if (successModalPartBatch) successModalPartBatch.textContent = p.batchYear || '-';
+        if (successModalCheckinTime) successModalCheckinTime.textContent = data.checkInTimestamp || p.checkInTimestamp || '-';
+
+        var wa = data.checkinWhatsapp || {};
+        if (successModalWaBox && successModalWaHeadline && successModalWaDetail && successModalWaActions) {
+          if (wa.sent) {
+            successModalWaBox.style.borderColor = '#34D399';
+            successModalWaBox.style.background = 'rgba(16, 185, 129, 0.14)';
+            successModalWaHeadline.style.color = '#6EE7B7';
+            successModalWaHeadline.textContent = '✓ WhatsApp Confirmation Sent Automatically (Cloud API)';
+            successModalWaDetail.textContent = 'Delivered to ' + (p.formattedPhone || p.whatsappNumber || 'participant') + (wa.messageId ? (' • Message ID: ' + wa.messageId) : '');
+            successModalWaActions.style.display = 'none';
+          } else if (!wa.configured) {
+            successModalWaBox.style.borderColor = '#F59E0B';
+            successModalWaBox.style.background = 'rgba(245, 158, 11, 0.12)';
+            successModalWaHeadline.style.color = '#FDE68A';
+            successModalWaHeadline.textContent = '⚠ WhatsApp Cloud API Not Configured';
+            successModalWaDetail.textContent = 'Set WHATSAPP_CLOUD_API_TOKEN & WHATSAPP_PHONE_NUMBER_ID in Vercel environment variables for automatic sending. Use Manual Fallback below to send now:';
+            if (successModalManualWaLink && wa.manualFallbackUrl) {
+              successModalManualWaLink.href = wa.manualFallbackUrl;
+              successModalManualWaLink.setAttribute('data-reg-id', p.registrationId || '');
+              successModalManualWaLink.style.display = 'inline-flex';
+            } else if (successModalManualWaLink) {
+              successModalManualWaLink.style.display = 'none';
+            }
+            if (successModalRetryWaBtn) successModalRetryWaBtn.style.display = 'none';
+            successModalWaActions.style.display = 'flex';
+          } else {
+            successModalWaBox.style.borderColor = '#EF4444';
+            successModalWaBox.style.background = 'rgba(239, 68, 68, 0.14)';
+            successModalWaHeadline.style.color = '#FCA5A5';
+            successModalWaHeadline.textContent = '✕ WhatsApp Cloud API Delivery Failed';
+            successModalWaDetail.textContent = wa.error || 'Unable to deliver WhatsApp message via Cloud API.';
+            if (successModalRetryWaBtn) {
+              successModalRetryWaBtn.style.display = 'inline-flex';
+              successModalRetryWaBtn.disabled = false;
+              successModalRetryWaBtn.setAttribute('data-reg-id', p.registrationId || '');
+            }
+            if (successModalManualWaLink && wa.manualFallbackUrl) {
+              successModalManualWaLink.href = wa.manualFallbackUrl;
+              successModalManualWaLink.setAttribute('data-reg-id', p.registrationId || '');
+              successModalManualWaLink.style.display = 'inline-flex';
+            }
+            successModalWaActions.style.display = 'flex';
+          }
+        }
+
+        checkinSuccessModal.classList.add('open');
+      }
+
+      function closeCheckinSuccessModal() {
+        if (checkinSuccessModal) {
+          checkinSuccessModal.classList.remove('open');
+        }
+        lastScannedValue = '';
       }
 
       function renderScannerVerificationState(data) {
@@ -7461,16 +8333,16 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
         if (status === 'INVALID' || !p) {
           scannedTicketResultCard.classList.add('status-invalid');
-          scanResultHeadline.textContent = 'INVALID TICKET – PLEASE CHECK THE QR CODE';
+          scanResultHeadline.textContent = 'INVALID TICKET – ACCESS DENIED';
           scanResultHeadline.style.color = '#F87171';
-          scanResultSubtext.textContent = 'INVALID TICKET – PLEASE VERIFY: The scanned QR code does not match any valid registration record in the database.';
+          scanResultSubtext.textContent = 'The scanned QR code does not match any valid registration record in the database.';
           if (scanParticipantDetailsBox) scanParticipantDetailsBox.style.display = 'none';
           if (confirmTicketCheckinBtn) confirmTicketCheckinBtn.style.display = 'none';
           triggerScannerDeviceVibration([200, 80, 200]);
           showScannerTopNotification(
             'invalid',
-            'INVALID TICKET – PLEASE CHECK THE QR CODE',
-            'Unrecognized or invalid QR ticket token. Please verify the participant pass.'
+            'INVALID TICKET – ACCESS DENIED',
+            'Unrecognized or invalid QR ticket code. Access denied.'
           );
           return;
         }
@@ -7480,13 +8352,14 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         if (scanPartName) scanPartName.textContent = p.name || '-';
         if (scanPartId) scanPartId.textContent = partDisplayId;
         if (scanPartBatch) scanPartBatch.textContent = p.batchYear || '-';
+        if (scanPartPhone) scanPartPhone.textContent = p.formattedPhone || p.whatsappNumber || '-';
         if (scanRegStatus) scanRegStatus.textContent = 'REGISTERED';
 
         if (status === 'VALID_PENDING') {
           scannedTicketResultCard.classList.add('status-pending');
           scanResultHeadline.textContent = '< TICKET CONFIRMED >';
           scanResultHeadline.style.color = 'var(--gold-400)';
-          scanResultSubtext.textContent = 'QR SCANNED SUCCESSFULLY — Click CONFIRM TICKET below to complete check-in.';
+          scanResultSubtext.textContent = 'Valid ticket verified. Confirm check-in in the confirmation dialog or click CONFIRM TICKET below.';
           if (scanCheckinStatus) {
             scanCheckinStatus.textContent = 'NOT CHECKED IN';
             scanCheckinStatus.style.color = '#FBBF24';
@@ -7497,12 +8370,13 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             confirmTicketCheckinBtn.disabled = false;
             confirmTicketCheckinBtn.textContent = 'CONFIRM TICKET';
           }
-          triggerScannerDeviceVibration([120]);
+          triggerScannerDeviceVibration([100]);
           showScannerTopNotification(
             'valid',
             'QR SCANNED SUCCESSFULLY',
-            (p.name || 'Participant') + ' (' + partDisplayId + ' • Batch ' + (p.batchYear || '-') + ') — Ready to confirm entry'
+            (p.name || 'Participant') + ' (' + partDisplayId + ' • Batch ' + (p.batchYear || '-') + ') — Confirm entry in dialog'
           );
+          openQrConfirmationModal(p);
           return;
         }
 
@@ -7510,9 +8384,9 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           scannedTicketResultCard.classList.add('status-confirmed');
           scanResultHeadline.textContent = 'TICKET CONFIRMED SUCCESSFULLY';
           scanResultHeadline.style.color = '#34D399';
-          scanResultSubtext.textContent = 'CHECK-IN SUCCESSFUL — Participant entry has been permanently recorded in the database.';
+          scanResultSubtext.textContent = 'ANWAR ALUMNI SEAT CONFIRMED! Participant entry has been permanently recorded.';
           if (scanCheckinStatus) {
-            scanCheckinStatus.textContent = 'CHECKED IN';
+            scanCheckinStatus.textContent = 'CONFIRMED / CHECKED IN';
             scanCheckinStatus.style.color = '#34D399';
           }
           if (scanPrevCheckinInfo) {
@@ -7526,9 +8400,10 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           triggerScannerDeviceVibration([140, 60, 140]);
           showScannerTopNotification(
             'valid',
-            'CHECK-IN SUCCESSFUL — TICKET CONFIRMED SUCCESSFULLY',
+            'TICKET CONFIRMED SUCCESSFULLY — ANWAR ALUMNI SEAT CONFIRMED!',
             (p.name || 'Participant') + ' (' + partDisplayId + ') checked in at ' + (data.checkInTimestamp || p.checkInTimestamp || 'now')
           );
+          openCheckinSuccessModal(data);
           return;
         }
 
@@ -7537,9 +8412,9 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           scannedTicketResultCard.classList.add('status-already');
           scanResultHeadline.textContent = 'ALREADY CONFIRMED – ENTRY COMPLETED';
           scanResultHeadline.style.color = '#FBBF24';
-          scanResultSubtext.textContent = 'This ticket has already been used for check-in and cannot be confirmed again.';
+          scanResultSubtext.textContent = 'This ticket has already been confirmed and cannot be checked in again.';
           if (scanCheckinStatus) {
-            scanCheckinStatus.textContent = 'CHECKED IN';
+            scanCheckinStatus.textContent = 'CONFIRMED / CHECKED IN';
             scanCheckinStatus.style.color = '#34D399';
           }
           if (scanPrevCheckinInfo) {
@@ -7559,6 +8434,19 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         }
       }
 
+      function handleDetectedQrPayload(rawQr, allowIdLookup) {
+        var cleanQr = String(rawQr || '').trim();
+        var nowMs = Date.now();
+        if (!cleanQr) return;
+        if (cleanQr === lastScannedValue && (nowMs - lastScannedTimestamp) < 3500) {
+          return;
+        }
+        lastScannedValue = cleanQr;
+        lastScannedTimestamp = nowMs;
+        if (qrManualTokenInput) qrManualTokenInput.value = cleanQr;
+        verifyQrTicketOnBackend(cleanQr, allowIdLookup);
+      }
+
       function verifyQrTicketOnBackend(qrDataStr, allowIdLookup) {
         if (!isAdminAuthenticated) return;
         var cleanQr = String(qrDataStr || '').trim();
@@ -7566,110 +8454,272 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           renderScannerVerificationState({ status: 'INVALID' });
           return;
         }
+        if (isScannerProcessing) return;
+        isScannerProcessing = true;
         apiFetchJson('/api/admin/checkin/verify', {
           method: 'POST',
           headers: getAuthHeaders(true),
           body: JSON.stringify({ qrData: cleanQr, allowIdLookup: Boolean(allowIdLookup) })
         })
           .then(function(res) {
+            isScannerProcessing = false;
             renderScannerVerificationState(res.data || { status: 'INVALID' });
           })
           .catch(function() {
+            isScannerProcessing = false;
             renderScannerVerificationState({ status: 'INVALID' });
           });
       }
 
       if (verifyQrTokenBtn && qrManualTokenInput) {
         verifyQrTokenBtn.addEventListener('click', function() {
+          lastScannedValue = '';
           verifyQrTicketOnBackend(qrManualTokenInput.value, false);
         });
         qrManualTokenInput.addEventListener('keydown', function(e) {
           if (e.key === 'Enter') {
             e.preventDefault();
+            lastScannedValue = '';
             verifyQrTicketOnBackend(qrManualTokenInput.value, false);
           }
         });
+      }
+
+      function decodeQrFromLoadedImageElement(imgEl) {
+        var iw = imgEl.naturalWidth || imgEl.width;
+        var ih = imgEl.naturalHeight || imgEl.height;
+        if (!iw || !ih) return null;
+
+        var c = document.createElement('canvas');
+        var ctx = c.getContext('2d', { willReadFrequently: true });
+
+        // Pass 1: Scaled full image (handles direct QR screenshots & resized tickets)
+        var maxSide = 1200;
+        var ratio = Math.min(1, maxSide / Math.max(iw, ih));
+        c.width = Math.max(100, Math.round(iw * ratio));
+        c.height = Math.max(100, Math.round(ih * ratio));
+        ctx.drawImage(imgEl, 0, 0, c.width, c.height);
+        var hit = decodeQrFromCanvasContext(ctx, c.width, c.height);
+        if (hit) return hit;
+
+        // Pass 2: Bottom half crop at full native resolution (for downloaded tall ticket PNGs!)
+        var halfY = Math.floor(ih * 0.45);
+        var halfH = ih - halfY;
+        var subW = Math.min(1000, iw);
+        var subH = Math.round(halfH * (subW / iw));
+        c.width = subW;
+        c.height = subH;
+        ctx.drawImage(imgEl, 0, halfY, iw, halfH, 0, 0, subW, subH);
+        hit = decodeQrFromCanvasContext(ctx, subW, subH);
+        if (hit) return hit;
+
+        // Pass 3: Lower-center 500x500 crop (highest module crispness for jsQR)
+        var cropSize = Math.round(Math.min(iw, ih) * 0.6);
+        var sx = Math.floor((iw - cropSize) / 2);
+        var sy = Math.floor(ih - cropSize - (ih * 0.04));
+        c.width = 600;
+        c.height = 600;
+        ctx.drawImage(imgEl, sx, Math.max(0, sy), cropSize, cropSize, 0, 0, 600, 600);
+        return decodeQrFromCanvasContext(ctx, 600, 600);
       }
 
       if (qrTicketImageInput) {
         qrTicketImageInput.addEventListener('change', function() {
           var file = qrTicketImageInput.files && qrTicketImageInput.files[0];
           if (!file) return;
-          var fileNameMatch = file.name.match(/(AUF26-ANWAR\d{3,}-[A-F0-9]{12})/i);
-          if (typeof window.BarcodeDetector === 'function' && typeof createImageBitmap === 'function') {
-            createImageBitmap(file).then(function(bmp) {
-              var det = new window.BarcodeDetector({ formats: ['qr_code'] });
-              return det.detect(bmp);
-            }).then(function(codes) {
-              if (codes && codes.length > 0 && codes[0].rawValue) {
-                if (qrManualTokenInput) qrManualTokenInput.value = codes[0].rawValue;
-                verifyQrTicketOnBackend(codes[0].rawValue, false);
-              } else if (fileNameMatch) {
-                if (qrManualTokenInput) qrManualTokenInput.value = fileNameMatch[1];
-                verifyQrTicketOnBackend(fileNameMatch[1], false);
-              } else {
+          lastScannedValue = '';
+
+          var objUrl = URL.createObjectURL(file);
+          var img = new Image();
+          img.onload = function() {
+            var decoded = decodeQrFromLoadedImageElement(img);
+            URL.revokeObjectURL(objUrl);
+            if (decoded) {
+              if (qrManualTokenInput) qrManualTokenInput.value = decoded;
+              verifyQrTicketOnBackend(decoded, false);
+              return;
+            }
+            if (typeof window.BarcodeDetector === 'function' && typeof createImageBitmap === 'function') {
+              createImageBitmap(file).then(function(bmp) {
+                var det = new window.BarcodeDetector({ formats: ['qr_code'] });
+                return det.detect(bmp);
+              }).then(function(codes) {
+                if (codes && codes.length > 0 && codes[0].rawValue) {
+                  if (qrManualTokenInput) qrManualTokenInput.value = codes[0].rawValue;
+                  verifyQrTicketOnBackend(codes[0].rawValue, false);
+                } else {
+                  renderScannerVerificationState({ status: 'INVALID' });
+                }
+              }).catch(function() {
                 renderScannerVerificationState({ status: 'INVALID' });
-              }
-            }).catch(function() {
-              if (fileNameMatch) {
-                if (qrManualTokenInput) qrManualTokenInput.value = fileNameMatch[1];
-                verifyQrTicketOnBackend(fileNameMatch[1], false);
-              } else {
-                renderScannerVerificationState({ status: 'INVALID' });
-              }
-            });
-          } else if (fileNameMatch) {
-            if (qrManualTokenInput) qrManualTokenInput.value = fileNameMatch[1];
-            verifyQrTicketOnBackend(fileNameMatch[1], false);
-          } else {
+              });
+            } else {
+              renderScannerVerificationState({ status: 'INVALID' });
+            }
+          };
+          img.onerror = function() {
+            URL.revokeObjectURL(objUrl);
             renderScannerVerificationState({ status: 'INVALID' });
-          }
+          };
+          img.src = objUrl;
           qrTicketImageInput.value = '';
         });
       }
 
+      function executeTicketCheckinConfirmation(triggerBtn) {
+        if (!isAdminAuthenticated || !activeScannedParticipant) return;
+        var origLabel = triggerBtn ? triggerBtn.textContent : '';
+        if (triggerBtn) {
+          triggerBtn.disabled = true;
+          triggerBtn.textContent = 'Confirming & Sending WhatsApp...';
+        }
+        apiFetchJson('/api/admin/checkin/confirm', {
+          method: 'POST',
+          headers: getAuthHeaders(true),
+          body: JSON.stringify({
+            ticketToken: activeScannedParticipant.ticketToken,
+            registrationId: activeScannedParticipant.registrationId
+          })
+        })
+          .then(function(res) {
+            if (triggerBtn) {
+              triggerBtn.disabled = false;
+              triggerBtn.textContent = origLabel || '✓ CONFIRM TICKET';
+            }
+            closeQrConfirmationModal();
+            if (res.data && res.data.dashboard) {
+              showAuthenticatedDashboard(res.data.dashboard);
+            }
+            renderScannerVerificationState(res.data || { status: 'INVALID' });
+            if (res.status === 200 && res.data && res.data.status === 'CONFIRMED_NOW') {
+              showToast('✓ TICKET CONFIRMED SUCCESSFULLY — ANWAR ALUMNI SEAT CONFIRMED!');
+            } else if (res.data && res.data.status === 'ALREADY_CONFIRMED') {
+              showToast('⚠️ ALREADY CONFIRMED – ENTRY COMPLETED');
+            }
+          })
+          .catch(function() {
+            if (triggerBtn) {
+              triggerBtn.disabled = false;
+              triggerBtn.textContent = origLabel || '✓ CONFIRM TICKET';
+            }
+            showToast('Unable to confirm ticket. Please try again.');
+          });
+      }
+
       if (confirmTicketCheckinBtn) {
         confirmTicketCheckinBtn.addEventListener('click', function() {
-          if (!isAdminAuthenticated || !activeScannedParticipant) return;
-          confirmTicketCheckinBtn.disabled = true;
-          confirmTicketCheckinBtn.textContent = 'Confirming Check-in...';
-          apiFetchJson('/api/admin/checkin/confirm', {
-            method: 'POST',
-            headers: getAuthHeaders(true),
-            body: JSON.stringify({
-              ticketToken: activeScannedParticipant.ticketToken,
-              registrationId: activeScannedParticipant.registrationId
-            })
-          })
-            .then(function(res) {
-              if (res.data && res.data.dashboard) {
-                showAuthenticatedDashboard(res.data.dashboard);
-              }
-              renderScannerVerificationState(res.data || { status: 'INVALID' });
-              if (res.status === 200 && res.data && res.data.status === 'CONFIRMED_NOW') {
-                showToast('✓ TICKET CONFIRMED SUCCESSFULLY (' + (activeScannedParticipant.ticketId || '') + ')');
-              } else if (res.data && res.data.status === 'ALREADY_CONFIRMED') {
-                showToast('⚠️ ALREADY CONFIRMED – ENTRY COMPLETED');
-              }
-            })
-            .catch(function() {
-              confirmTicketCheckinBtn.disabled = false;
-              confirmTicketCheckinBtn.textContent = 'CONFIRM TICKET';
-              showToast('Unable to confirm ticket. Please try again.');
-            });
+          if (!activeScannedParticipant) return;
+          openQrConfirmationModal(activeScannedParticipant);
+        });
+      }
+      if (submitQrConfirmBtn) {
+        submitQrConfirmBtn.addEventListener('click', function() {
+          executeTicketCheckinConfirmation(submitQrConfirmBtn);
+        });
+      }
+      if (cancelQrConfirmBtn) {
+        cancelQrConfirmBtn.addEventListener('click', closeQrConfirmationModal);
+      }
+      if (closeCheckinSuccessBtn) {
+        closeCheckinSuccessBtn.addEventListener('click', closeCheckinSuccessModal);
+      }
+      if (checkinSuccessModal) {
+        checkinSuccessModal.addEventListener('click', function(e) {
+          if (e.target === checkinSuccessModal) closeCheckinSuccessModal();
+        });
+      }
+
+      function retryCheckinWhatsappCloudApi(regId, btnEl) {
+        if (!isAdminAuthenticated || !regId) return;
+        if (btnEl) {
+          btnEl.disabled = true;
+          btnEl.textContent = 'Sending...';
+        }
+        apiFetchJson('/api/admin/checkin/whatsapp-retry', {
+          method: 'POST',
+          headers: getAuthHeaders(true),
+          body: JSON.stringify({ registrationId: regId })
+        }).then(function(res) {
+          if (btnEl) {
+            btnEl.disabled = false;
+            btnEl.textContent = '🔄 Retry WA';
+          }
+          if (res.data && res.data.registrations) {
+            showAuthenticatedDashboard(res.data);
+          }
+          if (res.ok && res.data && res.data.updatedRecord) {
+            showToast('✓ WhatsApp confirmation sent via Cloud API!');
+            if (checkinSuccessModal && checkinSuccessModal.classList.contains('open')) {
+              openCheckinSuccessModal({
+                participant: res.data.updatedRecord,
+                checkInTimestamp: res.data.updatedRecord.checkInTimestamp,
+                checkinWhatsapp: {
+                  sent: true,
+                  configured: true,
+                  messageId: res.data.updatedRecord.checkinWhatsappMessageId
+                }
+              });
+            }
+          } else {
+            showToast(extractReadableMessage(res.data && res.data.message, 'WhatsApp Cloud API send failed.'));
+          }
+        }).catch(function() {
+          if (btnEl) {
+            btnEl.disabled = false;
+            btnEl.textContent = '🔄 Retry WA';
+          }
+          showToast('Unable to retry WhatsApp delivery.');
+        });
+      }
+
+      function recordManualCheckinWhatsappFallback(regId) {
+        if (!isAdminAuthenticated || !regId) return;
+        apiFetchJson('/api/admin/checkin/whatsapp-manual', {
+          method: 'POST',
+          headers: getAuthHeaders(true),
+          body: JSON.stringify({ registrationId: regId })
+        }).then(function(res) {
+          if (res.ok && res.data && res.data.registrations) {
+            showAuthenticatedDashboard(res.data);
+          }
+        }).catch(function() {});
+      }
+
+      if (successModalRetryWaBtn) {
+        successModalRetryWaBtn.addEventListener('click', function() {
+          var regId = successModalRetryWaBtn.getAttribute('data-reg-id') || (activeSuccessParticipant && activeSuccessParticipant.registrationId) || '';
+          retryCheckinWhatsappCloudApi(regId, successModalRetryWaBtn);
+        });
+      }
+      if (successModalManualWaLink) {
+        successModalManualWaLink.addEventListener('click', function() {
+          var regId = successModalManualWaLink.getAttribute('data-reg-id') || (activeSuccessParticipant && activeSuccessParticipant.registrationId) || '';
+          recordManualCheckinWhatsappFallback(regId);
         });
       }
 
       if (checkinManagementTableBody) {
         checkinManagementTableBody.addEventListener('click', function(e) {
           var btn = e.target.closest('.checkin-select-ticket-btn');
-          if (!btn) return;
-          var tok = btn.getAttribute('data-ticket-token') || '';
-          if (qrManualTokenInput) qrManualTokenInput.value = tok;
-          verifyQrTicketOnBackend(tok, false);
-          var scanSec = document.getElementById('qrScannerSection');
-          if (scanSec && scanSec.scrollIntoView) {
-            scanSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          if (btn) {
+            var tok = btn.getAttribute('data-ticket-token') || '';
+            if (qrManualTokenInput) qrManualTokenInput.value = tok;
+            lastScannedValue = '';
+            verifyQrTicketOnBackend(tok, false);
+            var scanSec = document.getElementById('qrScannerSection');
+            if (scanSec && scanSec.scrollIntoView) {
+              scanSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            return;
+          }
+          var retryBtn = e.target.closest('.checkin-retry-wa-btn');
+          if (retryBtn) {
+            retryCheckinWhatsappCloudApi(retryBtn.getAttribute('data-reg-id'), retryBtn);
+            return;
+          }
+          var manualLink = e.target.closest('.checkin-manual-wa-link');
+          if (manualLink) {
+            recordManualCheckinWhatsappFallback(manualLink.getAttribute('data-reg-id'));
           }
         });
       }
@@ -7677,6 +8727,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       if (searchCheckinInput) searchCheckinInput.addEventListener('input', renderCheckinManagementUI);
       if (filterCheckinBatchSelect) filterCheckinBatchSelect.addEventListener('change', renderCheckinManagementUI);
       if (filterCheckinStatusSelect) filterCheckinStatusSelect.addEventListener('change', renderCheckinManagementUI);
+      if (filterCheckinWaStatusSelect) filterCheckinWaStatusSelect.addEventListener('change', renderCheckinManagementUI);
 
       if (exportCheckinXlsxBtn) {
         exportCheckinXlsxBtn.addEventListener('click', function() {

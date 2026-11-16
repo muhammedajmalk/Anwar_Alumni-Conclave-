@@ -24,15 +24,23 @@ import re
 import secrets
 import socket
 import tempfile
+import threading
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 import zipfile
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+
+IST_TZ = timezone(timedelta(hours=5, minutes=30))
+DB_CHECKIN_LOCK = threading.Lock()
+
+
+def now_ist() -> datetime:
+    return datetime.now(IST_TZ)
 
 try:
     from vercel.blob import sync as vercel_blob
@@ -411,6 +419,25 @@ def build_whatsapp_message(name: str) -> str:
     )
 
 
+def build_checkin_whatsapp_message(name: str, batch_year: str, ticket_id: str) -> str:
+    clean_name = str(name or "Alumni Member").strip() or "Alumni Member"
+    clean_batch = str(batch_year or "-").strip() or "-"
+    clean_ticket = str(ticket_id or "ANWAR 001").strip() or "ANWAR 001"
+    return (
+        "*ANWAR ALUMNI – SEAT CONFIRMED!*\n\n"
+        f"Assalamu Alaikum {clean_name},\n\n"
+        "Your entry for *AUFBRUCH ALUMNI CONCLAVE 2026* has been successfully confirmed.\n\n"
+        "*Ticket Details:*\n"
+        f"- Name: {clean_name}\n"
+        f"- Batch: {clean_batch}\n"
+        f"- Ticket ID: {clean_ticket}\n"
+        "- Status: CONFIRMED\n\n"
+        "We look forward to welcoming you!\n\n"
+        "*Majmau Ssaqafathil Islamiyya*\n"
+        "Da'wa College Alumni"
+    )
+
+
 def format_anwar_id(raw_id_or_num) -> str:
     s = str(raw_id_or_num or "001").strip()
     m = re.search(r"(\d+)$", s)
@@ -525,7 +552,7 @@ def make_qr_matrix(text: str) -> list[list[int]]:
             for dc in range(-1, 8):
                 r, c = row + dr, col + dc
                 if 0 <= r < size and 0 <= c < size:
-                    in_outer = 0 <= dr <= 6 and (dc in (0, 6) or dr in (0, 6))
+                    in_outer = 0 <= dr <= 6 and 0 <= dc <= 6 and (dc in (0, 6) or dr in (0, 6))
                     in_inner = 2 <= dr <= 4 and 2 <= dc <= 4
                     set_func(r, c, in_outer or in_inner)
 
@@ -798,18 +825,34 @@ def enrich_registration(rec: dict) -> dict:
     checked_in = bool(rec.get("checkedIn", False))
     checkin_ts = str(rec.get("checkInTimestamp") or "").strip() if checked_in else ""
     checked_in_by = str(rec.get("checkedInBy") or "").strip() if checked_in else ""
+    batch_year_str = str(rec.get("batchYear", "")).strip()
+
+    checkin_wa_msg = build_checkin_whatsapp_message(clean_name, batch_year_str, ticket_id)
+    checkin_wa_url = (
+        f"https://wa.me/{phone_data['waNumber']}?text={urllib.parse.quote(checkin_wa_msg, safe='')}"
+        if phone_data["isValid"]
+        else ""
+    )
+    checkin_wa_status = str(rec.get("checkinWhatsappStatus") or "").strip().upper()
+    if not checkin_wa_status:
+        checkin_wa_status = "PENDING"
+    checkin_wa_sent = bool(rec.get("checkinWhatsappSent", False) or checkin_wa_status == "SENT")
+    checkin_wa_sent_at = str(rec.get("checkinWhatsappSentAt") or "").strip() if (checkin_wa_sent or checkin_wa_status == "MANUAL_FALLBACK") else ""
+    checkin_wa_msg_id = str(rec.get("checkinWhatsappMessageId") or "").strip()
+    checkin_wa_error = str(rec.get("checkinWhatsappError") or "").strip()
+    checkin_wa_resp = str(rec.get("checkinWhatsappApiResponse") or "").strip()
 
     return {
         "registrationId": raw_id,
         "ticketId": ticket_id,
         "ticketToken": ticket_token,
-        "timestamp": rec.get("timestamp") or datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "timestamp": rec.get("timestamp") or now_ist().strftime("%Y-%m-%d %H:%M:%S"),
         "name": clean_name,
         "originalExcelName": orig_excel_name,
         "nameEdited": name_edited,
         "studentId": student_id,
         "place": place_str,
-        "batchYear": str(rec.get("batchYear", "")).strip(),
+        "batchYear": batch_year_str,
         "whatsappNumber": str(rec.get("whatsappNumber", "")).strip(),
         "formattedPhone": phone_data["display"] if phone_data["isValid"] else str(rec.get("whatsappNumber", "")),
         "waNumber": phone_data["waNumber"] if phone_data["isValid"] else "",
@@ -822,10 +865,19 @@ def enrich_registration(rec: dict) -> dict:
         "whatsappSentCount": wa_sent_count,
         "whatsappCloudApiMessageId": str(rec.get("whatsappCloudApiMessageId") or "").strip(),
         "registrationStatus": "REGISTERED",
+        "ticketStatusLabel": "CONFIRMED / CHECKED IN" if checked_in else "VALID ENTRY PASS",
         "checkedIn": checked_in,
         "checkInStatus": "CHECKED IN" if checked_in else "NOT CHECKED IN",
         "checkInTimestamp": checkin_ts,
         "checkedInBy": checked_in_by,
+        "checkinWhatsappStatus": checkin_wa_status,
+        "checkinWhatsappSent": checkin_wa_sent,
+        "checkinWhatsappSentAt": checkin_wa_sent_at,
+        "checkinWhatsappMessageId": checkin_wa_msg_id,
+        "checkinWhatsappError": checkin_wa_error,
+        "checkinWhatsappApiResponse": checkin_wa_resp,
+        "checkinWhatsappMessage": checkin_wa_msg,
+        "checkinWhatsappClickToChatUrl": checkin_wa_url,
         "qrMatrix": make_qr_matrix(ticket_token),
     }
 
@@ -1110,6 +1162,8 @@ def get_whatsapp_cloud_api_status() -> dict:
     token = os.environ.get("WHATSAPP_CLOUD_API_TOKEN", "").strip()
     phone_id = os.environ.get("WHATSAPP_PHONE_NUMBER_ID", "").strip()
     api_ver = os.environ.get("WHATSAPP_API_VERSION", "v21.0").strip()
+    template_name = os.environ.get("WHATSAPP_CONFIRM_TEMPLATE_NAME", "").strip()
+    template_lang = os.environ.get("WHATSAPP_CONFIRM_TEMPLATE_LANG", "en").strip() or "en"
     configured = bool(token and phone_id)
     return {
         "senderNumber": WHATSAPP_SENDER_NUMBER,
@@ -1117,26 +1171,51 @@ def get_whatsapp_cloud_api_status() -> dict:
         "configured": configured,
         "tokenConfigured": bool(token),
         "phoneNumberIdConfigured": bool(phone_id),
+        "templateConfigured": bool(template_name),
+        "templateName": template_name,
+        "templateLang": template_lang,
         "apiVersion": api_ver,
         "status": "configured" if configured else "credentials_missing",
+        "requiredEnvVars": [
+            "WHATSAPP_CLOUD_API_TOKEN",
+            "WHATSAPP_PHONE_NUMBER_ID",
+            "WHATSAPP_CONFIRM_TEMPLATE_NAME (optional approved Meta template)",
+        ],
         "setupNotice": (
-            f"WhatsApp Business Cloud API is configured for sender {WHATSAPP_SENDER_NUMBER}."
+            f"Meta WhatsApp Business Cloud API is active (Sender {WHATSAPP_SENDER_NUMBER})."
             if configured
             else (
-                f"Sender number {WHATSAPP_SENDER_NUMBER} is configured, but Meta WhatsApp Business Cloud API "
-                "credentials (WHATSAPP_CLOUD_API_TOKEN and WHATSAPP_PHONE_NUMBER_ID) are not set in environment "
-                "variables yet. Manual Click-to-Chat (wa.me) remains active; add those environment variables to "
-                f"enable automated server-side sending from {WHATSAPP_SENDER_NUMBER}."
+                "WhatsApp Business Cloud API is NOT configured: set WHATSAPP_CLOUD_API_TOKEN and "
+                "WHATSAPP_PHONE_NUMBER_ID (plus optional WHATSAPP_CONFIRM_TEMPLATE_NAME) in Vercel / server "
+                "environment variables for automatic Cloud API delivery. Use Manual Fallback below to send via WhatsApp."
             )
         ),
     }
 
 
-def send_whatsapp_cloud_api_message(recipient_wa_number: str, message_text: str) -> dict:
+def send_whatsapp_cloud_api_message(
+    recipient_wa_number: str,
+    message_text: str,
+    template_params: list[str] | None = None,
+) -> dict:
     cfg = get_whatsapp_cloud_api_status()
     token = os.environ.get("WHATSAPP_CLOUD_API_TOKEN", "").strip()
     phone_id = os.environ.get("WHATSAPP_PHONE_NUMBER_ID", "").strip()
     api_ver = cfg["apiVersion"]
+    template_name = cfg["templateName"]
+    template_lang = cfg["templateLang"]
+
+    phone_norm = normalize_indian_phone(recipient_wa_number)
+    clean_to = phone_norm["waNumber"] if phone_norm["isValid"] else re.sub(r"\D+", "", str(recipient_wa_number or ""))
+    if not clean_to or len(clean_to) < 10:
+        return {
+            "success": False,
+            "configured": cfg["configured"],
+            "sent": False,
+            "senderNumber": WHATSAPP_SENDER_NUMBER,
+            "error": "Recipient does not have a valid WhatsApp phone number with country code.",
+        }
+
     if not cfg["configured"]:
         return {
             "success": False,
@@ -1144,15 +1223,36 @@ def send_whatsapp_cloud_api_message(recipient_wa_number: str, message_text: str)
             "sent": False,
             "senderNumber": WHATSAPP_SENDER_NUMBER,
             "error": cfg["setupNotice"],
+            "requiredEnvVars": cfg["requiredEnvVars"],
         }
+
     url = f"https://graph.facebook.com/{api_ver}/{phone_id}/messages"
-    payload = {
-        "messaging_product": "whatsapp",
-        "recipient_type": "individual",
-        "to": recipient_wa_number,
-        "type": "text",
-        "text": {"preview_url": False, "body": message_text},
-    }
+    if template_name and template_params:
+        payload = {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": clean_to,
+            "type": "template",
+            "template": {
+                "name": template_name,
+                "language": {"code": template_lang},
+                "components": [
+                    {
+                        "type": "body",
+                        "parameters": [{"type": "text", "text": str(v)} for v in template_params],
+                    }
+                ],
+            },
+        }
+    else:
+        payload = {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": clean_to,
+            "type": "text",
+            "text": {"preview_url": False, "body": message_text},
+        }
+
     req = urllib.request.Request(
         url,
         data=json.dumps(payload).encode("utf-8"),
@@ -1164,7 +1264,8 @@ def send_whatsapp_cloud_api_message(recipient_wa_number: str, message_text: str)
     )
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
-            res_data = json.loads(resp.read().decode("utf-8"))
+            raw_body = resp.read().decode("utf-8", errors="ignore")
+            res_data = json.loads(raw_body) if raw_body else {}
             msgs = res_data.get("messages") if isinstance(res_data, dict) else None
             msg_id = msgs[0].get("id") if (isinstance(msgs, list) and msgs and isinstance(msgs[0], dict)) else ""
             if 200 <= resp.status < 300 and msg_id:
@@ -1174,13 +1275,17 @@ def send_whatsapp_cloud_api_message(recipient_wa_number: str, message_text: str)
                     "sent": True,
                     "senderNumber": WHATSAPP_SENDER_NUMBER,
                     "messageId": msg_id,
+                    "httpStatus": resp.status,
+                    "apiResponse": raw_body[:240],
                 }
             return {
                 "success": False,
                 "configured": True,
                 "sent": False,
                 "senderNumber": WHATSAPP_SENDER_NUMBER,
+                "httpStatus": resp.status,
                 "error": "Meta Graph API did not return a confirmed message ID.",
+                "apiResponse": raw_body[:240],
             }
     except urllib.error.HTTPError as err:
         err_body = err.read().decode("utf-8", errors="ignore")
@@ -1189,7 +1294,9 @@ def send_whatsapp_cloud_api_message(recipient_wa_number: str, message_text: str)
             "configured": True,
             "sent": False,
             "senderNumber": WHATSAPP_SENDER_NUMBER,
+            "httpStatus": err.code,
             "error": f"Meta WhatsApp Cloud API HTTP {err.code}: {err_body[:240]}",
+            "apiResponse": err_body[:240],
         }
     except Exception as exc:
         return {
@@ -1198,6 +1305,7 @@ def send_whatsapp_cloud_api_message(recipient_wa_number: str, message_text: str)
             "sent": False,
             "senderNumber": WHATSAPP_SENDER_NUMBER,
             "error": f"WhatsApp Cloud API request failed: {exc}",
+            "apiResponse": str(exc)[:240],
         }
 
 
@@ -1215,6 +1323,10 @@ def build_checkin_xlsx_bytes(records: list[dict]) -> bytes:
         "Check-in Status",
         "Check-in Date & Time",
         "Confirmed By Admin",
+        "WhatsApp Message Status",
+        "WhatsApp Sent Date & Time",
+        "WhatsApp Message ID",
+        "WhatsApp API / Error",
         "Ticket Token",
         "Submitted Timestamp",
     ]
@@ -1234,6 +1346,10 @@ def build_checkin_xlsx_bytes(records: list[dict]) -> bytes:
                 str(r.get("checkInStatus") or ("CHECKED IN" if r.get("checkedIn") else "NOT CHECKED IN")),
                 str(r.get("checkInTimestamp") or "-"),
                 str(r.get("checkedInBy") or "-"),
+                str(r.get("checkinWhatsappStatus") or "PENDING"),
+                str(r.get("checkinWhatsappSentAt") or "-"),
+                str(r.get("checkinWhatsappMessageId") or "-"),
+                str(r.get("checkinWhatsappError") or r.get("checkinWhatsappApiResponse") or "-"),
                 str(r.get("ticketToken") or ""),
                 str(r.get("timestamp") or ""),
             ]
@@ -1321,6 +1437,18 @@ def build_dashboard_payload() -> dict:
 
     checked_in_total = sum(1 for r in records if r.get("checkedIn"))
     pending_checkin_total = max(0, total - checked_in_total)
+    checkin_wa_sent_total = sum(
+        1 for r in records if r.get("checkinWhatsappSent") or r.get("checkinWhatsappStatus") == "SENT"
+    )
+    checkin_wa_failed_total = sum(
+        1 for r in records if r.get("checkinWhatsappStatus") == "FAILED"
+    )
+    checkin_wa_not_configured_total = sum(
+        1 for r in records if r.get("checkinWhatsappStatus") == "NOT_CONFIGURED"
+    )
+    whatsapp_sent_total = sum(
+        1 for r in records if r.get("whatsappSent") or r.get("checkinWhatsappSent")
+    )
 
     batch_map: dict[str, dict] = {}
     place_map: dict[str, dict] = {}
@@ -1365,6 +1493,10 @@ def build_dashboard_payload() -> dict:
             "confirmationRate": rate,
             "checkedIn": checked_in_total,
             "pendingCheckIn": pending_checkin_total,
+            "checkinWhatsappSent": checkin_wa_sent_total,
+            "checkinWhatsappFailed": checkin_wa_failed_total,
+            "checkinWhatsappNotConfigured": checkin_wa_not_configured_total,
+            "whatsappSentTotal": whatsapp_sent_total,
             "uniqueBatchRegistered": batch_report["totalRegistered"],
             "officialOverallTotal": OFFICIAL_OVERALL_TOTAL,
             "overallPercentage": batch_report["overallPercentage"],
@@ -1588,13 +1720,14 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                 qs = urllib.parse.parse_qs(parsed.query)
                 q_token = (qs.get("token", [""])[0] or "").strip()
                 q_id = (qs.get("id", [""])[0] or "").strip()
+                admin_sess = get_valid_session(self)
                 records = load_db()
                 found = None
                 for r in records:
                     if q_token and str(r.get("ticketToken", "")).strip().upper() == q_token.upper():
                         found = r
                         break
-                    if q_id and (
+                    if admin_sess and q_id and (
                         str(r.get("registrationId", "")).strip() == normalize_reg_id(q_id)
                         or str(r.get("ticketId", "")).strip().upper() == q_id.upper()
                     ):
@@ -1603,7 +1736,24 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                 if not found:
                     self._send_json(404, {"success": False, "error": "Ticket not found."})
                     return
-                self._send_json(200, {"success": True, "ticket": found})
+                if admin_sess:
+                    self._send_json(200, {"success": True, "ticket": found})
+                    return
+                # Strip private PII (phone numbers, WhatsApp links) from public QR ticket lookup
+                safe_ticket = {
+                    "registrationId": found.get("registrationId"),
+                    "ticketId": found.get("ticketId"),
+                    "ticketToken": found.get("ticketToken"),
+                    "name": found.get("name"),
+                    "batchYear": found.get("batchYear"),
+                    "place": found.get("place"),
+                    "registrationStatus": found.get("registrationStatus", "REGISTERED"),
+                    "ticketStatusLabel": found.get("ticketStatusLabel", "VALID ENTRY PASS"),
+                    "checkedIn": bool(found.get("checkedIn", False)),
+                    "checkInStatus": found.get("checkInStatus", "NOT CHECKED IN"),
+                    "qrMatrix": found.get("qrMatrix"),
+                }
+                self._send_json(200, {"success": True, "ticket": safe_ticket})
                 return
 
             if route == "/api/ticket/qr.svg":
@@ -1982,10 +2132,10 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                         "success": False,
                         "valid": False,
                         "status": "INVALID",
-                        "headline": "INVALID TICKET – PLEASE CHECK THE QR CODE",
-                        "toastHeadline": "INVALID TICKET – PLEASE CHECK THE QR CODE",
+                        "headline": "INVALID TICKET – ACCESS DENIED",
+                        "toastHeadline": "INVALID TICKET – ACCESS DENIED",
                         "legacyHeadline": "INVALID TICKET – PLEASE VERIFY",
-                        "message": "INVALID TICKET – PLEASE CHECK THE QR CODE (INVALID TICKET – PLEASE VERIFY)",
+                        "message": "INVALID TICKET – ACCESS DENIED",
                     },
                 )
                 return
@@ -2031,10 +2181,10 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                         "success": False,
                         "valid": False,
                         "status": "INVALID",
-                        "headline": "INVALID TICKET – PLEASE CHECK THE QR CODE",
-                        "toastHeadline": "INVALID TICKET – PLEASE CHECK THE QR CODE",
+                        "headline": "INVALID TICKET – ACCESS DENIED",
+                        "toastHeadline": "INVALID TICKET – ACCESS DENIED",
                         "legacyHeadline": "INVALID TICKET – PLEASE VERIFY",
-                        "message": "INVALID TICKET – PLEASE CHECK THE QR CODE (INVALID TICKET – PLEASE VERIFY)",
+                        "message": "INVALID TICKET – ACCESS DENIED",
                     },
                 )
                 return
@@ -2072,7 +2222,7 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
             )
             return
 
-        # 4E. Protected Admin One-Time Check-in Confirmation Route
+        # 4E. Protected Admin One-Time Check-in Confirmation Route (Atomic + Auto WhatsApp Cloud API)
         if route == "/api/admin/checkin/confirm":
             sess = get_valid_session(self)
             if not sess:
@@ -2087,66 +2237,119 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                     {
                         "success": False,
                         "status": "INVALID",
-                        "headline": "INVALID TICKET – PLEASE CHECK THE QR CODE",
-                        "toastHeadline": "INVALID TICKET – PLEASE CHECK THE QR CODE",
+                        "headline": "INVALID TICKET – ACCESS DENIED",
+                        "toastHeadline": "INVALID TICKET – ACCESS DENIED",
                         "legacyHeadline": "INVALID TICKET – PLEASE VERIFY",
-                        "message": "INVALID TICKET – PLEASE CHECK THE QR CODE (INVALID TICKET – PLEASE VERIFY)",
+                        "message": "INVALID TICKET – ACCESS DENIED",
                     },
                 )
                 return
 
-            records = load_db()
-            found_index = -1
-            for idx, r in enumerate(records):
-                if target_token and str(r.get("ticketToken", "")).strip().upper() == target_token.upper():
-                    found_index = idx
-                    break
-                if not target_token and target_reg_id and str(r.get("registrationId", "")).strip() == normalize_reg_id(target_reg_id):
-                    found_index = idx
-                    break
+            with DB_CHECKIN_LOCK:
+                records = load_db()
+                found_index = -1
+                for idx, r in enumerate(records):
+                    if target_token and str(r.get("ticketToken", "")).strip().upper() == target_token.upper():
+                        found_index = idx
+                        break
+                    if not target_token and target_reg_id and str(r.get("registrationId", "")).strip() == normalize_reg_id(target_reg_id):
+                        found_index = idx
+                        break
 
-            if found_index == -1:
-                self._send_json(
-                    404,
-                    {
-                        "success": False,
-                        "valid": False,
-                        "status": "INVALID",
-                        "headline": "INVALID TICKET – PLEASE CHECK THE QR CODE",
-                        "toastHeadline": "INVALID TICKET – PLEASE CHECK THE QR CODE",
-                        "legacyHeadline": "INVALID TICKET – PLEASE VERIFY",
-                        "message": "INVALID TICKET – PLEASE CHECK THE QR CODE (INVALID TICKET – PLEASE VERIFY)",
-                    },
-                )
-                return
+                if found_index == -1:
+                    self._send_json(
+                        404,
+                        {
+                            "success": False,
+                            "valid": False,
+                            "status": "INVALID",
+                            "headline": "INVALID TICKET – ACCESS DENIED",
+                            "toastHeadline": "INVALID TICKET – ACCESS DENIED",
+                            "legacyHeadline": "INVALID TICKET – PLEASE VERIFY",
+                            "message": "INVALID TICKET – ACCESS DENIED",
+                        },
+                    )
+                    return
 
-            existing_rec = dict(records[found_index])
-            if existing_rec.get("checkedIn"):
-                self._send_json(
-                    409,
-                    {
-                        "success": False,
-                        "valid": True,
-                        "alreadyCheckedIn": True,
-                        "status": "ALREADY_CONFIRMED",
-                        "headline": "ALREADY CONFIRMED – ENTRY COMPLETED",
-                        "toastHeadline": "ALREADY CONFIRMED – ENTRY COMPLETED",
-                        "message": "ALREADY CONFIRMED – ENTRY COMPLETED",
-                        "checkInTimestamp": existing_rec.get("checkInTimestamp", ""),
-                        "checkedInBy": existing_rec.get("checkedInBy", ""),
-                        "participant": existing_rec,
-                    },
-                )
-                return
+                existing_rec = dict(records[found_index])
+                if existing_rec.get("checkedIn"):
+                    self._send_json(
+                        409,
+                        {
+                            "success": False,
+                            "valid": True,
+                            "alreadyCheckedIn": True,
+                            "status": "ALREADY_CONFIRMED",
+                            "headline": "ALREADY CONFIRMED – ENTRY COMPLETED",
+                            "toastHeadline": "ALREADY CONFIRMED – ENTRY COMPLETED",
+                            "message": "ALREADY CONFIRMED – ENTRY COMPLETED",
+                            "checkInTimestamp": existing_rec.get("checkInTimestamp", ""),
+                            "checkedInBy": existing_rec.get("checkedInBy", ""),
+                            "participant": existing_rec,
+                        },
+                    )
+                    return
 
-            now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            existing_rec["checkedIn"] = True
-            existing_rec["checkInStatus"] = "CHECKED IN"
-            existing_rec["checkInTimestamp"] = now_str
-            existing_rec["checkedInBy"] = sess.get("username", "admin")
-            updated_rec = enrich_registration(existing_rec)
-            records[found_index] = updated_rec
-            save_db(records)
+                now_str = now_ist().strftime("%Y-%m-%d %H:%M:%S")
+                existing_rec["checkedIn"] = True
+                existing_rec["checkInStatus"] = "CHECKED IN"
+                existing_rec["ticketStatusLabel"] = "CONFIRMED / CHECKED IN"
+                existing_rec["checkInTimestamp"] = now_str
+                existing_rec["checkedInBy"] = sess.get("username", "admin")
+                updated_rec = enrich_registration(existing_rec)
+                records[found_index] = updated_rec
+                # Persist check-in immediately before external WhatsApp API call (separate failure domain)
+                save_db(records)
+
+            # Automatically send WhatsApp Confirmation via WhatsApp Business Cloud API
+            wa_confirm_msg = updated_rec["checkinWhatsappMessage"]
+            wa_fallback_url = updated_rec["checkinWhatsappClickToChatUrl"]
+            wa_phone = updated_rec.get("waNumber") or updated_rec.get("whatsappNumber") or ""
+
+            cloud_res = send_whatsapp_cloud_api_message(
+                wa_phone,
+                wa_confirm_msg,
+                template_params=[
+                    updated_rec["name"],
+                    updated_rec["batchYear"],
+                    updated_rec["ticketId"],
+                ],
+            )
+            wa_attempt_ts = now_ist().strftime("%Y-%m-%d %H:%M:%S")
+
+            with DB_CHECKIN_LOCK:
+                records = load_db()
+                re_idx = -1
+                for idx, r in enumerate(records):
+                    if str(r.get("registrationId", "")).strip() == updated_rec["registrationId"]:
+                        re_idx = idx
+                        break
+                if re_idx != -1:
+                    rec_after = dict(records[re_idx])
+                    if cloud_res.get("sent"):
+                        rec_after["checkinWhatsappStatus"] = "SENT"
+                        rec_after["checkinWhatsappSent"] = True
+                        rec_after["checkinWhatsappSentAt"] = wa_attempt_ts
+                        rec_after["checkinWhatsappMessageId"] = cloud_res.get("messageId", "")
+                        rec_after["checkinWhatsappError"] = ""
+                        rec_after["checkinWhatsappApiResponse"] = f"Delivered via Cloud API (ID: {cloud_res.get('messageId', '')})"
+                        rec_after["whatsappSent"] = True
+                        rec_after["whatsappSentAt"] = wa_attempt_ts
+                        rec_after["whatsappSentCount"] = int(rec_after.get("whatsappSentCount") or 0) + 1
+                        rec_after["whatsappCloudApiMessageId"] = cloud_res.get("messageId", "")
+                    elif not cloud_res.get("configured"):
+                        rec_after["checkinWhatsappStatus"] = "NOT_CONFIGURED"
+                        rec_after["checkinWhatsappSent"] = False
+                        rec_after["checkinWhatsappError"] = cloud_res.get("error", "WhatsApp Cloud API credentials not configured.")
+                        rec_after["checkinWhatsappApiResponse"] = "Not configured in environment variables (manual fallback available)."
+                    else:
+                        rec_after["checkinWhatsappStatus"] = "FAILED"
+                        rec_after["checkinWhatsappSent"] = False
+                        rec_after["checkinWhatsappError"] = cloud_res.get("error", "WhatsApp Cloud API delivery failed.")
+                        rec_after["checkinWhatsappApiResponse"] = cloud_res.get("apiResponse") or cloud_res.get("error", "")
+                    updated_rec = enrich_registration(rec_after)
+                    records[re_idx] = updated_rec
+                    save_db(records)
 
             dash_payload = build_dashboard_payload()
             self._send_json(
@@ -2157,14 +2360,134 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                     "alreadyCheckedIn": False,
                     "status": "CONFIRMED_NOW",
                     "headline": "TICKET CONFIRMED SUCCESSFULLY",
-                    "toastHeadline": "CHECK-IN SUCCESSFUL",
-                    "message": "TICKET CONFIRMED SUCCESSFULLY — CHECK-IN SUCCESSFUL",
+                    "subHeadline": "ANWAR ALUMNI SEAT CONFIRMED!",
+                    "toastHeadline": "TICKET CONFIRMED SUCCESSFULLY — ANWAR ALUMNI SEAT CONFIRMED!",
+                    "message": "ANWAR ALUMNI SEAT CONFIRMED!",
                     "checkInTimestamp": updated_rec["checkInTimestamp"],
                     "checkedInBy": updated_rec["checkedInBy"],
+                    "checkinWhatsapp": {
+                        "status": updated_rec["checkinWhatsappStatus"],
+                        "sent": updated_rec["checkinWhatsappSent"],
+                        "configured": bool(cloud_res.get("configured")),
+                        "sentAt": updated_rec["checkinWhatsappSentAt"],
+                        "messageId": updated_rec["checkinWhatsappMessageId"],
+                        "error": updated_rec["checkinWhatsappError"],
+                        "apiResponse": updated_rec["checkinWhatsappApiResponse"],
+                        "messageText": wa_confirm_msg,
+                        "manualFallbackUrl": wa_fallback_url,
+                        "requiredEnvVars": cloud_res.get("requiredEnvVars", []),
+                    },
                     "participant": updated_rec,
                     "dashboard": dash_payload,
                 },
             )
+            return
+
+        # 4E-2. Protected Admin Retry WhatsApp Confirmation After Check-in Failure
+        if route == "/api/admin/checkin/whatsapp-retry":
+            sess = get_valid_session(self)
+            if not sess:
+                self._send_json(401, {"success": False, "error": "Unauthorized access."})
+                return
+
+            target_reg_id = normalize_reg_id(body.get("registrationId") or "001")
+            records = load_db()
+            found_index = -1
+            for idx, r in enumerate(records):
+                if str(r.get("registrationId", "")).strip() == target_reg_id:
+                    found_index = idx
+                    break
+            if found_index == -1:
+                self._send_json(404, {"success": False, "error": "Registration not found."})
+                return
+
+            target_rec = dict(records[found_index])
+            if not target_rec.get("checkedIn"):
+                self._send_json(400, {"success": False, "error": "Participant must be checked in before sending check-in WhatsApp confirmation."})
+                return
+            if target_rec.get("checkinWhatsappStatus") == "SENT" and not body.get("force"):
+                self._send_json(409, {"success": False, "error": "WhatsApp confirmation was already sent via Cloud API for this check-in."})
+                return
+
+            wa_msg = build_checkin_whatsapp_message(
+                target_rec.get("name", ""),
+                target_rec.get("batchYear", ""),
+                target_rec.get("ticketId") or format_anwar_id(target_reg_id),
+            )
+            cloud_res = send_whatsapp_cloud_api_message(
+                target_rec.get("waNumber") or target_rec.get("whatsappNumber") or "",
+                wa_msg,
+                template_params=[
+                    target_rec.get("name", ""),
+                    target_rec.get("batchYear", ""),
+                    target_rec.get("ticketId") or format_anwar_id(target_reg_id),
+                ],
+            )
+            wa_attempt_ts = now_ist().strftime("%Y-%m-%d %H:%M:%S")
+            if cloud_res.get("sent"):
+                target_rec["checkinWhatsappStatus"] = "SENT"
+                target_rec["checkinWhatsappSent"] = True
+                target_rec["checkinWhatsappSentAt"] = wa_attempt_ts
+                target_rec["checkinWhatsappMessageId"] = cloud_res.get("messageId", "")
+                target_rec["checkinWhatsappError"] = ""
+                target_rec["checkinWhatsappApiResponse"] = f"Delivered via Cloud API (ID: {cloud_res.get('messageId', '')})"
+                target_rec["whatsappSent"] = True
+                target_rec["whatsappSentAt"] = wa_attempt_ts
+                target_rec["whatsappSentCount"] = int(target_rec.get("whatsappSentCount") or 0) + 1
+            elif not cloud_res.get("configured"):
+                target_rec["checkinWhatsappStatus"] = "NOT_CONFIGURED"
+                target_rec["checkinWhatsappSent"] = False
+                target_rec["checkinWhatsappError"] = cloud_res.get("error", "")
+                target_rec["checkinWhatsappApiResponse"] = "Not configured in environment variables."
+            else:
+                target_rec["checkinWhatsappStatus"] = "FAILED"
+                target_rec["checkinWhatsappSent"] = False
+                target_rec["checkinWhatsappError"] = cloud_res.get("error", "")
+                target_rec["checkinWhatsappApiResponse"] = cloud_res.get("apiResponse") or cloud_res.get("error", "")
+
+            updated_rec = enrich_registration(target_rec)
+            records[found_index] = updated_rec
+            save_db(records)
+
+            dash_payload = build_dashboard_payload()
+            dash_payload["updatedRecord"] = updated_rec
+            dash_payload["cloudApi"] = cloud_res
+            dash_payload["message"] = (
+                f"WhatsApp check-in confirmation delivered to {updated_rec['name']}."
+                if cloud_res.get("sent")
+                else (cloud_res.get("error") or "Unable to send WhatsApp confirmation.")
+            )
+            self._send_json(200 if cloud_res.get("sent") else (400 if not cloud_res.get("configured") else 502), dash_payload)
+            return
+
+        # 4E-3. Protected Admin Record Explicit Manual Fallback Status
+        if route == "/api/admin/checkin/whatsapp-manual":
+            sess = get_valid_session(self)
+            if not sess:
+                self._send_json(401, {"success": False, "error": "Unauthorized access."})
+                return
+            target_reg_id = normalize_reg_id(body.get("registrationId") or "001")
+            records = load_db()
+            found_index = -1
+            for idx, r in enumerate(records):
+                if str(r.get("registrationId", "")).strip() == target_reg_id:
+                    found_index = idx
+                    break
+            if found_index == -1:
+                self._send_json(404, {"success": False, "error": "Registration not found."})
+                return
+            target_rec = dict(records[found_index])
+            now_str = now_ist().strftime("%Y-%m-%d %H:%M:%S")
+            target_rec["checkinWhatsappStatus"] = "MANUAL_FALLBACK"
+            target_rec["checkinWhatsappSentAt"] = now_str
+            target_rec["checkinWhatsappError"] = ""
+            target_rec["checkinWhatsappApiResponse"] = f"Manual WhatsApp opened by {sess.get('username', 'admin')} at {now_str}"
+            updated_rec = enrich_registration(target_rec)
+            records[found_index] = updated_rec
+            save_db(records)
+            dash_payload = build_dashboard_payload()
+            dash_payload["updatedRecord"] = updated_rec
+            self._send_json(200, dash_payload)
             return
 
         # 4F. Protected Admin Student Master List CRUD & Excel Import Routes
@@ -2389,7 +2712,7 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
             records = load_db()
 
             # Prevent duplicate student registration in the same Batch Year
-            now_dt = datetime.now()
+            now_dt = now_ist()
             norm_name_up = name.upper()
             norm_orig_up = orig_excel_name.upper()
             for existing in records:

@@ -269,9 +269,20 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertIn("EVENT CHECK-IN / QR SCANNER", index_html)
         self.assertIn("CONFIRM TICKET", index_html)
         self.assertIn("TICKET CONFIRMED SUCCESSFULLY", index_html)
+        self.assertIn("ANWAR ALUMNI SEAT CONFIRMED!", index_html)
         self.assertIn("ALREADY CONFIRMED – ENTRY COMPLETED", index_html)
-        self.assertIn("INVALID TICKET – PLEASE VERIFY", index_html)
-        self.assertIn("Download QR Code", index_html)
+        self.assertIn("INVALID TICKET – ACCESS DENIED", index_html)
+        self.assertIn("Are you sure you want to confirm this ticket?", index_html)
+        self.assertIn("VALID ENTRY PASS", index_html)
+        self.assertIn("Download Ticket", index_html)
+        self.assertIn("View Ticket", index_html)
+        self.assertIn("Print Ticket", index_html)
+        self.assertIn("/vendor/jsQR.js", index_html)
+        self.assertIn("jsQR", index_html)
+        self.assertIn('id="qrCameraSelect"', index_html)
+        self.assertIn('id="checkinKpiWaSent"', index_html)
+        self.assertIn('id="checkinKpiWaFailed"', index_html)
+        self.assertIn('id="filterCheckinWaStatusSelect"', index_html)
 
         # 9. Verify Object/JSON Display Guards, Session Endpoint Integration, Routing & Deployment Files
         self.assertIn("extractReadableMessage", index_html)
@@ -293,6 +304,7 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertIn("Are you sure you want to remove this student?", index_html)
         self.assertTrue((WORKSPACE_DIR / "public" / "index.html").exists())
         self.assertTrue((WORKSPACE_DIR / "public" / "aufbruch_poster.png").exists())
+        self.assertTrue((WORKSPACE_DIR / "public" / "vendor" / "jsQR.js").exists())
         self.assertTrue((WORKSPACE_DIR / "public" / "fonts" / "Sora-Regular.ttf").exists())
         self.assertTrue((WORKSPACE_DIR / "vercel.json").exists())
         self.assertTrue((WORKSPACE_DIR / "api" / "index.py").exists())
@@ -454,8 +466,19 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertFalse(dup_res.get("success", True))
         self.assertTrue(dup_res.get("duplicate"))
 
-        # 5-QR. Verify QR Scanner verification & One-Time Check-in Confirmation
-        # (a) Invalid QR code must return INVALID TICKET – PLEASE CHECK THE QR CODE
+        # 5-QR. Verify QR Scanner verification, Public Ticket Privacy & One-Time Check-in Confirmation
+        # (a0) Public /api/ticket?token=... must NOT expose private phone numbers or WhatsApp links
+        pub_t_status, pub_t_body, _ = http_json_request(f"/api/ticket?token={created_token}", "GET")
+        self.assertEqual(pub_t_status, 200)
+        self.assertTrue(pub_t_body.get("success"))
+        pub_ticket = pub_t_body.get("ticket", {})
+        self.assertEqual(pub_ticket.get("ticketId"), created_ticket_id)
+        self.assertNotIn("whatsappNumber", pub_ticket)
+        self.assertNotIn("formattedPhone", pub_ticket)
+        self.assertNotIn("waNumber", pub_ticket)
+        self.assertNotIn("whatsAppClickToChatUrl", pub_ticket)
+
+        # (a) Invalid QR code must return INVALID TICKET – ACCESS DENIED
         inv_status, inv_body, _ = http_json_request(
             "/api/admin/checkin/verify",
             "POST",
@@ -465,9 +488,8 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertEqual(inv_status, 200)
         self.assertFalse(inv_body.get("valid", True))
         self.assertEqual(inv_body.get("status"), "INVALID")
-        self.assertEqual(inv_body.get("headline"), "INVALID TICKET – PLEASE CHECK THE QR CODE")
-        self.assertEqual(inv_body.get("toastHeadline"), "INVALID TICKET – PLEASE CHECK THE QR CODE")
-        self.assertEqual(inv_body.get("legacyHeadline"), "INVALID TICKET – PLEASE VERIFY")
+        self.assertEqual(inv_body.get("headline"), "INVALID TICKET – ACCESS DENIED")
+        self.assertEqual(inv_body.get("toastHeadline"), "INVALID TICKET – ACCESS DENIED")
 
         # (b) Valid unconfirmed QR code must return VALID_PENDING & < TICKET CONFIRMED > + QR SCANNED SUCCESSFULLY
         ver_status, ver_body, _ = http_json_request(
@@ -483,8 +505,9 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertEqual(ver_body.get("headline"), "< TICKET CONFIRMED >")
         self.assertEqual(ver_body.get("toastHeadline"), "QR SCANNED SUCCESSFULLY")
         self.assertEqual(ver_body["participant"]["ticketId"], created_ticket_id)
+        self.assertTrue(ver_body["participant"].get("formattedPhone"))
 
-        # (c) First check-in confirmation must succeed with 200 & TICKET CONFIRMED SUCCESSFULLY
+        # (c) First check-in confirmation must succeed with 200, TICKET CONFIRMED SUCCESSFULLY & accurate WhatsApp status
         conf1_status, conf1_body, _ = http_json_request(
             "/api/admin/checkin/confirm",
             "POST",
@@ -495,10 +518,21 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertTrue(conf1_body.get("success"))
         self.assertEqual(conf1_body.get("status"), "CONFIRMED_NOW")
         self.assertEqual(conf1_body.get("headline"), "TICKET CONFIRMED SUCCESSFULLY")
+        self.assertEqual(conf1_body.get("subHeadline"), "ANWAR ALUMNI SEAT CONFIRMED!")
         self.assertTrue(conf1_body["participant"]["checkedIn"])
         self.assertEqual(conf1_body["participant"]["checkInStatus"], "CHECKED IN")
         first_checkin_ts = conf1_body.get("checkInTimestamp")
         self.assertTrue(first_checkin_ts)
+
+        wa_info = conf1_body.get("checkinWhatsapp", {})
+        self.assertIn("*ANWAR ALUMNI – SEAT CONFIRMED!*", wa_info.get("messageText", ""))
+        self.assertIn("Assalamu Alaikum Temp Alumni Corrected", wa_info.get("messageText", ""))
+        self.assertIn("*Majmau Ssaqafathil Islamiyya*", wa_info.get("messageText", ""))
+        # Without Cloud API env vars configured, sent MUST be False and status MUST NOT falsely claim SENT
+        if not wa_info.get("configured"):
+            self.assertFalse(wa_info.get("sent", True))
+            self.assertEqual(wa_info.get("status"), "NOT_CONFIGURED")
+            self.assertTrue(wa_info.get("manualFallbackUrl", "").startswith("https://wa.me/91"))
 
         # (d) Second check-in confirmation on the same ticket must be permanently blocked (HTTP 409)
         conf2_status, conf2_body, _ = http_json_request(
@@ -802,6 +836,88 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
                 os.environ.pop("BLOB_READ_WRITE_TOKEN", None)
             else:
                 os.environ["BLOB_READ_WRITE_TOKEN"] = orig_token
+
+    def test_qr_matrix_iso_compliance_and_cloud_api_delivery(self):
+        import qrcode
+        import qrcode.util
+        import server
+
+        # 1. Verify /vendor/jsQR.js is served cleanly with 200 OK
+        with urllib.request.urlopen(f"{BASE_URL}/vendor/jsQR.js", timeout=5) as resp:
+            self.assertEqual(resp.status, 200)
+            self.assertGreater(len(resp.read()), 100000)
+
+        # 2. Verify make_qr_matrix generates 100% ISO-compliant finder separators & data bits
+        for ver, sample in [
+            (1, "AUF26-001"),
+            (2, "AUF26-ANWAR001-7578BC76EB87"),
+            (3, "AUF26-" + "A" * 38),
+            (4, "AUF26-" + "B" * 64),
+        ]:
+            qr = qrcode.QRCode(
+                version=ver,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=1,
+                border=0,
+                mask_pattern=0,
+            )
+            qr.add_data(qrcode.util.QRData(sample.encode("utf-8"), mode=qrcode.util.MODE_8BIT_BYTE))
+            qr.make(fit=False)
+            ref_mat = [[1 if c else 0 for c in row] for row in qr.get_matrix()]
+            srv_mat = server.make_qr_matrix(sample)
+            self.assertEqual(srv_mat, ref_mat, f"QR mismatch on version {ver}")
+
+        # 3. Verify WhatsApp Business Cloud API payload formatting & failure isolation
+        msg_text = server.build_checkin_whatsapp_message("Test Alumni", "2020", "ANWAR 007")
+        self.assertIn("*ANWAR ALUMNI – SEAT CONFIRMED!*", msg_text)
+        self.assertIn("- Name: Test Alumni", msg_text)
+        self.assertIn("- Batch: 2020", msg_text)
+        self.assertIn("- Ticket ID: ANWAR 007", msg_text)
+        self.assertIn("- Status: CONFIRMED", msg_text)
+        self.assertIn("*Majmau Ssaqafathil Islamiyya*", msg_text)
+
+        orig_wa_tok = os.environ.get("WHATSAPP_CLOUD_API_TOKEN")
+        orig_wa_pid = os.environ.get("WHATSAPP_PHONE_NUMBER_ID")
+        orig_urlopen = server.urllib.request.urlopen
+        try:
+            os.environ["WHATSAPP_CLOUD_API_TOKEN"] = "test_token_123"
+            os.environ["WHATSAPP_PHONE_NUMBER_ID"] = "1234567890"
+            captured = {}
+
+            class MockResp:
+                status = 200
+
+                def __enter__(self):
+                    return self
+
+                def __exit__(self, *args):
+                    return False
+
+                def read(self):
+                    return json.dumps({"messages": [{"id": "wamid.TEST_CONFIRM_999"}]}).encode("utf-8")
+
+            def fake_urlopen(req, timeout=10):
+                captured["url"] = req.full_url
+                captured["auth"] = req.headers.get("Authorization")
+                captured["body"] = json.loads(req.data.decode("utf-8"))
+                return MockResp()
+
+            server.urllib.request.urlopen = fake_urlopen
+            res_ok = server.send_whatsapp_cloud_api_message("9876543210", msg_text)
+            self.assertTrue(res_ok.get("sent"))
+            self.assertEqual(res_ok.get("messageId"), "wamid.TEST_CONFIRM_999")
+            self.assertEqual(captured["body"]["to"], "919876543210")
+            self.assertEqual(captured["auth"], "Bearer test_token_123")
+        finally:
+            server.urllib.request.urlopen = orig_urlopen
+            if orig_wa_tok is None:
+                os.environ.pop("WHATSAPP_CLOUD_API_TOKEN", None)
+            else:
+                os.environ["WHATSAPP_CLOUD_API_TOKEN"] = orig_wa_tok
+            if orig_wa_pid is None:
+                os.environ.pop("WHATSAPP_PHONE_NUMBER_ID", None)
+            else:
+                os.environ["WHATSAPP_PHONE_NUMBER_ID"] = orig_wa_pid
 
 
 if __name__ == "__main__":
