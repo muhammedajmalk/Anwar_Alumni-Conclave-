@@ -4,7 +4,7 @@
   "outputDirectory": "public",
   "functions": {
     "api/index.py": {
-      "includeFiles": "{server.py,registrations_db.json,public/index.html}"
+      "includeFiles": "{server.py,registrations_db.json,alumni_students_db.json,alumni list.xlsx,public/index.html}"
     }
   },
   "rewrites": [
@@ -50,6 +50,22 @@
     },
     {
       "source": "/admin/login/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/scanner",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/scanner/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/checkin",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/checkin/",
       "destination": "/index.html"
     }
   ]

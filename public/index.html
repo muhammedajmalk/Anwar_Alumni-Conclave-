@@ -2254,7 +2254,360 @@
     .submission-alert-box.is-error .submission-alert-badge {
       color: #FCA5A5;
       background: rgba(239, 68, 68, 0.14);
-      border-color: rgba(239, 68, 68, 0.4);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    /* =========================================================================
+       BATCH DROPDOWN, EDIT NAME, QR TICKET PASS & SCANNER STYLES
+       ========================================================================= */
+    .student-selector-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .student-search-input {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 13.5px;
+      font-family: var(--font-primary);
+      color: var(--text-primary);
+      background: #FFFFFF;
+      border: 1.5px dashed #94A3B8;
+      border-radius: 9px;
+      outline: none;
+    }
+
+    .student-search-input:focus {
+      border-color: var(--navy-700);
+      border-style: solid;
+    }
+
+    .edit-name-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .edit-name-toggle-btn {
+      background: #FEF9E7;
+      border: 1px solid var(--gold-500);
+      color: var(--navy-900);
+      font-family: var(--font-primary);
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 6px 13px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .edit-name-toggle-btn:hover {
+      background: var(--gold-400);
+      color: var(--navy-950);
+    }
+
+    .edit-name-box {
+      display: none;
+      margin-top: 10px;
+      padding: 14px;
+      background: #F8FAFC;
+      border: 1.5px solid #CBD5E1;
+      border-left: 4px solid var(--gold-500);
+      border-radius: 10px;
+    }
+
+    .edit-name-box.open {
+      display: block;
+    }
+
+    .orig-excel-pill {
+      display: inline-block;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #475569;
+      background: #E2E8F0;
+      padding: 3px 10px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    .duplicate-warn-banner {
+      display: none;
+      margin-top: 8px;
+      padding: 11px 14px;
+      background: #FEF2F2;
+      border: 1.5px solid #F87171;
+      border-radius: 10px;
+      color: #991B1B;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .duplicate-warn-banner.visible {
+      display: block;
+    }
+
+    /* Official QR Ticket Pass inside Submission Alert Modal */
+    .submission-alert-box.has-ticket {
+      max-width: 480px;
+      max-height: 92vh;
+      overflow-y: auto;
+      padding: 26px 24px 22px;
+    }
+
+    .ticket-pass-card {
+      display: none;
+      background: linear-gradient(180deg, #0A1628 0%, #122645 100%);
+      border: 2px solid var(--gold-500);
+      border-radius: 16px;
+      padding: 18px 16px;
+      margin: 14px 0 18px;
+      color: #FFFFFF;
+      text-align: center;
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+    }
+
+    .ticket-pass-card.visible {
+      display: block;
+    }
+
+    .ticket-pass-header {
+      border-bottom: 1px dashed rgba(212, 175, 55, 0.45);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+
+    .ticket-pass-brand {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--gold-400);
+      letter-spacing: 1.2px;
+    }
+
+    .ticket-pass-sub {
+      font-size: 12px;
+      font-weight: 700;
+      color: #E2E8F0;
+      letter-spacing: 0.8px;
+      margin-top: 2px;
+    }
+
+    .ticket-pass-meta {
+      text-align: left;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .ticket-pass-meta-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 3px 0;
+    }
+
+    .ticket-pass-meta-row:last-child {
+      border-bottom: none;
+    }
+
+    .ticket-pass-qr-box {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      background: #FFFFFF;
+      padding: 12px;
+      border-radius: 12px;
+      border: 3px solid var(--gold-400);
+      margin-bottom: 12px;
+    }
+
+    .ticket-download-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: 1.5px solid #10B981;
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      color: #FFFFFF;
+      font-family: var(--font-primary);
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 4px;
+      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+      transition: all 0.15s ease;
+    }
+
+    .ticket-download-btn:hover {
+      filter: brightness(1.06);
+      transform: translateY(-1px);
+    }
+
+    /* Admin Dashboard Batch Report & QR Scanner Cards */
+    .admin-section-card {
+      background: var(--navy-900);
+      border: 1px solid rgba(212, 175, 55, 0.28);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 28px;
+    }
+
+    .admin-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .batch-report-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .batch-stat-card {
+      background: rgba(5, 11, 22, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 11px 13px;
+    }
+
+    .batch-report-preview-box {
+      display: none;
+      margin-top: 16px;
+      background: #050B16;
+      border: 1.5px solid rgba(37, 211, 102, 0.45);
+      border-radius: 12px;
+      padding: 16px 18px;
+      color: #E2E8F0;
+      font-family: monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      max-height: 360px;
+      overflow-y: auto;
+    }
+
+    .batch-report-preview-box.open {
+      display: block;
+    }
+
+    .scanner-layout-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    @media (max-width: 900px) {
+      .scanner-layout-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .scanner-box {
+      background: rgba(5, 11, 22, 0.75);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    .camera-stage {
+      width: 100%;
+      min-height: 240px;
+      background: #030712;
+      border: 2px dashed rgba(212, 175, 55, 0.4);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 14px;
+    }
+
+    .camera-stage video {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      display: none;
+    }
+
+    .camera-stage.active video {
+      display: block;
+    }
+
+    .scan-status-card {
+      border-radius: 12px;
+      padding: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      background: rgba(15, 23, 42, 0.85);
+    }
+
+    .scan-status-card.status-pending {
+      border-color: var(--gold-400);
+      background: rgba(212, 175, 55, 0.1);
+    }
+
+    .scan-status-card.status-confirmed {
+      border-color: #10B981;
+      background: rgba(16, 185, 129, 0.14);
+    }
+
+    .scan-status-card.status-already {
+      border-color: #F59E0B;
+      background: rgba(245, 158, 11, 0.14);
+    }
+
+    .scan-status-card.status-invalid {
+      border-color: #EF4444;
+      background: rgba(239, 68, 68, 0.15);
+    }
+
+    .confirm-ticket-btn {
+      width: 100%;
+      margin-top: 14px;
+      padding: 14px 20px;
+      border-radius: 11px;
+      border: none;
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      color: #FFFFFF;
+      font-family: var(--font-primary);
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      cursor: pointer;
+      box-shadow: 0 8px 22px rgba(16, 185, 129, 0.4);
+      transition: all 0.15s ease;
+    }
+
+    .confirm-ticket-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      filter: brightness(1.06);
+    }
+
+    .confirm-ticket-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     /* =========================================================================
@@ -2587,29 +2940,112 @@
         <div id="globalError" class="global-error"></div>
 
         <form id="registrationForm" novalidate>
-          <!-- Field 1: Name -->
+          <!-- Field 1: Batch Year (FIRST FIELD, Mandatory Dropdown 2001–2026) -->
           <div class="field-group">
-            <label class="field-label" for="nameInput">
-              <span>1. Name <span class="req">*</span></span>
-              <span class="field-type-tag">Short Answer</span>
+            <label class="field-label" for="batchInput">
+              <span>1. Batch Year <span class="req">*</span></span>
+              <span class="field-type-tag">Dropdown • 2001–2026</span>
             </label>
-            <div class="field-help">Enter your full name</div>
-            <input
-              type="text"
-              id="nameInput"
-              name="name"
+            <div class="field-help">Select your batch year (2001 to 2026)</div>
+            <select
+              id="batchInput"
+              name="batchYear"
               class="text-input"
-              placeholder="Your answer (e.g., Ajmal Saqafi)"
               required
-              autocomplete="name"
-            />
-            <div id="nameError" class="error-text">Please enter your full name (minimum 2 characters).</div>
+            >
+              <option value="">Select your Batch Year (2001 – 2026)</option>
+              <option value="2001">2001</option>
+              <option value="2002">2002</option>
+              <option value="2003">2003</option>
+              <option value="2004">2004</option>
+              <option value="2005">2005</option>
+              <option value="2006">2006</option>
+              <option value="2007">2007</option>
+              <option value="2008">2008</option>
+              <option value="2009">2009</option>
+              <option value="2010">2010</option>
+              <option value="2011">2011</option>
+              <option value="2012">2012</option>
+              <option value="2013">2013</option>
+              <option value="2014">2014</option>
+              <option value="2015">2015</option>
+              <option value="2016">2016</option>
+              <option value="2017">2017</option>
+              <option value="2018">2018</option>
+              <option value="2019">2019</option>
+              <option value="2020">2020</option>
+              <option value="2021">2021</option>
+              <option value="2022">2022</option>
+              <option value="2023">2023</option>
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+              <option value="2026">2026</option>
+            </select>
+            <div id="batchError" class="error-text">Please select a valid Batch Year (2001–2026).</div>
           </div>
 
-          <!-- Field 2: Place -->
+          <!-- Field 2: Dynamic Student Name Dropdown + Edit Name Option -->
+          <div class="field-group">
+            <label class="field-label" for="studentSelect">
+              <span>2. Name <span class="req">*</span></span>
+              <span class="field-type-tag">Batch Student List</span>
+            </label>
+            <div class="field-help">Select your name from your batch list, or click "Name not correct? Edit Name" to correct spelling</div>
+
+            <div class="student-selector-wrap">
+              <input
+                type="search"
+                id="studentSearchInput"
+                class="student-search-input"
+                placeholder="🔍 Type to search your name in the selected batch..."
+                autocomplete="off"
+                disabled
+              />
+              <select
+                id="studentSelect"
+                class="text-input"
+                disabled
+              >
+                <option value="">Please select a Batch Year first</option>
+              </select>
+            </div>
+
+            <div class="edit-name-row">
+              <span id="batchStudentCountHint" style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">
+                Select a batch above to load student names
+              </span>
+              <button type="button" id="toggleEditNameBtn" class="edit-name-toggle-btn">
+                ✏️ Name not correct? Edit Name
+              </button>
+            </div>
+
+            <div id="editNameBox" class="edit-name-box">
+              <div id="originalExcelNameBadge" class="orig-excel-pill">Original Excel Record: Not selected</div>
+              <label class="field-label" for="nameInput" style="font-size: 13px; margin-bottom: 5px;">
+                <span>Corrected / Full Name <span class="req">*</span></span>
+              </label>
+              <input
+                type="text"
+                id="nameInput"
+                name="name"
+                class="text-input"
+                placeholder="Your answer (e.g., Ajmal Saqafi)"
+                required
+                autocomplete="name"
+              />
+            </div>
+
+            <input type="hidden" id="originalExcelNameInput" value="" />
+            <input type="hidden" id="studentIdInput" value="" />
+
+            <div id="duplicateNameWarning" class="duplicate-warn-banner" role="alert"></div>
+            <div id="nameError" class="error-text">Please select or enter your full name (minimum 2 characters).</div>
+          </div>
+
+          <!-- Field 3: Place -->
           <div class="field-group">
             <label class="field-label" for="placeInput">
-              <span>2. Place <span class="req">*</span></span>
+              <span>3. Place <span class="req">*</span></span>
               <span class="field-type-tag">Short Answer</span>
             </label>
             <div class="field-help">Enter your locality</div>
@@ -2622,24 +3058,6 @@
               required
             />
             <div id="placeError" class="error-text">Please enter your place / city.</div>
-          </div>
-
-          <!-- Field 3: Batch Year -->
-          <div class="field-group">
-            <label class="field-label" for="batchInput">
-              <span>3. Batch Year <span class="req">*</span></span>
-              <span class="field-type-tag">Short Answer</span>
-            </label>
-            <div class="field-help">Enter your batch year</div>
-            <input
-              type="text"
-              id="batchInput"
-              name="batchYear"
-              class="text-input"
-              placeholder="Your answer (e.g., 2020)"
-              required
-            />
-            <div id="batchError" class="error-text">Please enter a valid 4-digit Batch Year (e.g., 2018).</div>
           </div>
 
           <!-- Field 4: WhatsApp Number -->
@@ -2893,6 +3311,269 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           </div>
         </div>
 
+        <!-- 4B-1. Automatic Batch-wise Registration Report (2001–2026) & WhatsApp Share -->
+        <div id="batchReportSection" class="admin-section-card">
+          <div class="admin-section-header">
+            <div>
+              <h3 style="font-size: 18px; font-weight: 800; color: var(--gold-400); margin-bottom: 4px;">
+                📊 Official Batch-wise Registration Report (2001 – 2026)
+              </h3>
+              <p style="font-size: 13px; color: #94A3B8;">
+                Overall Registration: <strong id="overallBatchRegSummary" style="color: #34D399; font-size: 14px;">00/330 (0%)</strong> • Official Student Total: <strong>330</strong>
+              </p>
+            </div>
+            <div class="dash-toolbar">
+              <button type="button" id="shareBatchReportWaBtn" class="dash-btn" style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: #FFFFFF; border: none; font-weight: 800;">
+                <span>📲 SHARE BATCH REPORT ON WHATSAPP</span>
+              </button>
+              <button type="button" id="copyBatchReportBtn" class="dash-btn">
+                <span>📋 Copy Report</span>
+              </button>
+              <button type="button" id="shareBatchReportBtn" class="dash-btn">
+                <span>🔗 Share Report</span>
+              </button>
+              <button type="button" id="previewBatchReportBtn" class="dash-btn">
+                <span>👁️ Preview Report</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="bar-track" style="height: 12px; margin-bottom: 14px;">
+            <div id="overallBatchProgressBar" class="bar-fill" style="width: 0%;"></div>
+          </div>
+
+          <pre id="batchReportPreviewBox" class="batch-report-preview-box"></pre>
+
+          <div id="batchReportGridContainer" class="batch-report-grid"></div>
+        </div>
+
+        <!-- 4B-2. EVENT CHECK-IN / QR SCANNER & Check-in Management Section -->
+        <div id="qrScannerSection" class="admin-section-card">
+          <div class="admin-section-header">
+            <div>
+              <span class="section-eyebrow" style="background: rgba(16, 185, 129, 0.16); color: #6EE7B7; border-color: rgba(16, 185, 129, 0.4);">One-Time Entry Verification</span>
+              <h3 style="font-size: 19px; font-weight: 800; color: #FFFFFF; margin-bottom: 4px;">
+                EVENT CHECK-IN / QR SCANNER
+              </h3>
+              <p style="font-size: 13px; color: #94A3B8;">
+                Scan participant QR tickets via camera, ticket image, or token to verify and confirm one-time event entry
+              </p>
+            </div>
+            <div class="dash-toolbar">
+              <button type="button" id="startQrScannerBtn" class="dash-btn primary">
+                <span>📷 Scan QR Code</span>
+              </button>
+              <button type="button" id="stopQrScannerBtn" class="dash-btn" style="display: none;">
+                <span>⏹ Stop Camera</span>
+              </button>
+              <button type="button" id="flipCameraBtn" class="dash-btn" style="display: none;">
+                <span>🔄 Flip Camera</span>
+              </button>
+              <button type="button" id="exportCheckinXlsxBtn" class="dash-btn" style="border-color: #10B981; color: #6EE7B7;">
+                <span>📥 Export Check-in Report (Excel)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Check-in KPI Cards -->
+          <div class="kpi-grid" style="margin-bottom: 22px;">
+            <div class="kpi-card total-card">
+              <div class="kpi-label">Total Registered Participants</div>
+              <div class="kpi-value" id="checkinKpiTotal">0</div>
+              <div class="kpi-sub">Eligible for event entry</div>
+            </div>
+            <div class="kpi-card yes-card">
+              <div class="kpi-label">Total Confirmed Check-ins</div>
+              <div class="kpi-value" id="checkinKpiConfirmed" style="color: #34D399;">0</div>
+              <div class="kpi-sub">Checked in at venue</div>
+            </div>
+            <div class="kpi-card no-card">
+              <div class="kpi-label">Pending Check-ins</div>
+              <div class="kpi-value" id="checkinKpiPending" style="color: #FBBF24;">0</div>
+              <div class="kpi-sub">Awaiting arrival</div>
+            </div>
+            <div class="kpi-card rate-card">
+              <div class="kpi-label">Batch-wise Check-in Summary</div>
+              <div id="checkinBatchMiniSummary" style="font-size: 12.5px; color: #E2E8F0; max-height: 68px; overflow-y: auto; line-height: 1.5;">
+                No check-ins recorded yet
+              </div>
+            </div>
+          </div>
+
+          <div class="scanner-layout-grid">
+            <!-- Left: Camera Viewport + Image Upload + Manual Token Scanner Input -->
+            <div class="scanner-box">
+              <div id="qrCameraStage" class="camera-stage">
+                <video id="qrScannerVideo" playsinline muted></video>
+                <canvas id="qrScannerCanvas" style="display: none;"></canvas>
+                <div id="qrCameraPlaceholder" style="text-align: center; padding: 24px;">
+                  <div style="font-size: 36px; margin-bottom: 8px;">📷</div>
+                  <div style="font-size: 14px; font-weight: 700; color: #E2E8F0; margin-bottom: 4px;">
+                    Camera QR Scanner Ready
+                  </div>
+                  <div style="font-size: 12px; color: #94A3B8;">
+                    Click <strong>Scan QR Code</strong> to open device camera, upload a ticket PNG below, or scan/enter a ticket token.
+                  </div>
+                </div>
+              </div>
+              <div id="qrCameraErrorMsg" style="display: none; color: #FCA5A5; font-size: 12.5px; font-weight: 600; margin-bottom: 10px;"></div>
+
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                <input
+                  type="text"
+                  id="qrManualTokenInput"
+                  class="filter-input"
+                  style="flex: 1; min-width: 180px;"
+                  placeholder="Scan or enter QR Token (e.g., AUF26-ANWAR001-...)"
+                />
+                <button type="button" id="verifyQrTokenBtn" class="dash-btn primary">
+                  <span>🔍 Verify QR Ticket</span>
+                </button>
+              </div>
+
+              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                <label for="qrTicketImageInput" class="dash-btn" style="cursor: pointer; font-size: 12px; padding: 8px 12px;">
+                  <span>🖼️ Scan from Ticket Image (PNG/JPG)</span>
+                </label>
+                <input type="file" id="qrTicketImageInput" accept="image/*" style="display: none;" />
+                <span style="font-size: 11.5px; color: #94A3B8;">Supports mobile & desktop cameras</span>
+              </div>
+            </div>
+
+            <!-- Right: Scanned Ticket Verification & One-Time Check-in Confirmation Panel -->
+            <div class="scanner-box">
+              <div id="scannedTicketResultCard" class="scan-status-card">
+                <div id="scanResultHeadline" style="font-size: 16px; font-weight: 800; color: var(--gold-400); margin-bottom: 10px; letter-spacing: 0.4px;">
+                  AWAITING QR TICKET SCAN
+                </div>
+                <div id="scanResultSubtext" style="font-size: 13px; color: #94A3B8; margin-bottom: 12px;">
+                  Scan a participant's QR Code ticket to view registration details and confirm one-time entry.
+                </div>
+
+                <div id="scanParticipantDetailsBox" style="display: none; background: rgba(5, 11, 22, 0.72); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 12px 14px; font-size: 13.5px; line-height: 1.7;">
+                  <div>Participant Name: <strong id="scanPartName" style="color: #FFFFFF;">-</strong></div>
+                  <div>ID Number: <strong id="scanPartId" style="color: var(--gold-300);">-</strong></div>
+                  <div>Batch Year: <strong id="scanPartBatch" style="color: #FFFFFF;">-</strong></div>
+                  <div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+                    Registration Status: <strong id="scanRegStatus" style="color: #34D399;">REGISTERED</strong>
+                  </div>
+                  <div>
+                    Check-in Status: <strong id="scanCheckinStatus" style="color: #FBBF24;">NOT CHECKED IN</strong>
+                  </div>
+                  <div id="scanPrevCheckinInfo" style="display: none; margin-top: 6px; color: #FDE68A; font-size: 12.5px; font-weight: 700;"></div>
+                </div>
+
+                <button type="button" id="confirmTicketCheckinBtn" class="confirm-ticket-btn" style="display: none;">
+                  CONFIRM TICKET
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Check-in Management Search & Filter Bar -->
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+            <h4 style="font-size: 15px; font-weight: 700; color: var(--gold-300);">
+              Check-in Management & Participant Verification List
+            </h4>
+            <div class="table-filters">
+              <input
+                type="search"
+                id="searchCheckinInput"
+                class="filter-input"
+                placeholder="Search by Name or ID Number (ANWAR 001)..."
+              />
+              <select id="filterCheckinBatchSelect" class="filter-select">
+                <option value="ALL">All Batches (2001–2026)</option>
+              </select>
+              <select id="filterCheckinStatusSelect" class="filter-select">
+                <option value="ALL">All Check-in Statuses</option>
+                <option value="CHECKED IN">CHECKED IN</option>
+                <option value="NOT CHECKED IN">NOT CHECKED IN</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="resp-table">
+              <thead>
+                <tr>
+                  <th>ID Number</th>
+                  <th>Participant Name</th>
+                  <th>Batch Year</th>
+                  <th>Place</th>
+                  <th>Registration Status</th>
+                  <th>Check-in Status</th>
+                  <th>Check-in Date & Time</th>
+                  <th>Check-in Action</th>
+                </tr>
+              </thead>
+              <tbody id="checkinManagementTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 4B-3. Student Master Database Management (alumni list.xlsx) & WhatsApp Sender 8606140996 Status -->
+        <div id="studentMasterSection" class="admin-section-card">
+          <div class="admin-section-header">
+            <div>
+              <h3 style="font-size: 17px; font-weight: 800; color: var(--gold-400); margin-bottom: 4px;">
+                🎓 Master Student Database (`alumni list.xlsx`) & WhatsApp Business API Status
+              </h3>
+              <p id="excelDiscrepancyNotice" style="font-size: 12.5px; color: #FDE68A;">
+                Excel Master Records: <strong id="masterStudentTotalBadge">290</strong> imported • Official Total: <strong>330</strong> (Discrepancies: Batch 2007 has 5/6 in Excel; Batch 2026 has 0/12 in Excel)
+              </p>
+              <p id="waSenderStatusLine" style="font-size: 12px; color: #94A3B8; margin-top: 4px;">
+                Configured WhatsApp Sender Number: <strong style="color: #6EE7B7;">8606140996 (+91 8606140996)</strong> — <span id="waCloudApiBadgeText">Checking Cloud API status...</span>
+              </p>
+            </div>
+            <div class="dash-toolbar">
+              <select id="adminStudentBatchFilter" class="filter-select">
+                <option value="2001">Batch 2001</option>
+                <option value="2002">Batch 2002</option>
+                <option value="2003">Batch 2003</option>
+                <option value="2004">Batch 2004</option>
+                <option value="2005">Batch 2005</option>
+                <option value="2006">Batch 2006</option>
+                <option value="2007">Batch 2007 (5/6)</option>
+                <option value="2008">Batch 2008</option>
+                <option value="2009">Batch 2009</option>
+                <option value="2010">Batch 2010</option>
+                <option value="2011">Batch 2011</option>
+                <option value="2012">Batch 2012</option>
+                <option value="2013">Batch 2013</option>
+                <option value="2014">Batch 2014</option>
+                <option value="2015">Batch 2015</option>
+                <option value="2016">Batch 2016</option>
+                <option value="2017">Batch 2017</option>
+                <option value="2018">Batch 2018</option>
+                <option value="2019">Batch 2019</option>
+                <option value="2020" selected>Batch 2020</option>
+                <option value="2021">Batch 2021</option>
+                <option value="2022">Batch 2022</option>
+                <option value="2023">Batch 2023</option>
+                <option value="2024">Batch 2024</option>
+                <option value="2025">Batch 2025</option>
+                <option value="2026">Batch 2026 (0/12)</option>
+              </select>
+              <input
+                type="text"
+                id="newStudentNameInput"
+                class="filter-input"
+                placeholder="Add student name to selected batch..."
+              />
+              <button type="button" id="addMasterStudentBtn" class="dash-btn primary">
+                <span>+ Add Student</span>
+              </button>
+              <label for="importExcelFileInput" class="dash-btn" style="cursor: pointer;">
+                <span>📤 Import Excel (.xlsx)</span>
+              </label>
+              <input type="file" id="importExcelFileInput" accept=".xlsx" style="display: none;" />
+            </div>
+          </div>
+
+          <div id="adminStudentMasterList" style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 190px; overflow-y: auto; padding: 4px 0;"></div>
+        </div>
+
         <!-- Responses Management Table -->
         <div class="table-card">
           <div class="table-header-bar">
@@ -3078,11 +3759,22 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
                 <div class="view-detail-label">Submitted At</div>
                 <div id="viewTimestampVal" class="view-detail-value">-</div>
               </div>
+              <div class="view-detail-item">
+                <div class="view-detail-label">Original Excel Name</div>
+                <div id="viewOrigNameVal" class="view-detail-value">-</div>
+              </div>
+              <div class="view-detail-item">
+                <div class="view-detail-label">Check-in Status</div>
+                <div id="viewCheckinVal" class="view-detail-value">NOT CHECKED IN</div>
+              </div>
             </div>
 
             <div class="admin-modal-actions">
               <button type="button" id="closeViewModalBtn" class="modal-btn modal-btn-cancel">
                 Close
+              </button>
+              <button type="button" id="viewDownloadTicketBtn" class="modal-btn" style="background: rgba(16, 185, 129, 0.18); border: 1px solid #10B981; color: #6EE7B7;">
+                🎫 Download Ticket
               </button>
               <button type="button" id="viewToEditBtn" class="modal-btn modal-btn-save">
                 ✏️ Edit
@@ -3167,7 +3859,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
   <!-- Toast Alert for Instant Confirmation -->
   <div id="toastAlert" class="toast-alert" role="status" aria-live="polite"></div>
 
-  <!-- Custom Form Submission Alert Modal (Replaces Native Browser Alert) -->
+  <!-- Custom Form Submission Alert Modal (Replaces Native Browser Alert & Displays QR Ticket Pass) -->
   <div id="submissionAlertModal" class="submission-alert-overlay" role="dialog" aria-modal="true" aria-labelledby="submissionAlertTitle" aria-hidden="true">
     <div id="submissionAlertBox" class="submission-alert-box">
       <button type="button" id="submissionAlertCloseIcon" class="submission-alert-close-icon" aria-label="Close alert">✕</button>
@@ -3177,6 +3869,36 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       <p id="submissionAlertMessage" class="submission-alert-message">
         Your registration has been submitted successfully. Thank you for registering.
       </p>
+
+      <!-- Automatic QR Code Ticket Pass (Shown on Registration Success) -->
+      <div id="successTicketPassWrap" class="ticket-pass-card">
+        <div class="ticket-pass-header">
+          <div class="ticket-pass-brand">AUFBRUCH</div>
+          <div class="ticket-pass-sub">ALUMNI CONCLAVE 2026</div>
+        </div>
+        <div class="ticket-pass-meta">
+          <div class="ticket-pass-meta-row">
+            <span style="color: #94A3B8;">Participant Name:</span>
+            <strong id="ticketPassName" style="color: #FFFFFF;">-</strong>
+          </div>
+          <div class="ticket-pass-meta-row">
+            <span style="color: #94A3B8;">ID Number:</span>
+            <strong id="ticketPassId" style="color: var(--gold-400);">-</strong>
+          </div>
+          <div class="ticket-pass-meta-row">
+            <span style="color: #94A3B8;">Batch Year:</span>
+            <strong id="ticketPassBatch" style="color: #FFFFFF;">-</strong>
+          </div>
+        </div>
+        <div class="ticket-pass-qr-box">
+          <canvas id="ticketQrCanvas" width="184" height="184"></canvas>
+          <span id="ticketPassTokenLabel" style="font-size: 10px; font-weight: 700; color: #0A1628; margin-top: 4px; font-family: monospace;"></span>
+        </div>
+        <button type="button" id="downloadTicketPngBtn" class="ticket-download-btn">
+          <span>⬇ Download QR Code</span>
+        </button>
+      </div>
+
       <button type="button" id="submissionAlertOkBtn" class="submission-alert-btn">
         <span>OK</span>
       </button>
@@ -3687,18 +4409,245 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       });
 
       // -----------------------------------------------------------------------
-      // Live Phone Input Validation & Participation Radio Selection
+      // Dynamic Batch Student Dropdown, Edit Name Option, Phone & Radio Handlers
       // -----------------------------------------------------------------------
       var form = document.getElementById('registrationForm');
       var nameInput = document.getElementById('nameInput');
       var placeInput = document.getElementById('placeInput');
       var batchInput = document.getElementById('batchInput');
       var whatsappInput = document.getElementById('whatsappInput');
+      var studentSearchInput = document.getElementById('studentSearchInput');
+      var studentSelect = document.getElementById('studentSelect');
+      var toggleEditNameBtn = document.getElementById('toggleEditNameBtn');
+      var editNameBox = document.getElementById('editNameBox');
+      var originalExcelNameBadge = document.getElementById('originalExcelNameBadge');
+      var originalExcelNameInput = document.getElementById('originalExcelNameInput');
+      var studentIdInput = document.getElementById('studentIdInput');
+      var batchStudentCountHint = document.getElementById('batchStudentCountHint');
+      var duplicateNameWarning = document.getElementById('duplicateNameWarning');
       var phoneNormalizedBadge = document.getElementById('phoneNormalizedBadge');
       var cardYes = document.getElementById('cardYes');
       var cardNo = document.getElementById('cardNo');
       var submitBtn = document.getElementById('submitBtn');
       var globalError = document.getElementById('globalError');
+
+      var allMasterStudents = [];
+      var registeredStudentsMap = {};
+      var officialBatchTotalsMap = {
+        '2001': 4, '2002': 4, '2003': 3, '2004': 8, '2005': 10, '2006': 4,
+        '2007': 6, '2008': 6, '2009': 3, '2010': 8, '2011': 6, '2012': 6,
+        '2013': 8, '2014': 9, '2015': 14, '2016': 4, '2017': 13, '2018': 17,
+        '2019': 15, '2020': 23, '2021': 24, '2022': 24, '2023': 27, '2024': 16,
+        '2025': 29, '2026': 12
+      };
+      var isNameEditOpen = false;
+
+      function fetchPublicStudentsList() {
+        apiFetchJson('/api/students', { method: 'GET' })
+          .then(function(res) {
+            if (res.ok && res.data && res.data.success) {
+              allMasterStudents = Array.isArray(res.data.students) ? res.data.students : [];
+              registeredStudentsMap = (res.data.registeredMap && typeof res.data.registeredMap === 'object') ? res.data.registeredMap : {};
+              if (res.data.officialBatchTotals) {
+                officialBatchTotalsMap = res.data.officialBatchTotals;
+              }
+              if (batchInput && batchInput.value) {
+                populateStudentDropdownForBatch(batchInput.value, studentSearchInput ? studentSearchInput.value : '');
+              }
+            }
+          })
+          .catch(function() {});
+      }
+      fetchPublicStudentsList();
+
+      function checkDuplicateForStudent(batchYr, studentName, stuId) {
+        if (!batchYr) return null;
+        if (stuId && registeredStudentsMap['STU::' + stuId]) {
+          return registeredStudentsMap['STU::' + stuId];
+        }
+        var cleanNm = String(studentName || '').trim().replace(/\s+/g, ' ').toUpperCase();
+        if (cleanNm && registeredStudentsMap[batchYr + '::' + cleanNm]) {
+          return registeredStudentsMap[batchYr + '::' + cleanNm];
+        }
+        return null;
+      }
+
+      function updateDuplicateWarningUI() {
+        if (!duplicateNameWarning) return false;
+        var batchYr = batchInput ? batchInput.value.trim() : '';
+        var curName = nameInput ? nameInput.value.trim() : '';
+        var origName = originalExcelNameInput ? originalExcelNameInput.value.trim() : '';
+        var stuId = studentIdInput ? studentIdInput.value.trim() : '';
+        var dupInfo = checkDuplicateForStudent(batchYr, origName || curName, stuId) || checkDuplicateForStudent(batchYr, curName, '');
+        if (dupInfo) {
+          var tId = dupInfo.ticketId || ('ANWAR ' + (dupInfo.registrationId || '001'));
+          duplicateNameWarning.textContent = '⚠️ Duplicate Registration Warning: ' + (origName || curName) + ' (Batch ' + batchYr + ') is already registered under ID ' + tId + '.';
+          duplicateNameWarning.classList.add('visible');
+          return true;
+        }
+        duplicateNameWarning.textContent = '';
+        duplicateNameWarning.classList.remove('visible');
+        return false;
+      }
+
+      function populateStudentDropdownForBatch(batchYr, searchFilter) {
+        if (!studentSelect) return;
+        var cleanBatch = String(batchYr || '').trim();
+        var q = String(searchFilter || '').trim().toLowerCase();
+        var prevSelectedStuId = studentIdInput ? studentIdInput.value : '';
+        studentSelect.innerHTML = '';
+
+        if (!cleanBatch) {
+          studentSelect.disabled = true;
+          if (studentSearchInput) {
+            studentSearchInput.disabled = true;
+            studentSearchInput.value = '';
+          }
+          var optEmpty = document.createElement('option');
+          optEmpty.value = '';
+          optEmpty.textContent = 'Please select a Batch Year first';
+          studentSelect.appendChild(optEmpty);
+          if (batchStudentCountHint) {
+            batchStudentCountHint.textContent = 'Select a batch above to load student names';
+          }
+          return;
+        }
+
+        var batchStudents = allMasterStudents.filter(function(s) {
+          return String(s.batchYear || '').trim() === cleanBatch;
+        });
+
+        var filteredStudents = batchStudents.filter(function(s) {
+          if (!q) return true;
+          var nm = String(s.name || '').toLowerCase();
+          var sl = s.serialNo ? String(s.serialNo) : '';
+          return nm.indexOf(q) !== -1 || sl.indexOf(q) !== -1;
+        });
+
+        studentSelect.disabled = false;
+        if (studentSearchInput) studentSearchInput.disabled = false;
+
+        var offTot = officialBatchTotalsMap[cleanBatch] || batchStudents.length;
+        if (batchStudentCountHint) {
+          batchStudentCountHint.textContent = 'Batch ' + cleanBatch + ': ' + batchStudents.length + ' student names in Excel list (Official Batch Total: ' + (offTot < 10 ? '0' + offTot : offTot) + ')';
+        }
+
+        var placeholderOpt = document.createElement('option');
+        placeholderOpt.value = '';
+        placeholderOpt.textContent = filteredStudents.length > 0
+          ? ('-- Select your name from Batch ' + cleanBatch + ' (' + filteredStudents.length + ' shown) --')
+          : ('-- No matching names in Excel for Batch ' + cleanBatch + ' (Use Edit Name below) --');
+        studentSelect.appendChild(placeholderOpt);
+
+        // Count occurrences of same name in this batch to disambiguate if needed
+        var nameCounts = {};
+        batchStudents.forEach(function(s) {
+          var k = String(s.name || '').toUpperCase();
+          nameCounts[k] = (nameCounts[k] || 0) + 1;
+        });
+
+        filteredStudents.forEach(function(s) {
+          var opt = document.createElement('option');
+          opt.value = s.name;
+          opt.setAttribute('data-student-id', s.studentId || '');
+          opt.setAttribute('data-original-name', s.name || '');
+          var dup = checkDuplicateForStudent(cleanBatch, s.name, s.studentId);
+          var label = s.name;
+          if (nameCounts[String(s.name || '').toUpperCase()] > 1 && s.serialNo) {
+            label += ' (Sl. ' + s.serialNo + ')';
+          }
+          if (dup) {
+            label += ' ✓ [Already Registered - ' + (dup.ticketId || dup.registrationId) + ']';
+            opt.setAttribute('data-registered', 'true');
+          }
+          opt.textContent = label;
+          if (prevSelectedStuId && s.studentId === prevSelectedStuId) {
+            opt.selected = true;
+          }
+          studentSelect.appendChild(opt);
+        });
+
+        if (batchStudents.length === 0 && editNameBox && !isNameEditOpen) {
+          isNameEditOpen = true;
+          editNameBox.classList.add('open');
+          if (originalExcelNameBadge) {
+            originalExcelNameBadge.textContent = 'Batch ' + cleanBatch + ' has no Excel names yet — please enter your full name below';
+          }
+        }
+      }
+
+      if (batchInput) {
+        batchInput.addEventListener('change', function() {
+          var selectedBatch = batchInput.value.trim();
+          setFieldError(batchInput, 'batchError', false);
+          if (studentSearchInput) studentSearchInput.value = '';
+          if (studentIdInput) studentIdInput.value = '';
+          if (originalExcelNameInput) originalExcelNameInput.value = '';
+          if (!isNameEditOpen && nameInput) nameInput.value = '';
+          populateStudentDropdownForBatch(selectedBatch, '');
+          updateDuplicateWarningUI();
+        });
+      }
+
+      if (studentSearchInput) {
+        studentSearchInput.addEventListener('input', function() {
+          populateStudentDropdownForBatch(batchInput ? batchInput.value : '', studentSearchInput.value);
+        });
+      }
+
+      if (studentSelect) {
+        studentSelect.addEventListener('change', function() {
+          var selOpt = studentSelect.options[studentSelect.selectedIndex];
+          var val = studentSelect.value || '';
+          var origNm = (selOpt && selOpt.getAttribute('data-original-name')) || val;
+          var stuId = (selOpt && selOpt.getAttribute('data-student-id')) || '';
+          if (val) {
+            nameInput.value = origNm;
+            if (originalExcelNameInput) originalExcelNameInput.value = origNm;
+            if (studentIdInput) studentIdInput.value = stuId;
+            if (originalExcelNameBadge) {
+              originalExcelNameBadge.textContent = 'Original Excel Record: ' + origNm;
+            }
+            setFieldError(nameInput, 'nameError', false);
+            setFieldError(studentSelect, 'nameError', false);
+          } else if (!isNameEditOpen) {
+            nameInput.value = '';
+            if (originalExcelNameInput) originalExcelNameInput.value = '';
+            if (studentIdInput) studentIdInput.value = '';
+          }
+          updateDuplicateWarningUI();
+        });
+      }
+
+      if (toggleEditNameBtn && editNameBox) {
+        toggleEditNameBtn.addEventListener('click', function() {
+          isNameEditOpen = !isNameEditOpen;
+          editNameBox.classList.toggle('open', isNameEditOpen);
+          if (isNameEditOpen) {
+            var origNm = originalExcelNameInput && originalExcelNameInput.value
+              ? originalExcelNameInput.value
+              : (studentSelect && studentSelect.value ? studentSelect.value : '');
+            if (origNm && !nameInput.value) {
+              nameInput.value = origNm;
+            }
+            if (originalExcelNameBadge) {
+              originalExcelNameBadge.textContent = origNm
+                ? ('Original Excel Record: ' + origNm)
+                : 'Original Excel Record: Custom / Corrected Entry';
+            }
+            nameInput.focus();
+          }
+        });
+      }
+
+      if (nameInput) {
+        nameInput.addEventListener('input', function() {
+          if (nameInput.value.trim().length >= 2) {
+            setFieldError(nameInput, 'nameError', false);
+          }
+          updateDuplicateWarningUI();
+        });
+      }
 
       whatsappInput.addEventListener('input', function() {
         var phoneRes = normalizeIndianPhone(whatsappInput.value);
@@ -3739,7 +4688,9 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         if (isSubmitting) return;
         globalError.style.display = 'none';
 
-        var nameVal = nameInput.value.trim();
+        var nameVal = (nameInput.value || (studentSelect ? studentSelect.value : '') || '').trim();
+        var origExcelVal = (originalExcelNameInput && originalExcelNameInput.value ? originalExcelNameInput.value : nameVal).trim();
+        var stuIdVal = (studentIdInput && studentIdInput.value ? studentIdInput.value : '').trim();
         var placeVal = placeInput.value.trim();
         var batchVal = batchInput.value.trim();
         var phoneVal = whatsappInput.value.trim();
@@ -3748,11 +4699,25 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
         var valid = true;
 
+        var batchRegex = /^(19[5-9]\d|20[0-2]\d)(\s*[-–/]\s*(19[5-9]\d|20[0-2]\d|\d{2}))?$/;
+        if (!batchRegex.test(batchVal)) {
+          setFieldError(batchInput, 'batchError', true);
+          valid = false;
+        } else {
+          setFieldError(batchInput, 'batchError', false);
+        }
+
         if (nameVal.length < 2) {
           setFieldError(nameInput, 'nameError', true);
+          if (studentSelect) studentSelect.classList.add('invalid');
           valid = false;
         } else {
           setFieldError(nameInput, 'nameError', false);
+          if (studentSelect) studentSelect.classList.remove('invalid');
+        }
+
+        if (updateDuplicateWarningUI()) {
+          valid = false;
         }
 
         if (placeVal.length < 2) {
@@ -3760,14 +4725,6 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           valid = false;
         } else {
           setFieldError(placeInput, 'placeError', false);
-        }
-
-        var batchRegex = /^(19[5-9]\d|20[0-2]\d)(\s*[-–/]\s*(19[5-9]\d|20[0-2]\d|\d{2}))?$/;
-        if (!batchRegex.test(batchVal)) {
-          setFieldError(batchInput, 'batchError', true);
-          valid = false;
-        } else {
-          setFieldError(batchInput, 'batchError', false);
         }
 
         var phoneResult = normalizeIndianPhone(phoneVal);
@@ -3793,9 +4750,12 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
         var payload = {
           timestamp: formatTimestamp(new Date()),
-          name: nameVal,
-          place: placeVal,
           batchYear: batchVal,
+          name: nameVal,
+          originalExcelName: origExcelVal || nameVal,
+          nameEdited: Boolean(origExcelVal && origExcelVal.toUpperCase() !== nameVal.toUpperCase()),
+          studentId: stuIdVal,
+          place: placeVal,
           whatsappNumber: phoneVal,
           participation: partVal
         };
@@ -3882,11 +4842,192 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       var submissionAlertCloseIcon = document.getElementById('submissionAlertCloseIcon');
 
       var lastAlertWasSuccess = false;
+      var activeSuccessTicketRecord = null;
+      var successTicketPassWrap = document.getElementById('successTicketPassWrap');
+      var ticketPassName = document.getElementById('ticketPassName');
+      var ticketPassId = document.getElementById('ticketPassId');
+      var ticketPassBatch = document.getElementById('ticketPassBatch');
+      var ticketQrCanvas = document.getElementById('ticketQrCanvas');
+      var ticketPassTokenLabel = document.getElementById('ticketPassTokenLabel');
+      var downloadTicketPngBtn = document.getElementById('downloadTicketPngBtn');
+
+      function formatAnwarTicketId(rawId) {
+        var s = String(rawId || '001').trim();
+        var m = s.match(/(\d+)$/);
+        var num = m ? parseInt(m[1], 10) : 1;
+        var pad = String(num);
+        while (pad.length < 3) pad = '0' + pad;
+        return 'ANWAR ' + pad;
+      }
+
+      function drawQrMatrixToCanvas(canvasEl, qrMatrix, sizePx) {
+        if (!canvasEl || !canvasEl.getContext) return;
+        var ctx = canvasEl.getContext('2d');
+        var mat = (Array.isArray(qrMatrix) && qrMatrix.length > 0 && Array.isArray(qrMatrix[0])) ? qrMatrix : null;
+        var dim = sizePx || canvasEl.width || 184;
+        canvasEl.width = dim;
+        canvasEl.height = dim;
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, dim, dim);
+
+        if (!mat) return;
+        var n = mat.length;
+        var border = 3;
+        var totalMods = n + border * 2;
+        var scale = dim / totalMods;
+        ctx.fillStyle = '#0A1628';
+        for (var r = 0; r < n; r++) {
+          for (var c = 0; c < n; c++) {
+            if (mat[r][c]) {
+              var x = Math.floor((c + border) * scale);
+              var y = Math.floor((r + border) * scale);
+              var w = Math.ceil((c + border + 1) * scale) - x;
+              var h = Math.ceil((r + border + 1) * scale) - y;
+              ctx.fillRect(x, y, w, h);
+            }
+          }
+        }
+      }
+
+      function downloadTicketAsPng(rec) {
+        if (!rec) return;
+        var tId = rec.ticketId || formatAnwarTicketId(rec.registrationId || '001');
+        var pName = String(rec.name || 'ANWAR').toUpperCase();
+        var pBatch = String(rec.batchYear || '2020');
+        var tToken = String(rec.ticketToken || ('AUF26-' + tId.replace(/\s+/g, '')));
+
+        var canvas = document.createElement('canvas');
+        canvas.width = 960;
+        canvas.height = 1360;
+        var ctx = canvas.getContext('2d');
+
+        // Background Gradient
+        var bgGrad = ctx.createLinearGradient(0, 0, 0, 1360);
+        bgGrad.addColorStop(0, '#071020');
+        bgGrad.addColorStop(0.5, '#0F1F3A');
+        bgGrad.addColorStop(1, '#071020');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, 960, 1360);
+
+        // Outer Gold Border
+        ctx.strokeStyle = '#D4AF37';
+        ctx.lineWidth = 6;
+        ctx.strokeRect(32, 32, 896, 1296);
+
+        ctx.strokeStyle = 'rgba(212, 175, 55, 0.35)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(48, 48, 864, 1264);
+
+        // Header Badge
+        ctx.fillStyle = 'rgba(212, 175, 55, 0.16)';
+        ctx.fillRect(280, 88, 400, 44);
+        ctx.strokeStyle = '#D4AF37';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(280, 88, 400, 44);
+        ctx.fillStyle = '#F3D066';
+        ctx.font = 'bold 18px Sora, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('OFFICIAL EVENT ENTRY TICKET', 480, 117);
+
+        // Main Title: AUFBRUCH / ALUMNI CONCLAVE 2026
+        ctx.fillStyle = '#D4AF37';
+        ctx.font = '800 58px Sora, sans-serif';
+        ctx.fillText('AUFBRUCH', 480, 200);
+
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '700 32px Sora, sans-serif';
+        ctx.fillText('ALUMNI CONCLAVE 2026', 480, 248);
+
+        ctx.fillStyle = '#94A3B8';
+        ctx.font = '500 20px Sora, sans-serif';
+        ctx.fillText('Thursday, December 10, 2026 • Majmau Academy, Nilambur', 480, 290);
+
+        // Divider Line
+        ctx.strokeStyle = 'rgba(212, 175, 55, 0.45)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(90, 326);
+        ctx.lineTo(870, 326);
+        ctx.stroke();
+
+        // Participant Details Box
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx.fillRect(90, 360, 780, 240);
+        ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(90, 360, 780, 240);
+
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#94A3B8';
+        ctx.font = '600 24px Sora, sans-serif';
+        ctx.fillText('Participant Name:', 130, 420);
+        ctx.fillText('ID Number:', 130, 490);
+        ctx.fillText('Batch Year:', 130, 560);
+
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '800 28px Sora, sans-serif';
+        ctx.fillText(pName.substring(0, 32), 830, 420);
+
+        ctx.fillStyle = '#F3D066';
+        ctx.font = '800 30px Sora, sans-serif';
+        ctx.fillText(tId, 830, 490);
+
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '800 28px Sora, sans-serif';
+        ctx.fillText(pBatch, 830, 560);
+
+        // QR Code Frame
+        var qrBoxSize = 480;
+        var qrBoxX = (960 - qrBoxSize) / 2;
+        var qrBoxY = 650;
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(qrBoxX, qrBoxY, qrBoxSize, qrBoxSize);
+        ctx.strokeStyle = '#D4AF37';
+        ctx.lineWidth = 6;
+        ctx.strokeRect(qrBoxX, qrBoxY, qrBoxSize, qrBoxSize);
+
+        var tempQrCanvas = document.createElement('canvas');
+        drawQrMatrixToCanvas(tempQrCanvas, rec.qrMatrix, 440);
+        ctx.drawImage(tempQrCanvas, qrBoxX + 20, qrBoxY + 20, 440, 440);
+
+        // Token & Footer
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#F3D066';
+        ctx.font = '700 22px monospace';
+        ctx.fillText(tToken, 480, 1185);
+
+        ctx.fillStyle = '#CBD5E1';
+        ctx.font = '600 20px Sora, sans-serif';
+        ctx.fillText('Present this QR Code at the registration desk for one-time check-in', 480, 1245);
+
+        var dataUrl = canvas.toDataURL('image/png');
+        var link = document.createElement('a');
+        var fileSafeId = tId.replace(/[^A-Za-z0-9]+/g, '_');
+        link.download = 'Aufbruch_2026_Ticket_' + fileSafeId + '_' + tToken + '.png';
+        link.href = dataUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('🎫 Downloaded QR Ticket (' + tId + ') as PNG.');
+      }
+
+      if (downloadTicketPngBtn) {
+        downloadTicketPngBtn.addEventListener('click', function() {
+          if (activeSuccessTicketRecord) {
+            downloadTicketAsPng(activeSuccessTicketRecord);
+          }
+        });
+      }
 
       function openSubmissionAlertModal(res) {
         if (!submissionAlertModal) return;
         lastAlertWasSuccess = true;
-        if (submissionAlertBox) submissionAlertBox.classList.remove('is-error');
+        activeSuccessTicketRecord = res || null;
+        if (submissionAlertBox) {
+          submissionAlertBox.classList.remove('is-error');
+          submissionAlertBox.classList.add('has-ticket');
+        }
         if (submissionAlertIcon) submissionAlertIcon.textContent = '✓';
         submissionAlertTitle.textContent = 'Registration Successful!';
         if (submissionAlertBadge) {
@@ -3894,6 +5035,21 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           submissionAlertBadge.style.display = 'none';
         }
         submissionAlertMessage.textContent = 'Your registration has been submitted successfully. Thank you for registering.';
+
+        if (successTicketPassWrap && res) {
+          var tId = res.ticketId || formatAnwarTicketId(res.registrationId || '001');
+          if (ticketPassName) ticketPassName.textContent = res.name || '-';
+          if (ticketPassId) ticketPassId.textContent = tId;
+          if (ticketPassBatch) ticketPassBatch.textContent = res.batchYear || '-';
+          if (ticketPassTokenLabel) ticketPassTokenLabel.textContent = res.ticketToken || '';
+          if (ticketQrCanvas) {
+            drawQrMatrixToCanvas(ticketQrCanvas, res.qrMatrix, 184);
+            ticketQrCanvas.setAttribute('data-ticket-token', res.ticketToken || '');
+          }
+          successTicketPassWrap.classList.add('visible');
+        }
+
+        fetchPublicStudentsList();
         submissionAlertModal.setAttribute('aria-hidden', 'false');
         submissionAlertModal.classList.add('active');
         setTimeout(function() {
@@ -3904,7 +5060,14 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       function openSubmissionErrorModal(errMsg) {
         if (!submissionAlertModal) return;
         lastAlertWasSuccess = false;
-        if (submissionAlertBox) submissionAlertBox.classList.add('is-error');
+        activeSuccessTicketRecord = null;
+        if (submissionAlertBox) {
+          submissionAlertBox.classList.add('is-error');
+          submissionAlertBox.classList.remove('has-ticket');
+        }
+        if (successTicketPassWrap) {
+          successTicketPassWrap.classList.remove('visible');
+        }
         if (submissionAlertIcon) submissionAlertIcon.textContent = '✕';
         submissionAlertTitle.textContent = 'Submission Failed';
         if (submissionAlertBadge) {
@@ -3923,6 +5086,15 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         if (typeof form !== 'undefined' && form && form.reset) {
           form.reset();
         }
+        isNameEditOpen = false;
+        if (editNameBox) editNameBox.classList.remove('open');
+        if (originalExcelNameInput) originalExcelNameInput.value = '';
+        if (studentIdInput) studentIdInput.value = '';
+        if (duplicateNameWarning) {
+          duplicateNameWarning.textContent = '';
+          duplicateNameWarning.classList.remove('visible');
+        }
+        populateStudentDropdownForBatch('', '');
         var selectedCards = document.querySelectorAll('.selected-yes, .selected-no');
         for (var i = 0; i < selectedCards.length; i++) {
           selectedCards[i].classList.remove('selected-yes', 'selected-no');
@@ -4061,6 +5233,11 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         }
       }
 
+      var dashboardBatchReport = null;
+      var dashboardWhatsappReportText = '';
+      var dashboardMasterStudents = [];
+      var dashboardWhatsappCloudApi = null;
+
       function normalizeRegistrationItem(item, index) {
         var r = (item && typeof item === 'object') ? item : {};
         var fallbackId = String(index + 1);
@@ -4070,10 +5247,16 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         if (backendSent) {
           setLocalWaSent(regId, true);
         }
+        var checkedIn = Boolean(r.checkedIn);
         return {
           registrationId: regId,
+          ticketId: safeDisplayText(r.ticketId, formatAnwarTicketId(regId)),
+          ticketToken: safeDisplayText(r.ticketToken, ''),
           timestamp: safeDisplayText(r.timestamp, '-'),
           name: safeDisplayText(r.name, '-'),
+          originalExcelName: safeDisplayText(r.originalExcelName || r.name, '-'),
+          nameEdited: Boolean(r.nameEdited),
+          studentId: safeDisplayText(r.studentId, ''),
           place: safeDisplayText(r.place, '-'),
           batchYear: safeDisplayText(r.batchYear, '-'),
           whatsappNumber: safeDisplayText(r.whatsappNumber, ''),
@@ -4085,7 +5268,13 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           whatsAppClickToChatUrl: safeDisplayText(r.whatsAppClickToChatUrl, ''),
           whatsappSent: Boolean(backendSent || isLocalWaSent(regId)),
           whatsappSentAt: safeDisplayText(r.whatsappSentAt, ''),
-          whatsappSentCount: Number(r.whatsappSentCount || 0)
+          whatsappSentCount: Number(r.whatsappSentCount || 0),
+          registrationStatus: safeDisplayText(r.registrationStatus, 'REGISTERED'),
+          checkedIn: checkedIn,
+          checkInStatus: checkedIn ? 'CHECKED IN' : 'NOT CHECKED IN',
+          checkInTimestamp: safeDisplayText(r.checkInTimestamp, ''),
+          checkedInBy: safeDisplayText(r.checkedInBy, ''),
+          qrMatrix: Array.isArray(r.qrMatrix) ? r.qrMatrix : null
         };
       }
 
@@ -4100,6 +5289,15 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         adminLoginSection.style.display = 'none';
         adminDashboardContent.style.display = 'block';
         dashboardRegistrations = rawRegs.map(normalizeRegistrationItem);
+        dashboardBatchReport = payload.batchReport || null;
+        dashboardWhatsappReportText = safeDisplayText(payload.whatsappReportText, '');
+        if (Array.isArray(payload.students)) {
+          dashboardMasterStudents = payload.students;
+          allMasterStudents = payload.students;
+        }
+        if (payload.whatsappCloudApi) {
+          dashboardWhatsappCloudApi = payload.whatsappCloudApi;
+        }
         renderDashboardUI();
       }
 
@@ -4386,6 +5584,243 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         });
 
         renderResponsesTable();
+        renderBatchReportUI();
+        renderCheckinManagementUI();
+        renderMasterStudentsUI();
+      }
+
+      function formatPctClient(regCnt, totCnt) {
+        if (!totCnt || totCnt <= 0) return '0%';
+        var val = Math.round((regCnt / totCnt) * 1000) / 10;
+        return val + '%';
+      }
+
+      function computeClientBatchReportFallback() {
+        var batches = [];
+        var lines = [
+          '*Aufbruch*',
+          '*Alumni Conclave 2026*',
+          '________________________',
+          ''
+        ];
+        var totalUnique = 0;
+        for (var y = 2001; y <= 2026; y++) {
+          var yrStr = String(y);
+          var idx = y - 2000;
+          var seenSet = {};
+          var checkinCnt = 0;
+          for (var i = 0; i < dashboardRegistrations.length; i++) {
+            var r = dashboardRegistrations[i];
+            if (String(r.batchYear) === yrStr) {
+              var k = r.studentId ? ('STU:' + r.studentId) : ('NM:' + String(r.originalExcelName || r.name || '').toUpperCase());
+              if (!seenSet[k]) {
+                seenSet[k] = true;
+                if (r.checkedIn) checkinCnt++;
+              }
+            }
+          }
+          var regCnt = Object.keys(seenSet).length;
+          totalUnique += regCnt;
+          var offTot = officialBatchTotalsMap[yrStr] || 0;
+          var regFmt = regCnt < 10 ? ('0' + regCnt) : String(regCnt);
+          var offFmt = offTot < 10 ? ('0' + offTot) : String(offTot);
+          var pctStr = formatPctClient(regCnt, offTot);
+          var pctNum = offTot > 0 ? Math.round((regCnt / offTot) * 1000) / 10 : 0;
+          var line = idx + '. Batch ' + yrStr + ' : ' + regFmt + '/' + offFmt + ' (' + pctStr + ')';
+          lines.push(line);
+          batches.push({
+            index: idx,
+            batchYear: yrStr,
+            registeredCount: regCnt,
+            registeredFormatted: regFmt,
+            officialTotal: offTot,
+            officialTotalFormatted: offFmt,
+            percentage: pctNum,
+            percentageFormatted: pctStr,
+            checkedInCount: checkinCnt,
+            pendingCheckInCount: Math.max(0, regCnt - checkinCnt),
+            reportLine: line
+          });
+        }
+        var ovFmt = totalUnique < 10 ? ('0' + totalUnique) : String(totalUnique);
+        var ovPctStr = formatPctClient(totalUnique, 330);
+        var ovPctNum = Math.round((totalUnique / 330) * 1000) / 10;
+        lines.push('');
+        lines.push('________________________');
+        lines.push('*Total Registration: ' + ovFmt + '/330 (' + ovPctStr + ')*');
+        return {
+          batches: batches,
+          totalRegistered: totalUnique,
+          totalRegisteredFormatted: ovFmt,
+          officialOverallTotal: 330,
+          overallPercentage: ovPctNum,
+          overallPercentageFormatted: ovPctStr,
+          overallSummaryText: ovFmt + '/330 (' + ovPctStr + ')',
+          whatsappReportText: lines.join('\n')
+        };
+      }
+
+      function renderBatchReportUI() {
+        var rep = dashboardBatchReport || computeClientBatchReportFallback();
+        dashboardWhatsappReportText = rep.whatsappReportText || '';
+        var summaryEl = document.getElementById('overallBatchRegSummary');
+        var barEl = document.getElementById('overallBatchProgressBar');
+        var previewEl = document.getElementById('batchReportPreviewBox');
+        var gridEl = document.getElementById('batchReportGridContainer');
+
+        if (summaryEl) {
+          summaryEl.textContent = rep.overallSummaryText || (rep.totalRegisteredFormatted + '/330 (' + rep.overallPercentageFormatted + ')');
+        }
+        if (barEl) {
+          barEl.style.width = Math.min(100, Number(rep.overallPercentage || 0)) + '%';
+        }
+        if (previewEl) {
+          previewEl.textContent = dashboardWhatsappReportText;
+        }
+        if (!gridEl) return;
+        gridEl.innerHTML = '';
+
+        var batches = Array.isArray(rep.batches) ? rep.batches : [];
+        batches.forEach(function(b) {
+          var card = document.createElement('div');
+          card.className = 'batch-stat-card';
+          var pctWidth = Math.min(100, Number(b.percentage || 0));
+          card.innerHTML =
+            '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 13px; font-weight: 700;">' +
+              '<span style="color: #FFFFFF;">' + escapeHtml(b.index + '. Batch ' + b.batchYear) + '</span>' +
+              '<span style="color: var(--gold-300);">' + escapeHtml(b.registeredFormatted + '/' + b.officialTotalFormatted + ' (' + b.percentageFormatted + ')') + '</span>' +
+            '</div>' +
+            '<div class="bar-track" style="height: 8px;">' +
+              '<div class="bar-fill" style="width: ' + pctWidth + '%;"></div>' +
+            '</div>';
+          gridEl.appendChild(card);
+        });
+      }
+
+      function renderCheckinManagementUI() {
+        var total = dashboardRegistrations.length;
+        var confirmed = 0;
+        var batchCheckinLines = [];
+        var batchCheckinMap = {};
+
+        for (var i = 0; i < dashboardRegistrations.length; i++) {
+          var r = dashboardRegistrations[i];
+          if (r.checkedIn) confirmed++;
+          var by = r.batchYear || 'Unspecified';
+          if (!batchCheckinMap[by]) batchCheckinMap[by] = { reg: 0, inCount: 0 };
+          batchCheckinMap[by].reg++;
+          if (r.checkedIn) batchCheckinMap[by].inCount++;
+        }
+        var pending = Math.max(0, total - confirmed);
+
+        var elTot = document.getElementById('checkinKpiTotal');
+        var elConf = document.getElementById('checkinKpiConfirmed');
+        var elPend = document.getElementById('checkinKpiPending');
+        var elMini = document.getElementById('checkinBatchMiniSummary');
+        if (elTot) elTot.textContent = String(total);
+        if (elConf) elConf.textContent = String(confirmed);
+        if (elPend) elPend.textContent = String(pending);
+
+        var bKeys = Object.keys(batchCheckinMap).sort();
+        bKeys.forEach(function(k) {
+          var item = batchCheckinMap[k];
+          batchCheckinLines.push('Batch ' + escapeHtml(k) + ': <strong>' + item.inCount + '/' + item.reg + '</strong> checked in');
+        });
+        if (elMini) {
+          elMini.innerHTML = batchCheckinLines.length ? batchCheckinLines.join(' • ') : 'No registrations yet';
+        }
+
+        // Populate batch filter dropdown if needed
+        var batchSelect = document.getElementById('filterCheckinBatchSelect');
+        if (batchSelect && batchSelect.options.length <= 1) {
+          for (var y = 2001; y <= 2026; y++) {
+            var opt = document.createElement('option');
+            opt.value = String(y);
+            opt.textContent = 'Batch ' + y;
+            batchSelect.appendChild(opt);
+          }
+        }
+
+        var searchQ = (document.getElementById('searchCheckinInput') ? document.getElementById('searchCheckinInput').value : '').trim().toLowerCase();
+        var batchFilter = batchSelect ? batchSelect.value : 'ALL';
+        var statusFilter = document.getElementById('filterCheckinStatusSelect') ? document.getElementById('filterCheckinStatusSelect').value : 'ALL';
+
+        var filtered = dashboardRegistrations.filter(function(r) {
+          if (batchFilter !== 'ALL' && String(r.batchYear) !== batchFilter) return false;
+          if (statusFilter !== 'ALL' && r.checkInStatus !== statusFilter) return false;
+          if (!searchQ) return true;
+          var hay = (r.ticketId + ' ' + r.registrationId + ' ' + r.name + ' ' + r.originalExcelName + ' ' + r.batchYear + ' ' + r.place).toLowerCase();
+          return hay.indexOf(searchQ) !== -1;
+        });
+
+        var tbody = document.getElementById('checkinManagementTableBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        if (filtered.length === 0) {
+          var emptyTr = document.createElement('tr');
+          emptyTr.innerHTML = '<td colspan="8" style="text-align: center; padding: 22px; color: #94A3B8;">No matching participant records found.</td>';
+          tbody.appendChild(emptyTr);
+          return;
+        }
+
+        filtered.forEach(function(r) {
+          var tr = document.createElement('tr');
+          var statusBadge = r.checkedIn
+            ? '<span class="badge-yes">✓ CHECKED IN</span>'
+            : '<span class="badge-no" style="background: rgba(245, 158, 11, 0.16); color: #FDE68A; border-color: rgba(245, 158, 11, 0.4);">⏳ NOT CHECKED IN</span>';
+
+          var actionHtml = r.checkedIn
+            ? '<span style="font-size: 12px; font-weight: 700; color: #6EE7B7;">✓ Entry Completed</span>'
+            : '<button type="button" class="action-btn action-view-btn checkin-select-ticket-btn" data-ticket-token="' + escapeAttr(r.ticketToken) + '" data-reg-id="' + escapeAttr(r.registrationId) + '">📷 Inspect / Confirm</button>';
+
+          tr.innerHTML =
+            '<td style="font-weight: 800; color: var(--gold-300); white-space: nowrap;">' + escapeHtml(r.ticketId) + '</td>' +
+            '<td style="font-weight: 700; color: #FFFFFF;">' + escapeHtml(r.name) + '</td>' +
+            '<td style="font-weight: 600;">' + escapeHtml(r.batchYear) + '</td>' +
+            '<td>' + escapeHtml(r.place) + '</td>' +
+            '<td><span class="badge-yes">REGISTERED</span></td>' +
+            '<td>' + statusBadge + '</td>' +
+            '<td style="white-space: nowrap; color: #94A3B8; font-size: 12.5px;">' + escapeHtml(r.checkInTimestamp || '-') + '</td>' +
+            '<td>' + actionHtml + '</td>';
+          tbody.appendChild(tr);
+        });
+      }
+
+      function renderMasterStudentsUI() {
+        var totalBadge = document.getElementById('masterStudentTotalBadge');
+        if (totalBadge) totalBadge.textContent = String(allMasterStudents.length || 290);
+
+        var waStatusText = document.getElementById('waCloudApiBadgeText');
+        if (waStatusText && dashboardWhatsappCloudApi) {
+          waStatusText.textContent = dashboardWhatsappCloudApi.configured
+            ? 'Meta Cloud API Active (Verified Sender 8606140996)'
+            : 'Click-to-Chat Active (Set WHATSAPP_CLOUD_API_TOKEN & WHATSAPP_PHONE_NUMBER_ID in env for automated Cloud API)';
+        }
+
+        var batchSel = document.getElementById('adminStudentBatchFilter');
+        var listEl = document.getElementById('adminStudentMasterList');
+        if (!batchSel || !listEl) return;
+        var selectedBatch = batchSel.value || '2020';
+        var batchSt = allMasterStudents.filter(function(s) {
+          return String(s.batchYear) === selectedBatch;
+        });
+        listEl.innerHTML = '';
+
+        if (batchSt.length === 0) {
+          listEl.innerHTML = '<div style="color: #FDE68A; font-size: 13px; font-weight: 600;">No student names imported from Excel for Batch ' + escapeHtml(selectedBatch) + ' yet (Official Batch Total: ' + (officialBatchTotalsMap[selectedBatch] || 0) + '). Use "+ Add Student" above to add names.</div>';
+          return;
+        }
+
+        batchSt.forEach(function(st) {
+          var chip = document.createElement('div');
+          chip.style.cssText = 'display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.06); border: 1px solid rgba(212,175,55,0.3); border-radius: 8px; padding: 5px 10px; font-size: 12px; color: #E2E8F0;';
+          var slPrefix = st.serialNo ? ('#' + st.serialNo + ' ') : '';
+          chip.innerHTML =
+            '<span>' + escapeHtml(slPrefix + st.name) + '</span>' +
+            '<button type="button" class="master-stu-del-btn" data-stu-id="' + escapeAttr(st.studentId) + '" title="Remove Student" style="background: transparent; border: none; color: #FCA5A5; cursor: pointer; font-weight: 800; padding: 0 2px;">✕</button>';
+          listEl.appendChild(chip);
+        });
       }
 
       function renderResponsesTable() {
@@ -4438,16 +5873,21 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
           var actionsHtml =
             '<div class="actions-cell">' +
-              '<button type="button" class="action-btn action-view-btn" data-reg-id="' + escapeAttr(r.registrationId) + '" title="View Registration Details">👁️ View</button>' +
+              '<button type="button" class="action-btn action-view-btn" data-reg-id="' + escapeAttr(r.registrationId) + '" title="View Registration Details & Ticket">👁️ View</button>' +
               '<button type="button" class="action-btn action-edit-btn" data-reg-id="' + escapeAttr(r.registrationId) + '" title="Edit Registration">✏️ Edit</button>' +
               '<button type="button" class="action-btn action-delete-btn" data-reg-id="' + escapeAttr(r.registrationId) + '" title="Delete Registration">🗑️ Delete</button>' +
               '<button type="button" class="' + msgBtnClass + '" data-reg-id="' + escapeAttr(r.registrationId) + '" data-wa-sent="' + (isWaSent ? 'true' : 'false') + '" title="' + escapeAttr(msgBtnTitle) + '">💬 Send Message</button>' +
             '</div>';
 
+          var nameCellHtml = escapeHtml(r.name);
+          if (r.nameEdited && r.originalExcelName && r.originalExcelName.toUpperCase() !== r.name.toUpperCase()) {
+            nameCellHtml += '<div style="font-size: 11px; color: var(--gold-300); font-weight: 500;">Excel: ' + escapeHtml(r.originalExcelName) + '</div>';
+          }
+
           tr.innerHTML =
-            '<td style="font-weight: 700; color: var(--gold-300);">' + escapeHtml(r.registrationId) + '</td>' +
+            '<td style="font-weight: 700; color: var(--gold-300); white-space: nowrap;">' + escapeHtml(r.ticketId || r.registrationId) + '</td>' +
             '<td style="white-space: nowrap; color: #94A3B8;">' + escapeHtml(r.timestamp) + '</td>' +
-            '<td style="font-weight: 700; color: #FFFFFF;">' + escapeHtml(r.name) + '</td>' +
+            '<td style="font-weight: 700; color: #FFFFFF;">' + nameCellHtml + '</td>' +
             '<td>' + escapeHtml(r.place) + '</td>' +
             '<td style="font-weight: 600;">' + escapeHtml(r.batchYear) + '</td>' +
             '<td style="white-space: nowrap; font-weight: 600; font-size: 13px;">' + escapeHtml(r.formattedPhone) + '</td>' +
@@ -4616,13 +6056,21 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         activeViewRegId = rec.registrationId;
         var phoneInfo = formatPhoneForAdminWa(rec);
 
-        viewModalRegIdBadge.textContent = 'ID: ' + rec.registrationId;
+        viewModalRegIdBadge.textContent = rec.ticketId || ('ID: ' + rec.registrationId);
         viewNameVal.textContent = rec.name || '-';
         viewPlaceVal.textContent = rec.place || '-';
         viewBatchVal.textContent = rec.batchYear || '-';
         viewPhoneVal.textContent = phoneInfo.display || rec.formattedPhone || '-';
         viewParticipationVal.textContent = rec.participation || '-';
         viewTimestampVal.textContent = rec.timestamp || '-';
+        var origNameEl = document.getElementById('viewOrigNameVal');
+        if (origNameEl) origNameEl.textContent = rec.originalExcelName || rec.name || '-';
+        var checkinValEl = document.getElementById('viewCheckinVal');
+        if (checkinValEl) {
+          checkinValEl.textContent = rec.checkedIn
+            ? ('CHECKED IN (' + (rec.checkInTimestamp || '') + ')')
+            : 'NOT CHECKED IN';
+        }
         viewRegistrationModal.classList.add('open');
       }
 
@@ -5076,6 +6524,494 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
       document.getElementById('searchTableInput').addEventListener('input', renderResponsesTable);
       document.getElementById('filterParticipationSelect').addEventListener('change', renderResponsesTable);
+
+      var viewDownloadTicketBtn = document.getElementById('viewDownloadTicketBtn');
+      if (viewDownloadTicketBtn) {
+        viewDownloadTicketBtn.addEventListener('click', function() {
+          var rec = findRegistrationById(activeViewRegId);
+          if (rec) downloadTicketAsPng(rec);
+        });
+      }
+
+      // -----------------------------------------------------------------------
+      // Batch-wise Report Share, Copy & Preview Handlers
+      // -----------------------------------------------------------------------
+      function getLatestBatchReportText() {
+        if (!dashboardWhatsappReportText) {
+          var rep = dashboardBatchReport || computeClientBatchReportFallback();
+          dashboardWhatsappReportText = rep.whatsappReportText || '';
+        }
+        return dashboardWhatsappReportText;
+      }
+
+      function shareBatchReportToWhatsApp() {
+        if (!isAdminAuthenticated) return;
+        var text = getLatestBatchReportText();
+        if (!text) return;
+        var waUrl = 'https://wa.me/?text=' + encodeURIComponent(text);
+        window.open(waUrl, '_blank', 'noopener,noreferrer');
+        showToast('📲 Opened WhatsApp with live 26-batch registration report.');
+      }
+
+      var shareBatchReportWaBtn = document.getElementById('shareBatchReportWaBtn');
+      var shareBatchReportBtn = document.getElementById('shareBatchReportBtn');
+      var copyBatchReportBtn = document.getElementById('copyBatchReportBtn');
+      var previewBatchReportBtn = document.getElementById('previewBatchReportBtn');
+      var batchReportPreviewBox = document.getElementById('batchReportPreviewBox');
+
+      if (shareBatchReportWaBtn) shareBatchReportWaBtn.addEventListener('click', shareBatchReportToWhatsApp);
+      if (shareBatchReportBtn) shareBatchReportBtn.addEventListener('click', shareBatchReportToWhatsApp);
+
+      if (copyBatchReportBtn) {
+        copyBatchReportBtn.addEventListener('click', function() {
+          if (!isAdminAuthenticated) return;
+          var text = getLatestBatchReportText();
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(function() {
+              showToast('📋 Batch-wise registration report copied to clipboard!');
+            }).catch(function() {
+              showToast('📋 Report ready in preview box.');
+            });
+          } else {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); } catch (e) {}
+            document.body.removeChild(ta);
+            showToast('📋 Batch-wise registration report copied to clipboard!');
+          }
+        });
+      }
+
+      if (previewBatchReportBtn && batchReportPreviewBox) {
+        previewBatchReportBtn.addEventListener('click', function() {
+          if (!isAdminAuthenticated) return;
+          batchReportPreviewBox.textContent = getLatestBatchReportText();
+          batchReportPreviewBox.classList.toggle('open');
+        });
+      }
+
+      // -----------------------------------------------------------------------
+      // EVENT CHECK-IN / QR SCANNER & One-Time Confirmation Handlers
+      // -----------------------------------------------------------------------
+      var startQrScannerBtn = document.getElementById('startQrScannerBtn');
+      var stopQrScannerBtn = document.getElementById('stopQrScannerBtn');
+      var flipCameraBtn = document.getElementById('flipCameraBtn');
+      var qrCameraStage = document.getElementById('qrCameraStage');
+      var qrScannerVideo = document.getElementById('qrScannerVideo');
+      var qrScannerCanvas = document.getElementById('qrScannerCanvas');
+      var qrCameraPlaceholder = document.getElementById('qrCameraPlaceholder');
+      var qrCameraErrorMsg = document.getElementById('qrCameraErrorMsg');
+      var qrManualTokenInput = document.getElementById('qrManualTokenInput');
+      var verifyQrTokenBtn = document.getElementById('verifyQrTokenBtn');
+      var qrTicketImageInput = document.getElementById('qrTicketImageInput');
+      var scannedTicketResultCard = document.getElementById('scannedTicketResultCard');
+      var scanResultHeadline = document.getElementById('scanResultHeadline');
+      var scanResultSubtext = document.getElementById('scanResultSubtext');
+      var scanParticipantDetailsBox = document.getElementById('scanParticipantDetailsBox');
+      var scanPartName = document.getElementById('scanPartName');
+      var scanPartId = document.getElementById('scanPartId');
+      var scanPartBatch = document.getElementById('scanPartBatch');
+      var scanRegStatus = document.getElementById('scanRegStatus');
+      var scanCheckinStatus = document.getElementById('scanCheckinStatus');
+      var scanPrevCheckinInfo = document.getElementById('scanPrevCheckinInfo');
+      var confirmTicketCheckinBtn = document.getElementById('confirmTicketCheckinBtn');
+      var exportCheckinXlsxBtn = document.getElementById('exportCheckinXlsxBtn');
+      var searchCheckinInput = document.getElementById('searchCheckinInput');
+      var filterCheckinBatchSelect = document.getElementById('filterCheckinBatchSelect');
+      var filterCheckinStatusSelect = document.getElementById('filterCheckinStatusSelect');
+      var checkinManagementTableBody = document.getElementById('checkinManagementTableBody');
+
+      var activeCameraStream = null;
+      var qrScanTimer = null;
+      var currentCameraFacing = 'environment';
+      var activeScannedParticipant = null;
+
+      function stopQrCamera() {
+        if (qrScanTimer) {
+          clearInterval(qrScanTimer);
+          qrScanTimer = null;
+        }
+        if (activeCameraStream) {
+          try {
+            var tracks = activeCameraStream.getTracks();
+            for (var i = 0; i < tracks.length; i++) tracks[i].stop();
+          } catch (e) {}
+          activeCameraStream = null;
+        }
+        if (qrScannerVideo) {
+          qrScannerVideo.srcObject = null;
+        }
+        if (qrCameraStage) qrCameraStage.classList.remove('active');
+        if (qrCameraPlaceholder) qrCameraPlaceholder.style.display = 'block';
+        if (startQrScannerBtn) startQrScannerBtn.style.display = 'inline-flex';
+        if (stopQrScannerBtn) stopQrScannerBtn.style.display = 'none';
+        if (flipCameraBtn) flipCameraBtn.style.display = 'none';
+      }
+
+      function startQrCamera() {
+        if (!isAdminAuthenticated) return;
+        if (qrCameraErrorMsg) qrCameraErrorMsg.style.display = 'none';
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          if (qrCameraErrorMsg) {
+            qrCameraErrorMsg.textContent = 'Camera access is not supported in this browser context. You can upload a ticket image or enter a QR token below.';
+            qrCameraErrorMsg.style.display = 'block';
+          }
+          return;
+        }
+        stopQrCamera();
+        navigator.mediaDevices.getUserMedia({
+          video: { facingMode: currentCameraFacing }
+        }).then(function(stream) {
+          activeCameraStream = stream;
+          if (qrScannerVideo) {
+            qrScannerVideo.srcObject = stream;
+            qrScannerVideo.play().catch(function() {});
+          }
+          if (qrCameraStage) qrCameraStage.classList.add('active');
+          if (qrCameraPlaceholder) qrCameraPlaceholder.style.display = 'none';
+          if (startQrScannerBtn) startQrScannerBtn.style.display = 'none';
+          if (stopQrScannerBtn) stopQrScannerBtn.style.display = 'inline-flex';
+          if (flipCameraBtn) flipCameraBtn.style.display = 'inline-flex';
+
+          var detector = null;
+          if (typeof window.BarcodeDetector === 'function') {
+            try { detector = new window.BarcodeDetector({ formats: ['qr_code'] }); } catch (e) {}
+          }
+          qrScanTimer = setInterval(function() {
+            if (!qrScannerVideo || qrScannerVideo.readyState < 2 || !detector) return;
+            detector.detect(qrScannerVideo).then(function(codes) {
+              if (codes && codes.length > 0 && codes[0].rawValue) {
+                verifyQrTicketOnBackend(codes[0].rawValue, false);
+              }
+            }).catch(function() {});
+          }, 500);
+        }).catch(function(err) {
+          if (qrCameraErrorMsg) {
+            qrCameraErrorMsg.textContent = 'Camera permission denied or no camera available (' + (err && err.message ? err.message : 'unavailable') + '). Use Ticket Image or QR Token input below.';
+            qrCameraErrorMsg.style.display = 'block';
+          }
+        });
+      }
+
+      if (startQrScannerBtn) startQrScannerBtn.addEventListener('click', startQrCamera);
+      if (stopQrScannerBtn) stopQrScannerBtn.addEventListener('click', stopQrCamera);
+      if (flipCameraBtn) {
+        flipCameraBtn.addEventListener('click', function() {
+          currentCameraFacing = (currentCameraFacing === 'environment') ? 'user' : 'environment';
+          startQrCamera();
+        });
+      }
+
+      function renderScannerVerificationState(data) {
+        if (!scannedTicketResultCard) return;
+        scannedTicketResultCard.classList.remove('status-pending', 'status-confirmed', 'status-already', 'status-invalid');
+        var status = data && data.status ? data.status : 'INVALID';
+        var p = data && data.participant ? data.participant : null;
+        activeScannedParticipant = p;
+
+        if (status === 'INVALID' || !p) {
+          scannedTicketResultCard.classList.add('status-invalid');
+          scanResultHeadline.textContent = 'INVALID TICKET – PLEASE VERIFY';
+          scanResultHeadline.style.color = '#F87171';
+          scanResultSubtext.textContent = 'The scanned QR code does not match any valid registration record in the database.';
+          if (scanParticipantDetailsBox) scanParticipantDetailsBox.style.display = 'none';
+          if (confirmTicketCheckinBtn) confirmTicketCheckinBtn.style.display = 'none';
+          return;
+        }
+
+        if (scanParticipantDetailsBox) scanParticipantDetailsBox.style.display = 'block';
+        if (scanPartName) scanPartName.textContent = p.name || '-';
+        if (scanPartId) scanPartId.textContent = p.ticketId || formatAnwarTicketId(p.registrationId);
+        if (scanPartBatch) scanPartBatch.textContent = p.batchYear || '-';
+        if (scanRegStatus) scanRegStatus.textContent = 'REGISTERED';
+
+        if (status === 'VALID_PENDING') {
+          scannedTicketResultCard.classList.add('status-pending');
+          scanResultHeadline.textContent = '< TICKET CONFIRMED >';
+          scanResultHeadline.style.color = 'var(--gold-400)';
+          scanResultSubtext.textContent = 'Valid participant ticket verified. Click CONFIRM TICKET below to complete check-in.';
+          if (scanCheckinStatus) {
+            scanCheckinStatus.textContent = 'NOT CHECKED IN';
+            scanCheckinStatus.style.color = '#FBBF24';
+          }
+          if (scanPrevCheckinInfo) scanPrevCheckinInfo.style.display = 'none';
+          if (confirmTicketCheckinBtn) {
+            confirmTicketCheckinBtn.style.display = 'block';
+            confirmTicketCheckinBtn.disabled = false;
+            confirmTicketCheckinBtn.textContent = 'CONFIRM TICKET';
+          }
+          return;
+        }
+
+        if (status === 'CONFIRMED_NOW') {
+          scannedTicketResultCard.classList.add('status-confirmed');
+          scanResultHeadline.textContent = 'TICKET CONFIRMED SUCCESSFULLY';
+          scanResultHeadline.style.color = '#34D399';
+          scanResultSubtext.textContent = 'Participant entry has been permanently recorded in the database.';
+          if (scanCheckinStatus) {
+            scanCheckinStatus.textContent = 'CHECKED IN';
+            scanCheckinStatus.style.color = '#34D399';
+          }
+          if (scanPrevCheckinInfo) {
+            scanPrevCheckinInfo.textContent = 'Checked in at: ' + (data.checkInTimestamp || p.checkInTimestamp || '-') + ' (Confirmed by: ' + (data.checkedInBy || p.checkedInBy || 'admin') + ')';
+            scanPrevCheckinInfo.style.display = 'block';
+          }
+          if (confirmTicketCheckinBtn) {
+            confirmTicketCheckinBtn.style.display = 'none';
+            confirmTicketCheckinBtn.disabled = true;
+          }
+          return;
+        }
+
+        if (status === 'ALREADY_CONFIRMED') {
+          scannedTicketResultCard.classList.add('status-already');
+          scanResultHeadline.textContent = 'ALREADY CONFIRMED – ENTRY COMPLETED';
+          scanResultHeadline.style.color = '#FBBF24';
+          scanResultSubtext.textContent = 'This ticket has already been used for check-in and cannot be confirmed again.';
+          if (scanCheckinStatus) {
+            scanCheckinStatus.textContent = 'CHECKED IN';
+            scanCheckinStatus.style.color = '#34D399';
+          }
+          if (scanPrevCheckinInfo) {
+            scanPrevCheckinInfo.textContent = 'Previous Check-in Date & Time: ' + (data.checkInTimestamp || p.checkInTimestamp || '-') + ' (Confirmed by: ' + (data.checkedInBy || p.checkedInBy || 'admin') + ')';
+            scanPrevCheckinInfo.style.display = 'block';
+          }
+          if (confirmTicketCheckinBtn) {
+            confirmTicketCheckinBtn.style.display = 'none';
+            confirmTicketCheckinBtn.disabled = true;
+          }
+        }
+      }
+
+      function verifyQrTicketOnBackend(qrDataStr, allowIdLookup) {
+        if (!isAdminAuthenticated) return;
+        var cleanQr = String(qrDataStr || '').trim();
+        if (!cleanQr) {
+          renderScannerVerificationState({ status: 'INVALID' });
+          return;
+        }
+        apiFetchJson('/api/admin/checkin/verify', {
+          method: 'POST',
+          headers: getAuthHeaders(true),
+          body: JSON.stringify({ qrData: cleanQr, allowIdLookup: Boolean(allowIdLookup) })
+        })
+          .then(function(res) {
+            renderScannerVerificationState(res.data || { status: 'INVALID' });
+          })
+          .catch(function() {
+            renderScannerVerificationState({ status: 'INVALID' });
+          });
+      }
+
+      if (verifyQrTokenBtn && qrManualTokenInput) {
+        verifyQrTokenBtn.addEventListener('click', function() {
+          verifyQrTicketOnBackend(qrManualTokenInput.value, false);
+        });
+        qrManualTokenInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            verifyQrTicketOnBackend(qrManualTokenInput.value, false);
+          }
+        });
+      }
+
+      if (qrTicketImageInput) {
+        qrTicketImageInput.addEventListener('change', function() {
+          var file = qrTicketImageInput.files && qrTicketImageInput.files[0];
+          if (!file) return;
+          var fileNameMatch = file.name.match(/(AUF26-ANWAR\d{3,}-[A-F0-9]{12})/i);
+          if (typeof window.BarcodeDetector === 'function' && typeof createImageBitmap === 'function') {
+            createImageBitmap(file).then(function(bmp) {
+              var det = new window.BarcodeDetector({ formats: ['qr_code'] });
+              return det.detect(bmp);
+            }).then(function(codes) {
+              if (codes && codes.length > 0 && codes[0].rawValue) {
+                if (qrManualTokenInput) qrManualTokenInput.value = codes[0].rawValue;
+                verifyQrTicketOnBackend(codes[0].rawValue, false);
+              } else if (fileNameMatch) {
+                if (qrManualTokenInput) qrManualTokenInput.value = fileNameMatch[1];
+                verifyQrTicketOnBackend(fileNameMatch[1], false);
+              } else {
+                renderScannerVerificationState({ status: 'INVALID' });
+              }
+            }).catch(function() {
+              if (fileNameMatch) {
+                if (qrManualTokenInput) qrManualTokenInput.value = fileNameMatch[1];
+                verifyQrTicketOnBackend(fileNameMatch[1], false);
+              } else {
+                renderScannerVerificationState({ status: 'INVALID' });
+              }
+            });
+          } else if (fileNameMatch) {
+            if (qrManualTokenInput) qrManualTokenInput.value = fileNameMatch[1];
+            verifyQrTicketOnBackend(fileNameMatch[1], false);
+          } else {
+            renderScannerVerificationState({ status: 'INVALID' });
+          }
+          qrTicketImageInput.value = '';
+        });
+      }
+
+      if (confirmTicketCheckinBtn) {
+        confirmTicketCheckinBtn.addEventListener('click', function() {
+          if (!isAdminAuthenticated || !activeScannedParticipant) return;
+          confirmTicketCheckinBtn.disabled = true;
+          confirmTicketCheckinBtn.textContent = 'Confirming Check-in...';
+          apiFetchJson('/api/admin/checkin/confirm', {
+            method: 'POST',
+            headers: getAuthHeaders(true),
+            body: JSON.stringify({
+              ticketToken: activeScannedParticipant.ticketToken,
+              registrationId: activeScannedParticipant.registrationId
+            })
+          })
+            .then(function(res) {
+              if (res.data && res.data.dashboard) {
+                showAuthenticatedDashboard(res.data.dashboard);
+              }
+              renderScannerVerificationState(res.data || { status: 'INVALID' });
+              if (res.status === 200 && res.data && res.data.status === 'CONFIRMED_NOW') {
+                showToast('✓ TICKET CONFIRMED SUCCESSFULLY (' + (activeScannedParticipant.ticketId || '') + ')');
+              } else if (res.data && res.data.status === 'ALREADY_CONFIRMED') {
+                showToast('⚠️ ALREADY CONFIRMED – ENTRY COMPLETED');
+              }
+            })
+            .catch(function() {
+              confirmTicketCheckinBtn.disabled = false;
+              confirmTicketCheckinBtn.textContent = 'CONFIRM TICKET';
+              showToast('Unable to confirm ticket. Please try again.');
+            });
+        });
+      }
+
+      if (checkinManagementTableBody) {
+        checkinManagementTableBody.addEventListener('click', function(e) {
+          var btn = e.target.closest('.checkin-select-ticket-btn');
+          if (!btn) return;
+          var tok = btn.getAttribute('data-ticket-token') || '';
+          if (qrManualTokenInput) qrManualTokenInput.value = tok;
+          verifyQrTicketOnBackend(tok, false);
+          var scanSec = document.getElementById('qrScannerSection');
+          if (scanSec && scanSec.scrollIntoView) {
+            scanSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      }
+
+      if (searchCheckinInput) searchCheckinInput.addEventListener('input', renderCheckinManagementUI);
+      if (filterCheckinBatchSelect) filterCheckinBatchSelect.addEventListener('change', renderCheckinManagementUI);
+      if (filterCheckinStatusSelect) filterCheckinStatusSelect.addEventListener('change', renderCheckinManagementUI);
+
+      if (exportCheckinXlsxBtn) {
+        exportCheckinXlsxBtn.addEventListener('click', function() {
+          if (!isAdminAuthenticated) return;
+          fetch(getApiUrl('/api/admin/checkin/export-xlsx'), {
+            method: 'GET',
+            headers: getAuthHeaders(false),
+            credentials: getFetchCredentials()
+          })
+            .then(function(resp) {
+              if (!resp.ok) throw new Error('Export failed');
+              return resp.blob();
+            })
+            .then(function(blob) {
+              var url = URL.createObjectURL(blob);
+              var a = document.createElement('a');
+              a.href = url;
+              a.download = 'Aufbruch_2026_Checkin_Report.xlsx';
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              showToast('📥 Exported Check-in Report to Excel (.xlsx).');
+            })
+            .catch(function() {
+              showToast('Unable to download Excel report.');
+            });
+        });
+      }
+
+      // -----------------------------------------------------------------------
+      // Master Student Database Admin Handlers (Add / Delete / Import Excel)
+      // -----------------------------------------------------------------------
+      var adminStudentBatchFilter = document.getElementById('adminStudentBatchFilter');
+      var newStudentNameInput = document.getElementById('newStudentNameInput');
+      var addMasterStudentBtn = document.getElementById('addMasterStudentBtn');
+      var importExcelFileInput = document.getElementById('importExcelFileInput');
+      var adminStudentMasterList = document.getElementById('adminStudentMasterList');
+
+      if (adminStudentBatchFilter) {
+        adminStudentBatchFilter.addEventListener('change', renderMasterStudentsUI);
+      }
+
+      if (addMasterStudentBtn && newStudentNameInput && adminStudentBatchFilter) {
+        addMasterStudentBtn.addEventListener('click', function() {
+          if (!isAdminAuthenticated) return;
+          var by = adminStudentBatchFilter.value;
+          var nm = newStudentNameInput.value.trim();
+          if (nm.length < 2) {
+            showToast('Please enter a valid student name to add.');
+            return;
+          }
+          apiFetchJson('/api/admin/students/add', {
+            method: 'POST',
+            headers: getAuthHeaders(true),
+            body: JSON.stringify({ batchYear: by, name: nm })
+          }).then(function(res) {
+            if (res.ok && res.data && res.data.success) {
+              newStudentNameInput.value = '';
+              showAuthenticatedDashboard(res.data);
+              showToast('✓ Added ' + nm.toUpperCase() + ' to Batch ' + by + '.');
+            } else {
+              showToast(extractReadableMessage(res.data && res.data.error, 'Unable to add student.'));
+            }
+          });
+        });
+      }
+
+      if (adminStudentMasterList) {
+        adminStudentMasterList.addEventListener('click', function(e) {
+          var delBtn = e.target.closest('.master-stu-del-btn');
+          if (!delBtn || !isAdminAuthenticated) return;
+          var stuId = delBtn.getAttribute('data-stu-id');
+          if (!stuId) return;
+          apiFetchJson('/api/admin/students/delete', {
+            method: 'POST',
+            headers: getAuthHeaders(true),
+            body: JSON.stringify({ studentId: stuId })
+          }).then(function(res) {
+            if (res.ok && res.data && res.data.success) {
+              showAuthenticatedDashboard(res.data);
+              showToast('🗑️ Removed student from master list.');
+            }
+          });
+        });
+      }
+
+      if (importExcelFileInput) {
+        importExcelFileInput.addEventListener('change', function() {
+          var file = importExcelFileInput.files && importExcelFileInput.files[0];
+          if (!file || !isAdminAuthenticated) return;
+          var reader = new FileReader();
+          reader.onload = function(ev) {
+            apiFetchJson('/api/admin/students/import', {
+              method: 'POST',
+              headers: getAuthHeaders(true),
+              body: JSON.stringify({ fileBase64: ev.target.result, mode: 'merge' })
+            }).then(function(res) {
+              if (res.ok && res.data && res.data.success) {
+                showAuthenticatedDashboard(res.data);
+                showToast('📤 Imported ' + (res.data.importedCount || 0) + ' student records from Excel.');
+              } else {
+                showToast(extractReadableMessage(res.data && res.data.error, 'Failed to import Excel file.'));
+              }
+            });
+          };
+          reader.readAsDataURL(file);
+          importExcelFileInput.value = '';
+        });
+      }
 
       // -----------------------------------------------------------------------
       // Authenticated Toolbar Actions: Refresh Data & Export CSV

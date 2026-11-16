@@ -1,0 +1,1742 @@
+[
+  {
+    "studentId": "STU-2001-001",
+    "serialNo": 1,
+    "batchYear": "2001",
+    "name": "MOIDU SAQUAFI"
+  },
+  {
+    "studentId": "STU-2001-002",
+    "serialNo": 2,
+    "batchYear": "2001",
+    "name": "ABDULLA SAQUAFI"
+  },
+  {
+    "studentId": "STU-2001-003",
+    "serialNo": 3,
+    "batchYear": "2001",
+    "name": "SIDHEEK SAQUAFI"
+  },
+  {
+    "studentId": "STU-2001-004",
+    "serialNo": 4,
+    "batchYear": "2001",
+    "name": "RASHEED SAQUAFI"
+  },
+  {
+    "studentId": "STU-2002-005",
+    "serialNo": 5,
+    "batchYear": "2002",
+    "name": "UMARALI SAQUAFI"
+  },
+  {
+    "studentId": "STU-2002-006",
+    "serialNo": 6,
+    "batchYear": "2002",
+    "name": "RASHEED SAQUAFI"
+  },
+  {
+    "studentId": "STU-2002-007",
+    "serialNo": 7,
+    "batchYear": "2002",
+    "name": "SUNEER SAQUAFI"
+  },
+  {
+    "studentId": "STU-2002-008",
+    "serialNo": 8,
+    "batchYear": "2002",
+    "name": "ABDUL JALEEL SAQUAFI"
+  },
+  {
+    "studentId": "STU-2003-009",
+    "serialNo": 9,
+    "batchYear": "2003",
+    "name": "SULFEEKARALI SAQUAFI"
+  },
+  {
+    "studentId": "STU-2003-010",
+    "serialNo": 10,
+    "batchYear": "2003",
+    "name": "AKBER SAQUAFI"
+  },
+  {
+    "studentId": "STU-2003-011",
+    "serialNo": 11,
+    "batchYear": "2003",
+    "name": "ABDU RAZAK SAQUAFI"
+  },
+  {
+    "studentId": "STU-2004-012",
+    "serialNo": 12,
+    "batchYear": "2004",
+    "name": "THAHIR SAQUAFI"
+  },
+  {
+    "studentId": "STU-2004-013",
+    "serialNo": 13,
+    "batchYear": "2004",
+    "name": "JUNAID SAQUAFI"
+  },
+  {
+    "studentId": "STU-2004-014",
+    "serialNo": 14,
+    "batchYear": "2004",
+    "name": "JAZEERALI SAQUAFI"
+  },
+  {
+    "studentId": "STU-2004-015",
+    "serialNo": 15,
+    "batchYear": "2004",
+    "name": "UBAIDULLA SAQUAFI"
+  },
+  {
+    "studentId": "STU-2004-016",
+    "serialNo": 16,
+    "batchYear": "2004",
+    "name": "NOUFAL SAQUAFI"
+  },
+  {
+    "studentId": "STU-2004-017",
+    "serialNo": 17,
+    "batchYear": "2004",
+    "name": "JABBAR SAQUAFI"
+  },
+  {
+    "studentId": "STU-2004-018",
+    "serialNo": 18,
+    "batchYear": "2004",
+    "name": "SATHAR SAQUAFI"
+  },
+  {
+    "studentId": "STU-2004-019",
+    "serialNo": 19,
+    "batchYear": "2004",
+    "name": "IBRAHIM SAQUAFI"
+  },
+  {
+    "studentId": "STU-2005-020",
+    "serialNo": 20,
+    "batchYear": "2005",
+    "name": "ASHRAF SAQUAFI"
+  },
+  {
+    "studentId": "STU-2005-021",
+    "serialNo": 21,
+    "batchYear": "2005",
+    "name": "ABDULLA SAQUAFI"
+  },
+  {
+    "studentId": "STU-2005-022",
+    "serialNo": 22,
+    "batchYear": "2005",
+    "name": "SWADIK SAQUAFI"
+  },
+  {
+    "studentId": "STU-2005-023",
+    "serialNo": 23,
+    "batchYear": "2005",
+    "name": "ABDURAHIMAN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2005-024",
+    "serialNo": 24,
+    "batchYear": "2005",
+    "name": "MOIDU SAQUAFI"
+  },
+  {
+    "studentId": "STU-2005-025",
+    "serialNo": 25,
+    "batchYear": "2005",
+    "name": "SALAM SAQUAFI"
+  },
+  {
+    "studentId": "STU-2005-026",
+    "serialNo": 26,
+    "batchYear": "2005",
+    "name": "NOUFAL SAQUAFI"
+  },
+  {
+    "studentId": "STU-2005-027",
+    "serialNo": 27,
+    "batchYear": "2005",
+    "name": "JUNAID SAQUAFI"
+  },
+  {
+    "studentId": "STU-2005-028",
+    "serialNo": 28,
+    "batchYear": "2005",
+    "name": "SHAJAHAN SAAQUAFI"
+  },
+  {
+    "studentId": "STU-2005-029",
+    "serialNo": 29,
+    "batchYear": "2005",
+    "name": "UNAIS SAQUAFI"
+  },
+  {
+    "studentId": "STU-2006-030",
+    "serialNo": 30,
+    "batchYear": "2006",
+    "name": "MUHAMMED SAQUAFI"
+  },
+  {
+    "studentId": "STU-2006-031",
+    "serialNo": 31,
+    "batchYear": "2006",
+    "name": "ALAVIKUTTY SAQUAFI"
+  },
+  {
+    "studentId": "STU-2006-032",
+    "serialNo": 32,
+    "batchYear": "2006",
+    "name": "SAYYID HIDARALI THAGAL"
+  },
+  {
+    "studentId": "STU-2006-033",
+    "serialNo": 33,
+    "batchYear": "2006",
+    "name": "SAYYID ZAINUL ABDHEEN THAGAL"
+  },
+  {
+    "studentId": "STU-2007-034",
+    "serialNo": 34,
+    "batchYear": "2007",
+    "name": "ABDU RAHEEM SAQUAFI"
+  },
+  {
+    "studentId": "STU-2007-035",
+    "serialNo": 35,
+    "batchYear": "2007",
+    "name": "RAHMANALI SAQUAFI"
+  },
+  {
+    "studentId": "STU-2007-036",
+    "serialNo": 36,
+    "batchYear": "2007",
+    "name": "ZUBAIR SAQUAFI"
+  },
+  {
+    "studentId": "STU-2007-037",
+    "serialNo": 37,
+    "batchYear": "2007",
+    "name": "ALAVIKUTTY SAQUAFI"
+  },
+  {
+    "studentId": "STU-2007-038",
+    "serialNo": 38,
+    "batchYear": "2007",
+    "name": "AZHAR MEERAN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2008-039",
+    "serialNo": 39,
+    "batchYear": "2008",
+    "name": "JAMAL SAQUAFI"
+  },
+  {
+    "studentId": "STU-2008-040",
+    "serialNo": 40,
+    "batchYear": "2008",
+    "name": "SIDHEEK SAQUAFI"
+  },
+  {
+    "studentId": "STU-2008-041",
+    "serialNo": 41,
+    "batchYear": "2008",
+    "name": "ABDUL LATHIEEF SAQUAFI"
+  },
+  {
+    "studentId": "STU-2008-042",
+    "serialNo": 42,
+    "batchYear": "2008",
+    "name": "RAFEEQ SAQUAFI"
+  },
+  {
+    "studentId": "STU-2008-043",
+    "serialNo": 43,
+    "batchYear": "2008",
+    "name": "HAMZA SAQUAFI"
+  },
+  {
+    "studentId": "STU-2008-044",
+    "serialNo": 44,
+    "batchYear": "2008",
+    "name": "GAFOOR SAQUAFI"
+  },
+  {
+    "studentId": "STU-2009-045",
+    "serialNo": 45,
+    "batchYear": "2009",
+    "name": "JAHFAR SAQUAFI"
+  },
+  {
+    "studentId": "STU-2009-046",
+    "serialNo": 46,
+    "batchYear": "2009",
+    "name": "MUSTHAFA SAQUAFI"
+  },
+  {
+    "studentId": "STU-2009-047",
+    "serialNo": 47,
+    "batchYear": "2009",
+    "name": "SIDHEEK SAQUAFI"
+  },
+  {
+    "studentId": "STU-2010-048",
+    "serialNo": 48,
+    "batchYear": "2010",
+    "name": "HAFIL UMAR ALI SAQUAFI"
+  },
+  {
+    "studentId": "STU-2010-049",
+    "serialNo": 49,
+    "batchYear": "2010",
+    "name": "SHAMSEER SAQUAFI"
+  },
+  {
+    "studentId": "STU-2010-050",
+    "serialNo": 50,
+    "batchYear": "2010",
+    "name": "MUSTHAFA SAQUAFI"
+  },
+  {
+    "studentId": "STU-2010-051",
+    "serialNo": 51,
+    "batchYear": "2010",
+    "name": "FASIL SAQUAFI"
+  },
+  {
+    "studentId": "STU-2010-052",
+    "serialNo": 52,
+    "batchYear": "2010",
+    "name": "FAZLU RAHMAN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2010-053",
+    "serialNo": 53,
+    "batchYear": "2010",
+    "name": "SABITH SAQUAFI"
+  },
+  {
+    "studentId": "STU-2010-054",
+    "serialNo": 54,
+    "batchYear": "2010",
+    "name": "SAEED SAQUAFI"
+  },
+  {
+    "studentId": "STU-2010-055",
+    "serialNo": 55,
+    "batchYear": "2010",
+    "name": "MAHFOOL SAQUAFI"
+  },
+  {
+    "studentId": "STU-2011-056",
+    "serialNo": 56,
+    "batchYear": "2011",
+    "name": "MUNSHID SAQUAFI"
+  },
+  {
+    "studentId": "STU-2011-057",
+    "serialNo": 57,
+    "batchYear": "2011",
+    "name": "ZAINUL ABID SAQUAFI"
+  },
+  {
+    "studentId": "STU-2011-058",
+    "serialNo": 58,
+    "batchYear": "2011",
+    "name": "BASHEER SAQUAFI"
+  },
+  {
+    "studentId": "STU-2011-059",
+    "serialNo": 59,
+    "batchYear": "2011",
+    "name": "AZEEZ SAQUAFI"
+  },
+  {
+    "studentId": "STU-2011-060",
+    "serialNo": 60,
+    "batchYear": "2011",
+    "name": "NIZAM SAQUAFI"
+  },
+  {
+    "studentId": "STU-2011-061",
+    "serialNo": 61,
+    "batchYear": "2011",
+    "name": "HAFIL SAHAD SAQUAFI"
+  },
+  {
+    "studentId": "STU-2012-062",
+    "serialNo": 62,
+    "batchYear": "2012",
+    "name": "ANAS SAQUAFI"
+  },
+  {
+    "studentId": "STU-2012-063",
+    "serialNo": 63,
+    "batchYear": "2012",
+    "name": "HAMZA SAQUAFI"
+  },
+  {
+    "studentId": "STU-2012-064",
+    "serialNo": 64,
+    "batchYear": "2012",
+    "name": "UMER SAQUAFI"
+  },
+  {
+    "studentId": "STU-2012-065",
+    "serialNo": 65,
+    "batchYear": "2012",
+    "name": "MAHROOF SAQUAFI"
+  },
+  {
+    "studentId": "STU-2012-066",
+    "serialNo": 66,
+    "batchYear": "2012",
+    "name": "JUNAID SAQUAFI"
+  },
+  {
+    "studentId": "STU-2012-067",
+    "serialNo": 67,
+    "batchYear": "2012",
+    "name": "FARIS SAQUAFI"
+  },
+  {
+    "studentId": "STU-2013-068",
+    "serialNo": 68,
+    "batchYear": "2013",
+    "name": "NISHAD RAHMAN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2013-069",
+    "serialNo": 69,
+    "batchYear": "2013",
+    "name": "NIZAMUDHEEN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2013-070",
+    "serialNo": 70,
+    "batchYear": "2013",
+    "name": "KASIM SAQUAFI"
+  },
+  {
+    "studentId": "STU-2013-071",
+    "serialNo": 71,
+    "batchYear": "2013",
+    "name": "AMEEN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2013-072",
+    "serialNo": 72,
+    "batchYear": "2013",
+    "name": "SAIFUDHEEN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2013-073",
+    "serialNo": 73,
+    "batchYear": "2013",
+    "name": "HIBATHRAHMAN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2013-074",
+    "serialNo": 74,
+    "batchYear": "2013",
+    "name": "ZAINUL ABIDHEEN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2013-075",
+    "serialNo": 75,
+    "batchYear": "2013",
+    "name": "SAEED SAQUAFI"
+  },
+  {
+    "studentId": "STU-2014-076",
+    "serialNo": 76,
+    "batchYear": "2014",
+    "name": "SAYYID SAIFUDHEEN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2014-077",
+    "serialNo": 77,
+    "batchYear": "2014",
+    "name": "ALI FALILI"
+  },
+  {
+    "studentId": "STU-2014-078",
+    "serialNo": 78,
+    "batchYear": "2014",
+    "name": "ANAS SAQUAFI"
+  },
+  {
+    "studentId": "STU-2014-079",
+    "serialNo": 79,
+    "batchYear": "2014",
+    "name": "LUKMANUL HAKEEM SAQUAFI"
+  },
+  {
+    "studentId": "STU-2014-080",
+    "serialNo": 80,
+    "batchYear": "2014",
+    "name": "MUBASHIR SAQUAFI"
+  },
+  {
+    "studentId": "STU-2014-081",
+    "serialNo": 81,
+    "batchYear": "2014",
+    "name": "ASLAM SAQUAFI"
+  },
+  {
+    "studentId": "STU-2014-082",
+    "serialNo": 82,
+    "batchYear": "2014",
+    "name": "RASHID SAQUAFI"
+  },
+  {
+    "studentId": "STU-2014-083",
+    "serialNo": 83,
+    "batchYear": "2014",
+    "name": "UNAIS SAQUAFI"
+  },
+  {
+    "studentId": "STU-2014-084",
+    "serialNo": 84,
+    "batchYear": "2014",
+    "name": "ABDUL MAJEED SAQUAFI K"
+  },
+  {
+    "studentId": "STU-2015-085",
+    "serialNo": 85,
+    "batchYear": "2015",
+    "name": "SUHAIL SAQUAFI"
+  },
+  {
+    "studentId": "STU-2015-086",
+    "serialNo": 86,
+    "batchYear": "2015",
+    "name": "JAHFAR SAQUAFI"
+  },
+  {
+    "studentId": "STU-2015-087",
+    "serialNo": 87,
+    "batchYear": "2015",
+    "name": "ABDUL HAKEEM SAQUAFI"
+  },
+  {
+    "studentId": "STU-2015-088",
+    "serialNo": 88,
+    "batchYear": "2015",
+    "name": "MUSHTHAQ SAQUAFI"
+  },
+  {
+    "studentId": "STU-2015-089",
+    "serialNo": 89,
+    "batchYear": "2015",
+    "name": "RIYAS SAQUAFI"
+  },
+  {
+    "studentId": "STU-2015-090",
+    "serialNo": 90,
+    "batchYear": "2015",
+    "name": "RASHID SAQUAFI KAVANOOR"
+  },
+  {
+    "studentId": "STU-2015-091",
+    "serialNo": 91,
+    "batchYear": "2015",
+    "name": "SWADIK SAQUAFI"
+  },
+  {
+    "studentId": "STU-2015-092",
+    "serialNo": 92,
+    "batchYear": "2015",
+    "name": "ILYAS SAQUAFI"
+  },
+  {
+    "studentId": "STU-2015-093",
+    "serialNo": 93,
+    "batchYear": "2015",
+    "name": "JAMSHEER SAQUAFI"
+  },
+  {
+    "studentId": "STU-2015-094",
+    "serialNo": 94,
+    "batchYear": "2015",
+    "name": "SAIDALAVI SAQUAFI"
+  },
+  {
+    "studentId": "STU-2015-095",
+    "serialNo": 95,
+    "batchYear": "2015",
+    "name": "HABEEB RAHMAN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2015-096",
+    "serialNo": 96,
+    "batchYear": "2015",
+    "name": "SALEEMUDHEEN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2015-097",
+    "serialNo": 97,
+    "batchYear": "2015",
+    "name": "RASHID SAQUAFI PATHANAPURAM"
+  },
+  {
+    "studentId": "STU-2015-098",
+    "serialNo": 98,
+    "batchYear": "2015",
+    "name": "SULFEEKAR HADI"
+  },
+  {
+    "studentId": "STU-2016-099",
+    "serialNo": 99,
+    "batchYear": "2016",
+    "name": "HUSSAIN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2016-100",
+    "serialNo": 100,
+    "batchYear": "2016",
+    "name": "YAHYA SAQUAFI"
+  },
+  {
+    "studentId": "STU-2016-101",
+    "serialNo": 101,
+    "batchYear": "2016",
+    "name": "ASIF SAQUAFI"
+  },
+  {
+    "studentId": "STU-2016-102",
+    "serialNo": 102,
+    "batchYear": "2016",
+    "name": "RASHID SAQUAFI K"
+  },
+  {
+    "studentId": "STU-2017-103",
+    "serialNo": 103,
+    "batchYear": "2017",
+    "name": "IHSAN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2017-104",
+    "serialNo": 104,
+    "batchYear": "2017",
+    "name": "SAFUVAN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2017-105",
+    "serialNo": 105,
+    "batchYear": "2017",
+    "name": "AFSAL SAQUAFI"
+  },
+  {
+    "studentId": "STU-2017-106",
+    "serialNo": 106,
+    "batchYear": "2017",
+    "name": "FAHIS SAQUAFI"
+  },
+  {
+    "studentId": "STU-2017-107",
+    "serialNo": 107,
+    "batchYear": "2017",
+    "name": "ANAS SAQUAFI"
+  },
+  {
+    "studentId": "STU-2017-108",
+    "serialNo": 108,
+    "batchYear": "2017",
+    "name": "DILSHAD ALI SAQUAFI"
+  },
+  {
+    "studentId": "STU-2017-109",
+    "serialNo": 109,
+    "batchYear": "2017",
+    "name": "IYAS SAQUAFI"
+  },
+  {
+    "studentId": "STU-2017-110",
+    "serialNo": 110,
+    "batchYear": "2017",
+    "name": "ABDUL BARI SAQUAFI"
+  },
+  {
+    "studentId": "STU-2017-111",
+    "serialNo": 111,
+    "batchYear": "2017",
+    "name": "AL AMEEN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2017-112",
+    "serialNo": 112,
+    "batchYear": "2017",
+    "name": "NAMER SAQUAFI"
+  },
+  {
+    "studentId": "STU-2017-113",
+    "serialNo": 113,
+    "batchYear": "2017",
+    "name": "SAFUWAN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2017-114",
+    "serialNo": 114,
+    "batchYear": "2017",
+    "name": "MUHSIN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2017-115",
+    "serialNo": 115,
+    "batchYear": "2017",
+    "name": "JUNAID SAQUAFI"
+  },
+  {
+    "studentId": "STU-2018-116",
+    "serialNo": 116,
+    "batchYear": "2018",
+    "name": "SUFIYAN ULOOMI"
+  },
+  {
+    "studentId": "STU-2018-117",
+    "serialNo": 117,
+    "batchYear": "2018",
+    "name": "BADARUDHEEN ULOOMI"
+  },
+  {
+    "studentId": "STU-2018-118",
+    "serialNo": 118,
+    "batchYear": "2018",
+    "name": "MUHAMMED BASIM ULOOMI"
+  },
+  {
+    "studentId": "STU-2018-119",
+    "serialNo": 119,
+    "batchYear": "2018",
+    "name": "MUHAMMED SIRAJUSHEEN ULOOMI"
+  },
+  {
+    "studentId": "STU-2018-120",
+    "serialNo": 120,
+    "batchYear": "2018",
+    "name": "SHAMSUL HUDA ULOOMI"
+  },
+  {
+    "studentId": "STU-2018-121",
+    "serialNo": 121,
+    "batchYear": "2018",
+    "name": "MUHAMMED RASHID ULOOMI"
+  },
+  {
+    "studentId": "STU-2018-122",
+    "serialNo": 122,
+    "batchYear": "2018",
+    "name": "JUNAID MUSLIYAR"
+  },
+  {
+    "studentId": "STU-2018-123",
+    "serialNo": 123,
+    "batchYear": "2018",
+    "name": "MAHROOF MISBAHI"
+  },
+  {
+    "studentId": "STU-2018-124",
+    "serialNo": 124,
+    "batchYear": "2018",
+    "name": "MISHAB MISBAHI"
+  },
+  {
+    "studentId": "STU-2018-125",
+    "serialNo": 125,
+    "batchYear": "2018",
+    "name": "NASIF SAQUAFI KOCHI"
+  },
+  {
+    "studentId": "STU-2018-126",
+    "serialNo": 126,
+    "batchYear": "2018",
+    "name": "HIDAYATHULLA SAQUAFI"
+  },
+  {
+    "studentId": "STU-2018-127",
+    "serialNo": 127,
+    "batchYear": "2018",
+    "name": "MUHAMED UVAIS SAQUAFI"
+  },
+  {
+    "studentId": "STU-2018-128",
+    "serialNo": 128,
+    "batchYear": "2018",
+    "name": "DAVOOD SAQUAFI"
+  },
+  {
+    "studentId": "STU-2018-129",
+    "serialNo": 129,
+    "batchYear": "2018",
+    "name": "MUHAMMED NUJOOM SAQUAFI"
+  },
+  {
+    "studentId": "STU-2018-130",
+    "serialNo": 130,
+    "batchYear": "2018",
+    "name": "SAYYID JUNAID THAGAL"
+  },
+  {
+    "studentId": "STU-2018-131",
+    "serialNo": 131,
+    "batchYear": "2018",
+    "name": "ABDUL RASHEED SAQUAFI"
+  },
+  {
+    "studentId": "STU-2018-132",
+    "serialNo": 132,
+    "batchYear": "2018",
+    "name": "ABUBAKER SAQUAFI"
+  },
+  {
+    "studentId": "STU-2019-133",
+    "serialNo": 133,
+    "batchYear": "2019",
+    "name": "MAJID SAQUAFI"
+  },
+  {
+    "studentId": "STU-2019-134",
+    "serialNo": 134,
+    "batchYear": "2019",
+    "name": "SALIM SAQUAFI"
+  },
+  {
+    "studentId": "STU-2019-135",
+    "serialNo": 135,
+    "batchYear": "2019",
+    "name": "RAFEEQ SAQUAFI"
+  },
+  {
+    "studentId": "STU-2019-136",
+    "serialNo": 136,
+    "batchYear": "2019",
+    "name": "JUNAID SAQUAFI"
+  },
+  {
+    "studentId": "STU-2019-137",
+    "serialNo": 137,
+    "batchYear": "2019",
+    "name": "SALMAN FARIS LATHEEFI"
+  },
+  {
+    "studentId": "STU-2019-138",
+    "serialNo": 138,
+    "batchYear": "2019",
+    "name": "MUBASHIR SAQUAFI"
+  },
+  {
+    "studentId": "STU-2019-139",
+    "serialNo": 139,
+    "batchYear": "2019",
+    "name": "FAHEED ARSHAD LATHEEFI"
+  },
+  {
+    "studentId": "STU-2019-140",
+    "serialNo": 140,
+    "batchYear": "2019",
+    "name": "IRSHAD SAQUAFI"
+  },
+  {
+    "studentId": "STU-2019-141",
+    "serialNo": 141,
+    "batchYear": "2019",
+    "name": "NSDEEM SAQUAFI"
+  },
+  {
+    "studentId": "STU-2019-142",
+    "serialNo": 142,
+    "batchYear": "2019",
+    "name": "ABDU RADHEED AHSANI"
+  },
+  {
+    "studentId": "STU-2019-143",
+    "serialNo": 143,
+    "batchYear": "2019",
+    "name": "HAKEEM SAQUAFI"
+  },
+  {
+    "studentId": "STU-2019-145",
+    "serialNo": 145,
+    "batchYear": "2019",
+    "name": "MUHAMMED JUNAID SAQUAFI"
+  },
+  {
+    "studentId": "STU-2019-146",
+    "serialNo": 146,
+    "batchYear": "2019",
+    "name": "HARSHID LATHEEFI"
+  },
+  {
+    "studentId": "STU-2019-147",
+    "serialNo": 147,
+    "batchYear": "2019",
+    "name": "SHIBILI LATHEEFI"
+  },
+  {
+    "studentId": "STU-2019-148",
+    "serialNo": 148,
+    "batchYear": "2019",
+    "name": "ASBER SAQUAFI"
+  },
+  {
+    "studentId": "STU-2020-150",
+    "serialNo": 150,
+    "batchYear": "2020",
+    "name": "SUHAIL SAQUAFI"
+  },
+  {
+    "studentId": "STU-2020-151",
+    "serialNo": 151,
+    "batchYear": "2020",
+    "name": "SALMAN MUEENI"
+  },
+  {
+    "studentId": "STU-2020-152",
+    "serialNo": 152,
+    "batchYear": "2020",
+    "name": "JABIR SAQUAFI"
+  },
+  {
+    "studentId": "STU-2020-153",
+    "serialNo": 153,
+    "batchYear": "2020",
+    "name": "HASIM SABITH SAQUAFI"
+  },
+  {
+    "studentId": "STU-2020-154",
+    "serialNo": 154,
+    "batchYear": "2020",
+    "name": "ANAS SAQUAFI"
+  },
+  {
+    "studentId": "STU-2020-155",
+    "serialNo": 155,
+    "batchYear": "2020",
+    "name": "ANAS SAQUAFI"
+  },
+  {
+    "studentId": "STU-2020-156",
+    "serialNo": 156,
+    "batchYear": "2020",
+    "name": "JUNAID SAQUAFI CH"
+  },
+  {
+    "studentId": "STU-2020-157",
+    "serialNo": 157,
+    "batchYear": "2020",
+    "name": "MUBASHIR SAQUAFI"
+  },
+  {
+    "studentId": "STU-2020-158",
+    "serialNo": 158,
+    "batchYear": "2020",
+    "name": "MISHAB MUEENI"
+  },
+  {
+    "studentId": "STU-2020-159",
+    "serialNo": 159,
+    "batchYear": "2020",
+    "name": "NIZAMUDHEEN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2020-160",
+    "serialNo": 160,
+    "batchYear": "2020",
+    "name": "NUHMAN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2020-161",
+    "serialNo": 161,
+    "batchYear": "2020",
+    "name": "SAFUWAN MUEENI"
+  },
+  {
+    "studentId": "STU-2020-162",
+    "serialNo": 162,
+    "batchYear": "2020",
+    "name": "SABITH SAQUAFI ITI"
+  },
+  {
+    "studentId": "STU-2020-163",
+    "serialNo": 163,
+    "batchYear": "2020",
+    "name": "SAEED SAQUAFI"
+  },
+  {
+    "studentId": "STU-2020-164",
+    "serialNo": 164,
+    "batchYear": "2020",
+    "name": "SALMAN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2020-165",
+    "serialNo": 165,
+    "batchYear": "2020",
+    "name": "SHAFEEQ SAQUAFI"
+  },
+  {
+    "studentId": "STU-2020-166",
+    "serialNo": 166,
+    "batchYear": "2020",
+    "name": "SHAFEEQ MUEENI"
+  },
+  {
+    "studentId": "STU-2020-167",
+    "serialNo": 167,
+    "batchYear": "2020",
+    "name": "SHAFI MUEENI POOTHUKALLU"
+  },
+  {
+    "studentId": "STU-2020-168",
+    "serialNo": 168,
+    "batchYear": "2020",
+    "name": "SHAMEEM SAQUAFI"
+  },
+  {
+    "studentId": "STU-2020-169",
+    "serialNo": 169,
+    "batchYear": "2020",
+    "name": "SHAMNAS SAQUAFI"
+  },
+  {
+    "studentId": "STU-2020-170",
+    "serialNo": 170,
+    "batchYear": "2020",
+    "name": "SUFIYAN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2020-171",
+    "serialNo": 171,
+    "batchYear": "2020",
+    "name": "MUHAMMED AJMAL SAQUAFI"
+  },
+  {
+    "studentId": "STU-2020-172",
+    "serialNo": 172,
+    "batchYear": "2020",
+    "name": "SHOUKATH MUEENI"
+  },
+  {
+    "studentId": "STU-2021-173",
+    "serialNo": 173,
+    "batchYear": "2021",
+    "name": "HARIS BABU MUEENI"
+  },
+  {
+    "studentId": "STU-2021-174",
+    "serialNo": 174,
+    "batchYear": "2021",
+    "name": "AHMED KABEER HADI"
+  },
+  {
+    "studentId": "STU-2021-175",
+    "serialNo": 175,
+    "batchYear": "2021",
+    "name": "JOUHAR JUMAN NAEEMI"
+  },
+  {
+    "studentId": "STU-2021-176",
+    "serialNo": 176,
+    "batchYear": "2021",
+    "name": "SUHAIL HAQUE MUEENI"
+  },
+  {
+    "studentId": "STU-2021-177",
+    "serialNo": 177,
+    "batchYear": "2021",
+    "name": "RAZI HADI CHULLIYOD"
+  },
+  {
+    "studentId": "STU-2021-178",
+    "serialNo": 178,
+    "batchYear": "2021",
+    "name": "MUBASHIR MUEENI"
+  },
+  {
+    "studentId": "STU-2021-179",
+    "serialNo": 179,
+    "batchYear": "2021",
+    "name": "MUSHTHAQ SAQUAFI"
+  },
+  {
+    "studentId": "STU-2021-180",
+    "serialNo": 180,
+    "batchYear": "2021",
+    "name": "JABIR NIZAMI"
+  },
+  {
+    "studentId": "STU-2021-181",
+    "serialNo": 181,
+    "batchYear": "2021",
+    "name": "RAMSHAD ALI MUTHADI"
+  },
+  {
+    "studentId": "STU-2021-182",
+    "serialNo": 182,
+    "batchYear": "2021",
+    "name": "UNAIS MUEENI"
+  },
+  {
+    "studentId": "STU-2021-183",
+    "serialNo": 183,
+    "batchYear": "2021",
+    "name": "ZIYAD HADI CHERUVADI"
+  },
+  {
+    "studentId": "STU-2021-184",
+    "serialNo": 184,
+    "batchYear": "2021",
+    "name": "JUNAIDUL AMEEN MUEENI"
+  },
+  {
+    "studentId": "STU-2021-185",
+    "serialNo": 185,
+    "batchYear": "2021",
+    "name": "ANAS SAQUAFI"
+  },
+  {
+    "studentId": "STU-2021-186",
+    "serialNo": 186,
+    "batchYear": "2021",
+    "name": "AJMAL HADI KAVANOOR"
+  },
+  {
+    "studentId": "STU-2021-187",
+    "serialNo": 187,
+    "batchYear": "2021",
+    "name": "HAFIZ SWALIH MUEENI"
+  },
+  {
+    "studentId": "STU-2021-188",
+    "serialNo": 188,
+    "batchYear": "2021",
+    "name": "KHALEEL MUHTHADI"
+  },
+  {
+    "studentId": "STU-2021-189",
+    "serialNo": 189,
+    "batchYear": "2021",
+    "name": "NASHID MUHTHDI"
+  },
+  {
+    "studentId": "STU-2021-190",
+    "serialNo": 190,
+    "batchYear": "2021",
+    "name": "HIBATHULLAH HADI"
+  },
+  {
+    "studentId": "STU-2021-191",
+    "serialNo": 191,
+    "batchYear": "2021",
+    "name": "SHAFI HADI"
+  },
+  {
+    "studentId": "STU-2021-192",
+    "serialNo": 192,
+    "batchYear": "2021",
+    "name": "HABEEB HADI MAMPUZH"
+  },
+  {
+    "studentId": "STU-2021-193",
+    "serialNo": 193,
+    "batchYear": "2021",
+    "name": "ABUBAKER SAQUAFI"
+  },
+  {
+    "studentId": "STU-2021-194",
+    "serialNo": 194,
+    "batchYear": "2021",
+    "name": "ABUBAKER MUHTHADI"
+  },
+  {
+    "studentId": "STU-2021-195",
+    "serialNo": 195,
+    "batchYear": "2021",
+    "name": "YOUNUS HADI"
+  },
+  {
+    "studentId": "STU-2021-196",
+    "serialNo": 196,
+    "batchYear": "2021",
+    "name": "AMJAD LATHEEFI"
+  },
+  {
+    "studentId": "STU-2022-197",
+    "serialNo": 197,
+    "batchYear": "2022",
+    "name": "ABBAS HADI"
+  },
+  {
+    "studentId": "STU-2022-198",
+    "serialNo": 198,
+    "batchYear": "2022",
+    "name": "DHANISH MUEENI POTHUKALLU"
+  },
+  {
+    "studentId": "STU-2022-199",
+    "serialNo": 199,
+    "batchYear": "2022",
+    "name": "FAHAD HADI"
+  },
+  {
+    "studentId": "STU-2022-200",
+    "serialNo": 200,
+    "batchYear": "2022",
+    "name": "NAMEEL NIZAMI MNAJERI"
+  },
+  {
+    "studentId": "STU-2022-201",
+    "serialNo": 201,
+    "batchYear": "2022",
+    "name": "RASHID SAQUAFI"
+  },
+  {
+    "studentId": "STU-2022-202",
+    "serialNo": 202,
+    "batchYear": "2022",
+    "name": "SHAREEF MUEENI MALAPURAM"
+  },
+  {
+    "studentId": "STU-2022-203",
+    "serialNo": 203,
+    "batchYear": "2022",
+    "name": "HASEEB HADI KOORAD"
+  },
+  {
+    "studentId": "STU-2022-204",
+    "serialNo": 204,
+    "batchYear": "2022",
+    "name": "ABUTHWAHIR SA'ADI"
+  },
+  {
+    "studentId": "STU-2022-205",
+    "serialNo": 205,
+    "batchYear": "2022",
+    "name": "ANEES SAQUAFI CHERUKODE"
+  },
+  {
+    "studentId": "STU-2022-206",
+    "serialNo": 206,
+    "batchYear": "2022",
+    "name": "MUSTHAFA SA'ADI"
+  },
+  {
+    "studentId": "STU-2022-207",
+    "serialNo": 207,
+    "batchYear": "2022",
+    "name": "RAFI SAQUAFI UMMALATHUR"
+  },
+  {
+    "studentId": "STU-2022-208",
+    "serialNo": 208,
+    "batchYear": "2022",
+    "name": "RAMSHEED SA'ADI"
+  },
+  {
+    "studentId": "STU-2022-209",
+    "serialNo": 209,
+    "batchYear": "2022",
+    "name": "RIYAS HADI"
+  },
+  {
+    "studentId": "STU-2022-210",
+    "serialNo": 210,
+    "batchYear": "2022",
+    "name": "SABEEL SA'ADI"
+  },
+  {
+    "studentId": "STU-2022-211",
+    "serialNo": 211,
+    "batchYear": "2022",
+    "name": "SALIM MUEENI"
+  },
+  {
+    "studentId": "STU-2022-212",
+    "serialNo": 212,
+    "batchYear": "2022",
+    "name": "SWALIH HADI VETTIKKATTIRI"
+  },
+  {
+    "studentId": "STU-2022-213",
+    "serialNo": 213,
+    "batchYear": "2022",
+    "name": "SWALIH ADANY NADUVATH"
+  },
+  {
+    "studentId": "STU-2022-214",
+    "serialNo": 214,
+    "batchYear": "2022",
+    "name": "SWALIH HADI KODASHERI"
+  },
+  {
+    "studentId": "STU-2022-215",
+    "serialNo": 215,
+    "batchYear": "2022",
+    "name": "SWALIH NAEEMI KODALI"
+  },
+  {
+    "studentId": "STU-2022-216",
+    "serialNo": 216,
+    "batchYear": "2022",
+    "name": "MURSHID SAQUAFI"
+  },
+  {
+    "studentId": "STU-2022-217",
+    "serialNo": 217,
+    "batchYear": "2022",
+    "name": "NUHMAN NISAMI"
+  },
+  {
+    "studentId": "STU-2022-218",
+    "serialNo": 218,
+    "batchYear": "2022",
+    "name": "SAHAD HADI"
+  },
+  {
+    "studentId": "STU-2022-219",
+    "serialNo": 219,
+    "batchYear": "2022",
+    "name": "SHABEEB USMAN SAQUAFI"
+  },
+  {
+    "studentId": "STU-2022-220",
+    "serialNo": 220,
+    "batchYear": "2022",
+    "name": "SHARAFUDHEEN HADI"
+  },
+  {
+    "studentId": "STU-2023-221",
+    "serialNo": 221,
+    "batchYear": "2023",
+    "name": "ABDUL BASITH HADI"
+  },
+  {
+    "studentId": "STU-2023-222",
+    "serialNo": 222,
+    "batchYear": "2023",
+    "name": "ABDUL RAFEE MUEENI"
+  },
+  {
+    "studentId": "STU-2023-223",
+    "serialNo": 223,
+    "batchYear": "2023",
+    "name": "ABDUL RAHOOF HADI"
+  },
+  {
+    "studentId": "STU-2023-224",
+    "serialNo": 224,
+    "batchYear": "2023",
+    "name": "ABU THWAHIR MUEENI"
+  },
+  {
+    "studentId": "STU-2023-225",
+    "serialNo": 225,
+    "batchYear": "2023",
+    "name": "ADHIL SAQUAFI"
+  },
+  {
+    "studentId": "STU-2023-226",
+    "serialNo": 226,
+    "batchYear": "2023",
+    "name": "AFLAH HADI"
+  },
+  {
+    "studentId": "STU-2023-227",
+    "serialNo": 227,
+    "batchYear": "2023",
+    "name": "ANWER SAQUAFI"
+  },
+  {
+    "studentId": "STU-2023-228",
+    "serialNo": 228,
+    "batchYear": "2023",
+    "name": "ASHIQ RAHMAN MUEENI"
+  },
+  {
+    "studentId": "STU-2023-229",
+    "serialNo": 229,
+    "batchYear": "2023",
+    "name": "BADARUDHEEN SAQUAFI CK"
+  },
+  {
+    "studentId": "STU-2023-230",
+    "serialNo": 230,
+    "batchYear": "2023",
+    "name": "DILSHAD MUEENI"
+  },
+  {
+    "studentId": "STU-2023-231",
+    "serialNo": 231,
+    "batchYear": "2023",
+    "name": "FALALU RAHEEM SA'ADI"
+  },
+  {
+    "studentId": "STU-2023-232",
+    "serialNo": 232,
+    "batchYear": "2023",
+    "name": "HASHIR MUEENI"
+  },
+  {
+    "studentId": "STU-2023-234",
+    "serialNo": 234,
+    "batchYear": "2023",
+    "name": "IRFAD SA'ADI"
+  },
+  {
+    "studentId": "STU-2023-235",
+    "serialNo": 235,
+    "batchYear": "2023",
+    "name": "THWALHA SAQUAFI"
+  },
+  {
+    "studentId": "STU-2023-236",
+    "serialNo": 236,
+    "batchYear": "2023",
+    "name": "MAHMOOD ASLAM SAQUAFI"
+  },
+  {
+    "studentId": "STU-2023-237",
+    "serialNo": 237,
+    "batchYear": "2023",
+    "name": "MUBASHIR MUEENI"
+  },
+  {
+    "studentId": "STU-2023-238",
+    "serialNo": 238,
+    "batchYear": "2023",
+    "name": "MUHAMMED SAQUAFI OP"
+  },
+  {
+    "studentId": "STU-2023-239",
+    "serialNo": 239,
+    "batchYear": "2023",
+    "name": "NASEEF ADANY"
+  },
+  {
+    "studentId": "STU-2023-240",
+    "serialNo": 240,
+    "batchYear": "2023",
+    "name": "SHABEEB MUEENI"
+  },
+  {
+    "studentId": "STU-2023-241",
+    "serialNo": 241,
+    "batchYear": "2023",
+    "name": "SHAFEEQ ADANY"
+  },
+  {
+    "studentId": "STU-2023-242",
+    "serialNo": 242,
+    "batchYear": "2023",
+    "name": "SHAKIR SAQUAFI"
+  },
+  {
+    "studentId": "STU-2023-243",
+    "serialNo": 243,
+    "batchYear": "2023",
+    "name": "SHAHEER SA'ADI"
+  },
+  {
+    "studentId": "STU-2023-245",
+    "serialNo": 245,
+    "batchYear": "2023",
+    "name": "SUHAIL HADI"
+  },
+  {
+    "studentId": "STU-2023-246",
+    "serialNo": 246,
+    "batchYear": "2023",
+    "name": "SWALIH"
+  },
+  {
+    "studentId": "STU-2023-247",
+    "serialNo": 247,
+    "batchYear": "2023",
+    "name": "SHAREEF MUEENI"
+  },
+  {
+    "studentId": "STU-2023-248",
+    "serialNo": 248,
+    "batchYear": "2023",
+    "name": "SUHAIL ADANY PT"
+  },
+  {
+    "studentId": "STU-2023-249",
+    "serialNo": 249,
+    "batchYear": "2023",
+    "name": "JIMSHID HADI"
+  },
+  {
+    "studentId": "STU-2024-250",
+    "serialNo": 250,
+    "batchYear": "2024",
+    "name": "FARIS MAMNOON HADI"
+  },
+  {
+    "studentId": "STU-2024-251",
+    "serialNo": 251,
+    "batchYear": "2024",
+    "name": "MIDLAJ HADI"
+  },
+  {
+    "studentId": "STU-2024-252",
+    "serialNo": 252,
+    "batchYear": "2024",
+    "name": "ASIF SAHEER HADI"
+  },
+  {
+    "studentId": "STU-2024-253",
+    "serialNo": 253,
+    "batchYear": "2024",
+    "name": "BISHIR HADI"
+  },
+  {
+    "studentId": "STU-2024-254",
+    "serialNo": 254,
+    "batchYear": "2024",
+    "name": "RAFEEQ HADI"
+  },
+  {
+    "studentId": "STU-2024-255",
+    "serialNo": 255,
+    "batchYear": "2024",
+    "name": "UVAIS HADI"
+  },
+  {
+    "studentId": "STU-2024-256",
+    "serialNo": 256,
+    "batchYear": "2024",
+    "name": "FARHAN HADI"
+  },
+  {
+    "studentId": "STU-2024-257",
+    "serialNo": 257,
+    "batchYear": "2024",
+    "name": "SHAFI HADI"
+  },
+  {
+    "studentId": "STU-2024-258",
+    "serialNo": 258,
+    "batchYear": "2024",
+    "name": "UNAIS HADI"
+  },
+  {
+    "studentId": "STU-2024-259",
+    "serialNo": 259,
+    "batchYear": "2024",
+    "name": "MUHSIN HADI"
+  },
+  {
+    "studentId": "STU-2024-260",
+    "serialNo": 260,
+    "batchYear": "2024",
+    "name": "SUFIYAN HADI"
+  },
+  {
+    "studentId": "STU-2024-261",
+    "serialNo": 261,
+    "batchYear": "2024",
+    "name": "SUHAIL HADI"
+  },
+  {
+    "studentId": "STU-2024-262",
+    "serialNo": 262,
+    "batchYear": "2024",
+    "name": "ARSAL HADI"
+  },
+  {
+    "studentId": "STU-2024-263",
+    "serialNo": 263,
+    "batchYear": "2024",
+    "name": "MIRSHAD HADI"
+  },
+  {
+    "studentId": "STU-2024-264",
+    "serialNo": 264,
+    "batchYear": "2024",
+    "name": "ANAS LATHEEFI"
+  },
+  {
+    "studentId": "STU-2024-265",
+    "serialNo": 265,
+    "batchYear": "2024",
+    "name": "BISHIR HADI"
+  },
+  {
+    "studentId": "STU-2025-266",
+    "serialNo": 266,
+    "batchYear": "2025",
+    "name": "SHAKEEB ALI MK"
+  },
+  {
+    "studentId": "STU-2025-267",
+    "serialNo": 267,
+    "batchYear": "2025",
+    "name": "SHEHIN KT"
+  },
+  {
+    "studentId": "STU-2025-268",
+    "serialNo": 268,
+    "batchYear": "2025",
+    "name": "ANWAR JAMAL A"
+  },
+  {
+    "studentId": "STU-2025-269",
+    "serialNo": 269,
+    "batchYear": "2025",
+    "name": "MUHAMMED RASHID MC"
+  },
+  {
+    "studentId": "STU-2025-270",
+    "serialNo": 270,
+    "batchYear": "2025",
+    "name": "MUHAMMED LUFAN P"
+  },
+  {
+    "studentId": "STU-2025-271",
+    "serialNo": 271,
+    "batchYear": "2025",
+    "name": "ABDU RAHMAN PT"
+  },
+  {
+    "studentId": "STU-2025-272",
+    "serialNo": 272,
+    "batchYear": "2025",
+    "name": "MUHAMMED SAFUWAN M"
+  },
+  {
+    "studentId": "STU-2025-273",
+    "serialNo": 273,
+    "batchYear": "2025",
+    "name": "MUHAMMED AFTHAB M"
+  },
+  {
+    "studentId": "STU-2025-274",
+    "serialNo": 274,
+    "batchYear": "2025",
+    "name": "MUHAMMED SAHID T"
+  },
+  {
+    "studentId": "STU-2025-275",
+    "serialNo": 275,
+    "batchYear": "2025",
+    "name": "MISHAB T"
+  },
+  {
+    "studentId": "STU-2025-276",
+    "serialNo": 276,
+    "batchYear": "2025",
+    "name": "MUHAMMED SWALIH KK"
+  },
+  {
+    "studentId": "STU-2025-277",
+    "serialNo": 277,
+    "batchYear": "2025",
+    "name": "MUHAMMED NUSAIF K"
+  },
+  {
+    "studentId": "STU-2025-278",
+    "serialNo": 278,
+    "batchYear": "2025",
+    "name": "MOHAMMED NAHEEL P"
+  },
+  {
+    "studentId": "STU-2025-279",
+    "serialNo": 279,
+    "batchYear": "2025",
+    "name": "RIFAN K"
+  },
+  {
+    "studentId": "STU-2025-280",
+    "serialNo": 280,
+    "batchYear": "2025",
+    "name": "MUHAMMED RASHID K"
+  },
+  {
+    "studentId": "STU-2025-281",
+    "serialNo": 281,
+    "batchYear": "2025",
+    "name": "MUHAMMED RAEES M"
+  },
+  {
+    "studentId": "STU-2025-282",
+    "serialNo": 282,
+    "batchYear": "2025",
+    "name": "SUHAIL P"
+  },
+  {
+    "studentId": "STU-2025-283",
+    "serialNo": 283,
+    "batchYear": "2025",
+    "name": "SUHAIL VP"
+  },
+  {
+    "studentId": "STU-2025-284",
+    "serialNo": 284,
+    "batchYear": "2025",
+    "name": "MUHAMMED YONUS P"
+  },
+  {
+    "studentId": "STU-2025-285",
+    "serialNo": 285,
+    "batchYear": "2025",
+    "name": "ASLAH NISHMAL"
+  },
+  {
+    "studentId": "STU-2025-286",
+    "serialNo": 286,
+    "batchYear": "2025",
+    "name": "MUHAMMED ANSIL TH"
+  },
+  {
+    "studentId": "STU-2025-287",
+    "serialNo": 287,
+    "batchYear": "2025",
+    "name": "JUNAID K"
+  },
+  {
+    "studentId": "STU-2025-288",
+    "serialNo": 288,
+    "batchYear": "2025",
+    "name": "SAHYID FASAL RAHMAN T"
+  },
+  {
+    "studentId": "STU-2025-289",
+    "serialNo": 289,
+    "batchYear": "2025",
+    "name": "SHABEER NIHAD"
+  },
+  {
+    "studentId": "STU-2025-290",
+    "serialNo": 290,
+    "batchYear": "2025",
+    "name": "MUHAMMED IJAS P"
+  },
+  {
+    "studentId": "STU-2025-291",
+    "serialNo": 291,
+    "batchYear": "2025",
+    "name": "ASIF SHIBILI M"
+  },
+  {
+    "studentId": "STU-2025-292",
+    "serialNo": 292,
+    "batchYear": "2025",
+    "name": "ABDULLAH ARSHAD SHAFI K"
+  },
+  {
+    "studentId": "STU-2025-293",
+    "serialNo": 293,
+    "batchYear": "2025",
+    "name": "MUHAMMED MIDAJ N"
+  },
+  {
+    "studentId": "STU-2025-294",
+    "serialNo": 294,
+    "batchYear": "2025",
+    "name": "MUHAMMED SHAHEEM NK"
+  }
+]

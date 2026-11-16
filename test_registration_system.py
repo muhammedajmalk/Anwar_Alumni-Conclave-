@@ -253,6 +253,26 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertNotIn("Send WhatsApp to ", index_html)
         self.assertNotIn("<th>WhatsApp Confirmation Action</th>", index_html)
 
+        # 8B. Verify New Field Order (1. Batch Year first, 2. Name second), Edit Name, Batch Report & QR Scanner UI
+        batch_label_pos = index_html.find("1. Batch Year")
+        name_label_pos = index_html.find("2. Name")
+        place_label_pos = index_html.find("3. Place")
+        self.assertGreater(batch_label_pos, 0)
+        self.assertGreater(name_label_pos, batch_label_pos)
+        self.assertGreater(place_label_pos, name_label_pos)
+        for yr in range(2001, 2027):
+            self.assertIn(f'<option value="{yr}">{yr}</option>', index_html)
+        self.assertIn("Name not correct? Edit Name", index_html)
+        self.assertIn('id="studentSelect"', index_html)
+        self.assertIn('id="shareBatchReportWaBtn"', index_html)
+        self.assertIn("SHARE BATCH REPORT ON WHATSAPP", index_html)
+        self.assertIn("EVENT CHECK-IN / QR SCANNER", index_html)
+        self.assertIn("CONFIRM TICKET", index_html)
+        self.assertIn("TICKET CONFIRMED SUCCESSFULLY", index_html)
+        self.assertIn("ALREADY CONFIRMED – ENTRY COMPLETED", index_html)
+        self.assertIn("INVALID TICKET – PLEASE VERIFY", index_html)
+        self.assertIn("Download QR Code", index_html)
+
         # 9. Verify Object/JSON Display Guards, Session Endpoint Integration, Routing & Deployment Files
         self.assertIn("extractReadableMessage", index_html)
         self.assertIn("safeDisplayText", index_html)
@@ -344,13 +364,36 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertTrue(dash_body.get("success"))
         self.assertIn("registrations", dash_body)
         self.assertIn("stats", dash_body)
+        self.assertIn("batchReport", dash_body)
+        self.assertIn("whatsappReportText", dash_body)
+        self.assertEqual(dash_body.get("officialOverallTotal"), 330)
+        self.assertEqual(len(dash_body["batchReport"]["batches"]), 26)
+        self.assertIn("*Aufbruch*\n*Alumni Conclave 2026*", dash_body["whatsappReportText"])
+        self.assertIn("/330 (", dash_body["whatsappReportText"])
 
-        # 5. Create a temporary registration, verify strict JSON schema, then Edit & Delete it as Admin
+        # 4B. Verify /api/students returns batch-filtered Excel names and official totals
+        st_status, st_2001, _ = http_json_request("/api/students?batchYear=2001", "GET")
+        self.assertEqual(st_status, 200)
+        self.assertEqual(len(st_2001.get("students", [])), 4)
+        self.assertEqual(st_2001["officialBatchTotals"]["2001"], 4)
+        self.assertEqual(st_2001["officialBatchTotals"]["2007"], 6)
+        self.assertEqual(st_2001["officialBatchTotals"]["2026"], 12)
+        self.assertEqual(st_2001["officialOverallTotal"], 330)
+
+        _, st_2007, _ = http_json_request("/api/students?batchYear=2007", "GET")
+        self.assertEqual(len(st_2007.get("students", [])), 5)
+
+        _, st_2026, _ = http_json_request("/api/students?batchYear=2026", "GET")
+        self.assertEqual(len(st_2026.get("students", [])), 0)
+
+        # 5. Create a temporary registration (with edited name), verify QR ticket & strict JSON schema
         reg_status, reg_res, reg_headers = http_json_request(
             "/api/register",
             "POST",
             {
-                "name": "Temp Alumni Test",
+                "name": "Temp Alumni Corrected",
+                "originalExcelName": "Temp Alumni Original",
+                "nameEdited": True,
                 "place": "Nilambur",
                 "batchYear": "2019",
                 "whatsappNumber": "9747380130",
@@ -363,13 +406,21 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertEqual(reg_res.get("message"), "Registration completed successfully")
         self.assertIsInstance(reg_res.get("data"), dict)
         created_id = reg_res["registrationId"]
+        created_ticket_id = reg_res["ticketId"]
+        created_token = reg_res["ticketToken"]
+        self.assertTrue(created_ticket_id.startswith("ANWAR "))
+        self.assertTrue(created_token.startswith("AUF26-ANWAR"))
+        self.assertTrue(isinstance(reg_res.get("qrMatrix"), list) and len(reg_res["qrMatrix"]) >= 21)
+        self.assertEqual(reg_res["data"]["originalExcelName"], "Temp Alumni Original")
+        self.assertTrue(reg_res["data"]["nameEdited"])
 
-        # Verify rapid duplicate submission returns HTTP 409 JSON without creating duplicate row
+        # Verify duplicate registration for the same student/originalExcelName in same batch returns HTTP 409
         dup_status, dup_res, dup_headers = http_json_request(
             "/api/register",
             "POST",
             {
-                "name": "Temp Alumni Test",
+                "name": "Different Spelling",
+                "originalExcelName": "Temp Alumni Original",
                 "place": "Nilambur",
                 "batchYear": "2019",
                 "whatsappNumber": "9747380130",
@@ -380,6 +431,113 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertIn("application/json", dup_headers.get("Content-Type", ""))
         self.assertFalse(dup_res.get("success", True))
         self.assertTrue(dup_res.get("duplicate"))
+
+        # 5-QR. Verify QR Scanner verification & One-Time Check-in Confirmation
+        # (a) Invalid QR code must return INVALID TICKET – PLEASE VERIFY
+        inv_status, inv_body, _ = http_json_request(
+            "/api/admin/checkin/verify",
+            "POST",
+            {"qrData": "FAKE-INVALID-QR-TOKEN-999"},
+            headers=auth_headers,
+        )
+        self.assertEqual(inv_status, 200)
+        self.assertFalse(inv_body.get("valid", True))
+        self.assertEqual(inv_body.get("status"), "INVALID")
+        self.assertEqual(inv_body.get("headline"), "INVALID TICKET – PLEASE VERIFY")
+
+        # (b) Valid unconfirmed QR code must return VALID_PENDING & < TICKET CONFIRMED >
+        ver_status, ver_body, _ = http_json_request(
+            "/api/admin/checkin/verify",
+            "POST",
+            {"qrData": created_token},
+            headers=auth_headers,
+        )
+        self.assertEqual(ver_status, 200)
+        self.assertTrue(ver_body.get("valid"))
+        self.assertFalse(ver_body.get("alreadyCheckedIn", True))
+        self.assertEqual(ver_body.get("status"), "VALID_PENDING")
+        self.assertEqual(ver_body.get("headline"), "< TICKET CONFIRMED >")
+        self.assertEqual(ver_body["participant"]["ticketId"], created_ticket_id)
+
+        # (c) First check-in confirmation must succeed with 200 & TICKET CONFIRMED SUCCESSFULLY
+        conf1_status, conf1_body, _ = http_json_request(
+            "/api/admin/checkin/confirm",
+            "POST",
+            {"ticketToken": created_token},
+            headers=auth_headers,
+        )
+        self.assertEqual(conf1_status, 200)
+        self.assertTrue(conf1_body.get("success"))
+        self.assertEqual(conf1_body.get("status"), "CONFIRMED_NOW")
+        self.assertEqual(conf1_body.get("headline"), "TICKET CONFIRMED SUCCESSFULLY")
+        self.assertTrue(conf1_body["participant"]["checkedIn"])
+        self.assertEqual(conf1_body["participant"]["checkInStatus"], "CHECKED IN")
+        first_checkin_ts = conf1_body.get("checkInTimestamp")
+        self.assertTrue(first_checkin_ts)
+
+        # (d) Second check-in confirmation on the same ticket must be permanently blocked (HTTP 409)
+        conf2_status, conf2_body, _ = http_json_request(
+            "/api/admin/checkin/confirm",
+            "POST",
+            {"ticketToken": created_token},
+            headers=auth_headers,
+        )
+        self.assertEqual(conf2_status, 409)
+        self.assertFalse(conf2_body.get("success", True))
+        self.assertTrue(conf2_body.get("alreadyCheckedIn"))
+        self.assertEqual(conf2_body.get("status"), "ALREADY_CONFIRMED")
+        self.assertEqual(conf2_body.get("headline"), "ALREADY CONFIRMED – ENTRY COMPLETED")
+        self.assertEqual(conf2_body.get("checkInTimestamp"), first_checkin_ts)
+
+        # (e) Re-scanning the already-confirmed QR code must return ALREADY CONFIRMED – ENTRY COMPLETED
+        ver2_status, ver2_body, _ = http_json_request(
+            "/api/admin/checkin/verify",
+            "POST",
+            {"qrData": created_token},
+            headers=auth_headers,
+        )
+        self.assertEqual(ver2_status, 200)
+        self.assertTrue(ver2_body.get("alreadyCheckedIn"))
+        self.assertEqual(ver2_body.get("status"), "ALREADY_CONFIRMED")
+        self.assertEqual(ver2_body.get("headline"), "ALREADY CONFIRMED – ENTRY COMPLETED")
+
+        # (f) Verify a second participant's ticket can still be scanned and confirmed while first is blocked
+        reg2_status, reg2_res, _ = http_json_request(
+            "/api/register",
+            "POST",
+            {
+                "name": "Second Alumni Scanner Test",
+                "place": "Manjeri",
+                "batchYear": "2018",
+                "whatsappNumber": "9847011223",
+                "participation": "പങ്കെടുക്കും",
+            },
+        )
+        self.assertEqual(reg2_status, 200)
+        second_id = reg2_res["registrationId"]
+        second_token = reg2_res["ticketToken"]
+        ver_other_status, ver_other_body, _ = http_json_request(
+            "/api/admin/checkin/verify",
+            "POST",
+            {"qrData": second_token},
+            headers=auth_headers,
+        )
+        self.assertEqual(ver_other_status, 200)
+        self.assertEqual(ver_other_body.get("status"), "VALID_PENDING")
+        # Clean up second test record
+        http_json_request("/api/admin/delete", "POST", {"registrationId": second_id}, headers=auth_headers)
+
+        # (g) Verify Check-in Report Excel (.xlsx) export endpoint works
+        xlsx_req = urllib.request.Request(
+            f"{BASE_URL}/api/admin/checkin/export-xlsx",
+            headers=auth_headers,
+            method="GET",
+        )
+        with urllib.request.urlopen(xlsx_req, timeout=5) as xlsx_resp:
+            self.assertEqual(xlsx_resp.status, 200)
+            self.assertIn("spreadsheetml.sheet", xlsx_resp.headers.get("Content-Type", ""))
+            xlsx_bytes = xlsx_resp.read()
+            self.assertTrue(xlsx_bytes.startswith(b"PK"))
 
         # Verify invalid payload returns HTTP 400 with application/json and both message & error
         bad_status, bad_res, bad_headers = http_json_request(
@@ -450,6 +608,8 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertFalse(upd_body["updatedRecord"]["shouldSendWhatsApp"])
         self.assertTrue(upd_body["updatedRecord"]["whatsappSent"])
         self.assertEqual(upd_body["updatedRecord"]["whatsappSentCount"], 2)
+        self.assertEqual(upd_body["updatedRecord"]["ticketId"], created_ticket_id)
+        self.assertTrue(upd_body["updatedRecord"]["checkedIn"])
 
         # 5C. Delete the registration via /api/admin/delete
         del_status, del_body, _ = http_json_request(
