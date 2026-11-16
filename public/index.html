@@ -2924,9 +2924,9 @@
   <section id="register" class="section-wrap">
     <div class="section-header">
       <span class="section-eyebrow">Official Event Registration</span>
-      <h2 class="section-title">Aufbruch – Alumni Conclave 2026</h2>
+      <h2 class="section-title">Get your tickets to the Alumni Conclave...</h2>
       <p class="section-desc">
-        Complete your registration details below to confirm your participation
+        Let’s meet at the Alumni Conclave...! Register now.
       </p>
     </div>
 
@@ -2940,7 +2940,7 @@
         <div id="globalError" class="global-error"></div>
 
         <form id="registrationForm" novalidate>
-          <!-- Field 1: Batch Year (FIRST FIELD, Mandatory Dropdown 2001–2026) -->
+          <!-- Field 1: Batch Year -->
           <div class="field-group">
             <label class="field-label" for="batchInput">
               <span>1. Batch Year <span class="req">*</span></span>
@@ -3011,9 +3011,7 @@
             </div>
 
             <div class="edit-name-row">
-              <span id="batchStudentCountHint" style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">
-                Select a batch above to load student names
-              </span>
+              <span id="batchStudentCountHint" style="font-size: 12px; color: var(--text-secondary); font-weight: 600;"></span>
               <button type="button" id="toggleEditNameBtn" class="edit-name-toggle-btn">
                 ✏️ Name not correct? Edit Name
               </button>
@@ -3029,7 +3027,7 @@
                 id="nameInput"
                 name="name"
                 class="text-input"
-                placeholder="Your answer (e.g., Ajmal Saqafi)"
+                placeholder="Your answer ( In English Only)"
                 required
                 autocomplete="name"
               />
@@ -4508,7 +4506,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           optEmpty.textContent = 'Please select a Batch Year first';
           studentSelect.appendChild(optEmpty);
           if (batchStudentCountHint) {
-            batchStudentCountHint.textContent = 'Select a batch above to load student names';
+            batchStudentCountHint.textContent = '';
           }
           return;
         }
