@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aufbruch – Alumni Conclave 2026</title>
-  <meta name="description" content="Official Registration Portal & Executive Dashboard for Aufbruch – Alumni Conclave 2026." />
+  <title>Anwar Alumni Conclave — Aufbruch – Alumni Conclave 2026</title>
+  <meta name="description" content="Majmau Ssaqafathil Islamiyya&#10;Da'wa College Alumni — Official Registration Portal & Executive Dashboard for Aufbruch – Alumni Conclave 2026." />
+  <meta property="og:title" content="Anwar Alumni_Conclave — Aufbruch – Alumni Conclave 2026" />
+  <meta property="og:description" content="Majmau Ssaqafathil Islamiyya&#10;Da'wa College Alumni" />
+  <meta property="og:image" content="/aufbruch_poster.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@100;200;300;400;500;600;700;800&family=Noto+Sans+Malayalam:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -2352,83 +2355,349 @@
       display: block;
     }
 
-    /* Official QR Ticket Pass inside Submission Alert Modal */
-    .submission-alert-box.has-ticket {
-      max-width: 480px;
-      max-height: 92vh;
+    /* Two-Step Progressive Registration Form Transitions & Integrated Name Combobox */
+    .form-step-section {
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .form-step-section.step-hidden {
+      display: none !important;
+    }
+
+    .step-indicator-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--navy-900);
+      background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+      border: 1px solid var(--gold-500);
+      padding: 4px 11px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+    }
+
+    .student-combobox-container {
+      position: relative;
+      width: 100%;
+    }
+
+    .student-combo-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .student-combo-input {
+      width: 100%;
+      padding-right: 38px !important;
+      cursor: pointer;
+    }
+
+    .student-combo-chevron {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748B;
+      font-size: 12px;
+      pointer-events: none;
+      transition: transform 0.18s ease;
+    }
+
+    .student-combobox-container.open .student-combo-chevron {
+      transform: translateY(-50%) rotate(180deg);
+    }
+
+    .student-combo-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      max-height: 250px;
       overflow-y: auto;
-      padding: 26px 24px 22px;
+      background: #FFFFFF;
+      border: 1.5px solid var(--gold-500);
+      border-radius: 12px;
+      box-shadow: 0 14px 32px rgba(10, 22, 40, 0.18);
+      z-index: 60;
+      padding: 6px;
+    }
+
+    .student-combobox-container.open .student-combo-dropdown {
+      display: block;
+    }
+
+    .student-combo-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #0F172A;
+      cursor: pointer;
+      transition: background 0.12s ease;
+    }
+
+    .student-combo-option:hover,
+    .student-combo-option.active {
+      background: #FEF9E7;
+      color: var(--navy-950);
+    }
+
+    .student-combo-option.is-registered {
+      color: #64748B;
+      background: #F8FAFC;
+    }
+
+    .student-combo-empty {
+      padding: 12px;
+      text-align: center;
+      font-size: 13px;
+      color: #64748B;
+      font-weight: 600;
+    }
+
+    /* Official QR Ticket Pass inside Submission Alert Modal (Reference Two-Tone Design) */
+    .submission-alert-box.has-ticket {
+      max-width: 440px;
+      max-height: 94vh;
+      overflow-y: auto;
+      padding: 20px 18px 18px;
     }
 
     .ticket-pass-card {
       display: none;
-      background: linear-gradient(180deg, #0A1628 0%, #122645 100%);
-      border: 2px solid var(--gold-500);
-      border-radius: 16px;
-      padding: 18px 16px;
-      margin: 14px 0 18px;
-      color: #FFFFFF;
+      margin: 10px auto 14px;
+      max-width: 368px;
       text-align: center;
-      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
     }
 
     .ticket-pass-card.visible {
       display: block;
     }
 
-    .ticket-pass-header {
-      border-bottom: 1px dashed rgba(212, 175, 55, 0.45);
-      padding-bottom: 10px;
-      margin-bottom: 12px;
+    .ticket-ref-shell {
+      border-radius: 26px;
+      overflow: hidden;
+      box-shadow: 0 22px 48px rgba(0, 0, 0, 0.48);
+      background: #FFFFFF;
+      position: relative;
+      border: 1px solid rgba(226, 232, 240, 0.9);
     }
 
-    .ticket-pass-brand {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--gold-400);
-      letter-spacing: 1.2px;
+    .ticket-ref-top {
+      background: #FFFFFF;
+      padding: 20px 20px 14px;
+      color: #0F172A;
     }
 
-    .ticket-pass-sub {
-      font-size: 12px;
-      font-weight: 700;
-      color: #E2E8F0;
-      letter-spacing: 0.8px;
-      margin-top: 2px;
-    }
-
-    .ticket-pass-meta {
-      text-align: left;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 10px;
-      padding: 10px 14px;
-      margin-bottom: 14px;
-      font-size: 13px;
-      line-height: 1.65;
-    }
-
-    .ticket-pass-meta-row {
+    .ticket-ref-header-row {
       display: flex;
+      align-items: center;
       justify-content: space-between;
       gap: 8px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-      padding: 3px 0;
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid #F1F5F9;
     }
 
-    .ticket-pass-meta-row:last-child {
-      border-bottom: none;
+    .ticket-ref-badge-left {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 13px;
+      border-radius: 999px;
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #1E293B;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+
+    .ticket-ref-badge-right {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 11px;
+      border-radius: 8px;
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      font-weight: 800;
+      color: #1E293B;
+      letter-spacing: 0.8px;
+    }
+
+    .ticket-ref-poster-wrap {
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
+      margin-bottom: 14px;
+      background: #4A0E17;
+      border: 1px solid #F1F5F9;
+    }
+
+    .ticket-ref-poster-img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .ticket-ref-meta-rows {
+      text-align: left;
+      font-size: 13px;
+    }
+
+    .ticket-ref-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 2px;
+      border-top: 1px solid #F1F5F9;
+    }
+
+    .ticket-ref-meta-row:last-child {
+      border-bottom: 1px solid #F1F5F9;
+    }
+
+    .ticket-ref-meta-label {
+      color: #94A3B8;
+      font-weight: 600;
+      font-size: 12.5px;
+    }
+
+    .ticket-ref-meta-val {
+      color: #1E293B;
+      font-weight: 800;
+      font-size: 13px;
+      text-align: right;
+    }
+
+    /* Perforated Cutout Divider between Top White & Bottom Crimson Stub */
+    .ticket-ref-cutout-wrap {
+      position: relative;
+      height: 24px;
+      background: linear-gradient(180deg, #FFFFFF 50%, #E11D48 50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .ticket-ref-dashed-line {
+      width: calc(100% - 36px);
+      border-top: 2px dashed #CBD5E1;
+    }
+
+    .ticket-ref-notch {
+      position: absolute;
+      top: 50%;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #0D1B2A;
+      transform: translateY(-50%);
+      z-index: 2;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35);
+    }
+
+    .ticket-ref-notch.left {
+      left: -12px;
+    }
+
+    .ticket-ref-notch.right {
+      right: -12px;
+    }
+
+    .ticket-ref-bottom {
+      position: relative;
+      background: linear-gradient(180deg, #E11D48 0%, #BE123C 100%);
+      padding: 22px 20px 30px;
+      color: #FFFFFF;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .ticket-ref-bottom::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.12;
+      background-image: radial-gradient(#FFFFFF 1.5px, transparent 1.5px);
+      background-size: 16px 16px;
+      pointer-events: none;
     }
 
     .ticket-pass-qr-box {
+      position: relative;
+      z-index: 1;
       display: inline-flex;
       flex-direction: column;
       align-items: center;
       background: #FFFFFF;
-      padding: 12px;
-      border-radius: 12px;
-      border: 3px solid var(--gold-400);
-      margin-bottom: 12px;
+      padding: 15px;
+      border-radius: 22px;
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.25);
+      margin-bottom: 16px;
+    }
+
+    .ticket-ref-part-name {
+      position: relative;
+      z-index: 1;
+      font-size: 19px;
+      font-weight: 800;
+      color: #FFFFFF;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      line-height: 1.25;
+      margin-bottom: 4px;
+      word-break: break-word;
+    }
+
+    .ticket-ref-part-id {
+      position: relative;
+      z-index: 1;
+      font-size: 27px;
+      font-weight: 900;
+      color: #FFFFFF;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      line-height: 1.15;
+    }
+
+    .ticket-ref-scallop-edge {
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      right: 0;
+      height: 16px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 10px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .ticket-ref-scallop-dot {
+      width: 18px;
+      height: 16px;
+      border-radius: 50%;
+      background: #0D1B2A;
+      flex-shrink: 0;
     }
 
     .ticket-download-btn {
@@ -2438,7 +2707,7 @@
       gap: 8px;
       width: 100%;
       padding: 12px 18px;
-      border-radius: 10px;
+      border-radius: 12px;
       border: 1.5px solid #10B981;
       background: linear-gradient(135deg, #10B981 0%, #059669 100%);
       color: #FFFFFF;
@@ -2446,7 +2715,7 @@
       font-size: 14px;
       font-weight: 800;
       cursor: pointer;
-      margin-top: 4px;
+      margin-top: 12px;
       box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
       transition: all 0.15s ease;
     }
@@ -2454,6 +2723,94 @@
     .ticket-download-btn:hover {
       filter: brightness(1.06);
       transform: translateY(-1px);
+    }
+
+    /* QR Scanner Top Notification Toast Banner */
+    .scanner-top-toast {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+      animation: scannerToastSlideDown 0.25s ease-out;
+    }
+
+    .scanner-top-toast.visible {
+      display: flex;
+    }
+
+    .scanner-top-toast.toast-valid {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      border: 1.5px solid #34D399;
+      color: #FFFFFF;
+    }
+
+    .scanner-top-toast.toast-already {
+      background: linear-gradient(135deg, #D97706 0%, #B45309 100%);
+      border: 1.5px solid #FBBF24;
+      color: #FFFFFF;
+    }
+
+    .scanner-top-toast.toast-invalid {
+      background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+      border: 1.5px solid #F87171;
+      color: #FFFFFF;
+    }
+
+    @keyframes scannerToastSlideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Compact Master Students Database Table/Grid */
+    .master-student-compact-wrap {
+      max-height: 220px;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      background: rgba(5, 11, 22, 0.55);
+    }
+
+    .master-student-compact-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+
+    .master-student-compact-table th {
+      position: sticky;
+      top: 0;
+      background: #0A1628;
+      color: var(--gold-300);
+      font-weight: 700;
+      text-align: left;
+      padding: 7px 12px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .master-student-compact-table td {
+      padding: 6px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      color: #E2E8F0;
+    }
+
+    .master-student-compact-table tr:hover td {
+      background: rgba(255, 255, 255, 0.04);
     }
 
     /* Admin Dashboard Batch Report & QR Scanner Cards */
@@ -2940,13 +3297,14 @@
         <div id="globalError" class="global-error"></div>
 
         <form id="registrationForm" novalidate>
-          <!-- Field 1: Batch Year -->
-          <div class="field-group">
+          <!-- STEP 1: Batch Year Selection (Displayed Initially) -->
+          <div id="step1BatchSection" class="field-group">
+            <div class="step-indicator-pill">Step 1 of 2 • Select Your Batch</div>
             <label class="field-label" for="batchInput">
               <span>1. Batch Year <span class="req">*</span></span>
-              <span class="field-type-tag">Dropdown • 2001–2026</span>
+              <span class="field-type-tag">2001–2026</span>
             </label>
-            <div class="field-help">Select your batch year (2001 to 2026)</div>
+            <div class="field-help">Select your batch year (2001 to 2026) to continue</div>
             <select
               id="batchInput"
               name="batchYear"
@@ -2984,27 +3342,35 @@
             <div id="batchError" class="error-text">Please select a valid Batch Year (2001–2026).</div>
           </div>
 
-          <!-- Field 2: Dynamic Student Name Dropdown + Edit Name Option -->
-          <div class="field-group">
-            <label class="field-label" for="studentSelect">
+          <!-- STEP 2A: Dynamic Student Name Selection (Revealed After Batch Selection) -->
+          <div id="step2NameSection" class="field-group form-step-section step-hidden">
+            <div class="step-indicator-pill">Step 2 of 2 • Select Your Name & Details</div>
+            <label class="field-label" for="studentComboInput">
               <span>2. Name <span class="req">*</span></span>
               <span class="field-type-tag">Batch Student List</span>
             </label>
-            <div class="field-help">Select your name from your batch list, or click "Name not correct? Edit Name" to correct spelling</div>
 
             <div class="student-selector-wrap">
-              <input
-                type="search"
-                id="studentSearchInput"
-                class="student-search-input"
-                placeholder="🔍 Type to search your name in the selected batch..."
-                autocomplete="off"
-                disabled
-              />
+              <div id="studentComboboxContainer" class="student-combobox-container">
+                <div class="student-combo-input-wrap">
+                  <input
+                    type="text"
+                    id="studentComboInput"
+                    class="text-input student-combo-input"
+                    placeholder="Select or search your name..."
+                    autocomplete="off"
+                    aria-label="Select or search your name"
+                  />
+                  <span class="student-combo-chevron">▼</span>
+                </div>
+                <div id="studentComboDropdown" class="student-combo-dropdown" role="listbox"></div>
+              </div>
               <select
                 id="studentSelect"
                 class="text-input"
-                disabled
+                style="display: none;"
+                aria-hidden="true"
+                tabindex="-1"
               >
                 <option value="">Please select a Batch Year first</option>
               </select>
@@ -3040,78 +3406,81 @@
             <div id="nameError" class="error-text">Please select or enter your full name (minimum 2 characters).</div>
           </div>
 
-          <!-- Field 3: Place -->
-          <div class="field-group">
-            <label class="field-label" for="placeInput">
-              <span>3. Place <span class="req">*</span></span>
-              <span class="field-type-tag">Short Answer</span>
-            </label>
-            <div class="field-help">Enter your locality</div>
-            <input
-              type="text"
-              id="placeInput"
-              name="place"
-              class="text-input"
-              placeholder="Your answer (e.g., Nilambur)"
-              required
-            />
-            <div id="placeError" class="error-text">Please enter your place / city.</div>
-          </div>
-
-          <!-- Field 4: WhatsApp Number -->
-          <div class="field-group">
-            <label class="field-label" for="whatsappInput">
-              <span>4. WhatsApp Number <span class="req">*</span></span>
-              <span class="field-type-tag">Short Answer • Validated</span>
-            </label>
-            <div class="field-help">Mobile numbers</div>
-            <input
-              type="tel"
-              id="whatsappInput"
-              name="whatsappNumber"
-              class="text-input"
-              placeholder="e.g., +91 8606140996"
-              required
-              autocomplete="tel"
-            />
-            <div class="phone-status-line">
-              <span id="phoneNormalizedBadge" class="phone-normalized-pill">✓ Formatted: +91 8606140996</span>
-            </div>
-            <div id="whatsappError" class="error-text">
-              Please enter a valid 10-digit mobile number.
-            </div>
-          </div>
-
-          <!-- Field 5: അലുംനി സംഗമത്തിൽ പങ്കെടുക്കുമോ...? -->
-          <div class="field-group">
-            <label class="field-label">
-              <span>5. അലുംനി സംഗമത്തിൽ പങ്കെടുക്കുമോ...? <span class="req">*</span></span>
-              <span class="field-type-tag">Choice</span>
-            </label>
-            <div class="field-help">Select your attendance confirmation</div>
-            <div class="radio-group" id="participationGroup">
-              <label class="radio-card" id="cardYes">
-                <input type="radio" name="participation" value="പങ്കെടുക്കും" required />
-                <div class="radio-label-wrap">
-                  <span class="radio-label-text">പങ്കെടുക്കും</span>
-                  <span class="radio-label-sub">Yes, I will attend</span>
-                </div>
+          <!-- STEP 2B: Remaining Fields + Submit Button (Revealed After Name Selection) -->
+          <div id="step2RemainingSection" class="form-step-section step-hidden">
+            <!-- Field 3: Place -->
+            <div class="field-group">
+              <label class="field-label" for="placeInput">
+                <span>3. Place <span class="req">*</span></span>
+                <span class="field-type-tag">Short Answer</span>
               </label>
-              <label class="radio-card" id="cardNo">
-                <input type="radio" name="participation" value="സാധിക്കില്ല" required />
-                <div class="radio-label-wrap">
-                  <span class="radio-label-text">സാധിക്കില്ല</span>
-                  <span class="radio-label-sub">Unable to attend</span>
-                </div>
-              </label>
+              <div class="field-help">Enter your locality</div>
+              <input
+                type="text"
+                id="placeInput"
+                name="place"
+                class="text-input"
+                placeholder="Your answer (e.g., Nilambur)"
+                required
+              />
+              <div id="placeError" class="error-text">Please enter your place / city.</div>
             </div>
-            <div id="participationError" class="error-text">Please select whether you will attend (പങ്കെടുക്കും or സാധിക്കില്ല).</div>
-          </div>
 
-          <button type="submit" id="submitBtn" class="submit-btn">
-            <span>Submit Registration</span>
-            <span>✓</span>
-          </button>
+            <!-- Field 4: WhatsApp Number -->
+            <div class="field-group">
+              <label class="field-label" for="whatsappInput">
+                <span>4. WhatsApp Number <span class="req">*</span></span>
+                <span class="field-type-tag">Short Answer • Validated</span>
+              </label>
+              <div class="field-help">Mobile numbers</div>
+              <input
+                type="tel"
+                id="whatsappInput"
+                name="whatsappNumber"
+                class="text-input"
+                placeholder="e.g., +91 8606140996"
+                required
+                autocomplete="tel"
+              />
+              <div class="phone-status-line">
+                <span id="phoneNormalizedBadge" class="phone-normalized-pill">✓ Formatted: +91 8606140996</span>
+              </div>
+              <div id="whatsappError" class="error-text">
+                Please enter a valid 10-digit mobile number.
+              </div>
+            </div>
+
+            <!-- Field 5: അലുംനി സംഗമത്തിൽ പങ്കെടുക്കുമോ...? -->
+            <div class="field-group">
+              <label class="field-label">
+                <span>5. അലുംനി സംഗമത്തിൽ പങ്കെടുക്കുമോ...? <span class="req">*</span></span>
+                <span class="field-type-tag">Choice</span>
+              </label>
+              <div class="field-help">Select your attendance confirmation</div>
+              <div class="radio-group" id="participationGroup">
+                <label class="radio-card" id="cardYes">
+                  <input type="radio" name="participation" value="പങ്കെടുക്കും" required />
+                  <div class="radio-label-wrap">
+                    <span class="radio-label-text">പങ്കെടുക്കും</span>
+                    <span class="radio-label-sub">Yes, I will attend</span>
+                  </div>
+                </label>
+                <label class="radio-card" id="cardNo">
+                  <input type="radio" name="participation" value="സാധിക്കില്ല" required />
+                  <div class="radio-label-wrap">
+                    <span class="radio-label-text">സാധിക്കില്ല</span>
+                    <span class="radio-label-sub">Unable to attend</span>
+                  </div>
+                </label>
+              </div>
+              <div id="participationError" class="error-text">Please select whether you will attend (പങ്കെടുക്കും or സാധിക്കില്ല).</div>
+            </div>
+
+            <button type="submit" id="submitBtn" class="submit-btn">
+              <span>Submit Registration</span>
+              <span>✓</span>
+            </button>
+          </div>
         </form>
       </main>
 
@@ -3347,6 +3716,18 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
         <!-- 4B-2. EVENT CHECK-IN / QR SCANNER & Check-in Management Section -->
         <div id="qrScannerSection" class="admin-section-card">
+          <!-- Top Animated Toast Notification Banner for QR Scan & Check-in Feedback -->
+          <div id="scannerTopNotificationBanner" class="scanner-top-toast" role="alert" aria-live="assertive">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span id="scannerTopToastIcon" style="font-size: 18px;">✓</span>
+              <div>
+                <div id="scannerTopToastHeadline" style="font-size: 14px; font-weight: 800; line-height: 1.3;">QR SCANNED SUCCESSFULLY</div>
+                <div id="scannerTopToastSubtext" style="font-size: 12px; font-weight: 600; opacity: 0.92; margin-top: 2px;"></div>
+              </div>
+            </div>
+            <button type="button" id="scannerTopToastCloseBtn" style="background: rgba(0,0,0,0.2); border: none; color: #FFFFFF; border-radius: 6px; padding: 4px 8px; cursor: pointer; font-weight: 800;">✕</button>
+          </div>
+
           <div class="admin-section-header">
             <div>
               <span class="section-eyebrow" style="background: rgba(16, 185, 129, 0.16); color: #6EE7B7; border-color: rgba(16, 185, 129, 0.4);">One-Time Entry Verification</span>
@@ -3510,29 +3891,26 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           </div>
         </div>
 
-        <!-- 4B-3. Student Master Database Management (alumni list.xlsx) & WhatsApp Sender 8606140996 Status -->
-        <div id="studentMasterSection" class="admin-section-card">
-          <div class="admin-section-header">
+        <!-- 4B-3. Master Students Database Management -->
+        <div id="studentMasterSection" class="admin-section-card" style="padding: 16px 20px; margin-bottom: 20px;">
+          <div class="admin-section-header" style="margin-bottom: 10px; padding-bottom: 10px;">
             <div>
-              <h3 style="font-size: 17px; font-weight: 800; color: var(--gold-400); margin-bottom: 4px;">
-                🎓 Master Student Database (`alumni list.xlsx`) & WhatsApp Business API Status
+              <h3 style="font-size: 16px; font-weight: 800; color: var(--gold-400); margin-bottom: 2px;">
+                🎓 Master Students Database (<span id="masterStudentTotalBadge">290</span> Records)
               </h3>
-              <p id="excelDiscrepancyNotice" style="font-size: 12.5px; color: #FDE68A;">
-                Excel Master Records: <strong id="masterStudentTotalBadge">290</strong> imported • Official Total: <strong>330</strong> (Discrepancies: Batch 2007 has 5/6 in Excel; Batch 2026 has 0/12 in Excel)
-              </p>
-              <p id="waSenderStatusLine" style="font-size: 12px; color: #94A3B8; margin-top: 4px;">
-                Configured WhatsApp Sender Number: <strong style="color: #6EE7B7;">8606140996 (+91 8606140996)</strong> — <span id="waCloudApiBadgeText">Checking Cloud API status...</span>
-              </p>
+              <p id="excelDiscrepancyNotice" style="display: none;"></p>
+              <p id="waSenderStatusLine" style="display: none;"><span id="waCloudApiBadgeText"></span></p>
             </div>
-            <div class="dash-toolbar">
-              <select id="adminStudentBatchFilter" class="filter-select">
+            <div class="dash-toolbar" style="gap: 8px;">
+              <select id="adminStudentBatchFilter" class="filter-select" aria-label="Filter students by batch">
+                <option value="NONE" selected>None</option>
                 <option value="2001">Batch 2001</option>
                 <option value="2002">Batch 2002</option>
                 <option value="2003">Batch 2003</option>
                 <option value="2004">Batch 2004</option>
                 <option value="2005">Batch 2005</option>
                 <option value="2006">Batch 2006</option>
-                <option value="2007">Batch 2007 (5/6)</option>
+                <option value="2007">Batch 2007</option>
                 <option value="2008">Batch 2008</option>
                 <option value="2009">Batch 2009</option>
                 <option value="2010">Batch 2010</option>
@@ -3545,31 +3923,32 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
                 <option value="2017">Batch 2017</option>
                 <option value="2018">Batch 2018</option>
                 <option value="2019">Batch 2019</option>
-                <option value="2020" selected>Batch 2020</option>
+                <option value="2020">Batch 2020</option>
                 <option value="2021">Batch 2021</option>
                 <option value="2022">Batch 2022</option>
                 <option value="2023">Batch 2023</option>
                 <option value="2024">Batch 2024</option>
                 <option value="2025">Batch 2025</option>
-                <option value="2026">Batch 2026 (0/12)</option>
+                <option value="2026">Batch 2026</option>
               </select>
               <input
                 type="text"
                 id="newStudentNameInput"
                 class="filter-input"
+                style="padding: 7px 11px; font-size: 12.5px;"
                 placeholder="Add student name to selected batch..."
               />
-              <button type="button" id="addMasterStudentBtn" class="dash-btn primary">
+              <button type="button" id="addMasterStudentBtn" class="dash-btn primary" style="padding: 7px 12px; font-size: 12.5px;">
                 <span>+ Add Student</span>
               </button>
-              <label for="importExcelFileInput" class="dash-btn" style="cursor: pointer;">
-                <span>📤 Import Excel (.xlsx)</span>
+              <label for="importExcelFileInput" class="dash-btn" style="cursor: pointer; padding: 7px 12px; font-size: 12.5px;">
+                <span>📤 Import Excel</span>
               </label>
               <input type="file" id="importExcelFileInput" accept=".xlsx" style="display: none;" />
             </div>
           </div>
 
-          <div id="adminStudentMasterList" style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 190px; overflow-y: auto; padding: 4px 0;"></div>
+          <div id="adminStudentMasterList" class="master-student-compact-wrap"></div>
         </div>
 
         <!-- Responses Management Table -->
@@ -3851,6 +4230,31 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         </div>
       </div>
 
+      <!-- Remove Student Confirmation Modal -->
+      <div id="deleteStudentConfirmModal" class="admin-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="deleteStudentModalTitle">
+        <div class="admin-modal-box" style="max-width: 440px;">
+          <div class="admin-modal-header">
+            <span id="deleteStudentModalTitle" class="admin-modal-title" style="color: #F87171;">
+              🗑️ Confirm Student Removal
+            </span>
+          </div>
+          <div class="admin-modal-body">
+            <p style="font-size: 14.5px; color: #FFFFFF; font-weight: 700; line-height: 1.5; margin-bottom: 10px;">
+              Are you sure you want to remove this student?
+            </p>
+            <div id="deleteStudentTargetSummary" class="delete-target-box" style="margin-bottom: 14px;"></div>
+            <div class="admin-modal-actions">
+              <button type="button" id="cancelDeleteStudentBtn" class="modal-btn modal-btn-cancel">
+                Cancel
+              </button>
+              <button type="button" id="confirmDeleteStudentBtn" class="modal-btn modal-btn-danger">
+                Confirm Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -3868,30 +4272,71 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         Your registration has been submitted successfully. Thank you for registering.
       </p>
 
-      <!-- Automatic QR Code Ticket Pass (Shown on Registration Success) -->
+      <!-- Automatic QR Code Ticket Pass (Reference Two-Part Event Ticket Layout) -->
       <div id="successTicketPassWrap" class="ticket-pass-card">
-        <div class="ticket-pass-header">
-          <div class="ticket-pass-brand">AUFBRUCH</div>
-          <div class="ticket-pass-sub">ALUMNI CONCLAVE 2026</div>
-        </div>
-        <div class="ticket-pass-meta">
-          <div class="ticket-pass-meta-row">
-            <span style="color: #94A3B8;">Participant Name:</span>
-            <strong id="ticketPassName" style="color: #FFFFFF;">-</strong>
+        <div class="ticket-ref-shell">
+          <!-- Top White Card Section -->
+          <div class="ticket-ref-top">
+            <div class="ticket-ref-header-row">
+              <span class="ticket-ref-badge-left">
+                <span style="color: #F59E0B;">✨</span>
+                <span>EVENT TICKET</span>
+              </span>
+              <span id="ticketPassHeaderId" class="ticket-ref-badge-right">ANWAR 001</span>
+            </div>
+
+            <div class="ticket-ref-poster-wrap">
+              <img
+                src="/aufbruch_poster.png"
+                alt="Aufbruch – Alumni Conclave 2026 Official Ticket Poster"
+                class="ticket-ref-poster-img"
+              />
+            </div>
+
+            <div class="ticket-ref-meta-rows">
+              <div class="ticket-ref-meta-row">
+                <span class="ticket-ref-meta-label">Batch Year:</span>
+                <strong id="ticketPassBatch" class="ticket-ref-meta-val">-</strong>
+              </div>
+              <div class="ticket-ref-meta-row">
+                <span class="ticket-ref-meta-label">Place / Locality:</span>
+                <strong id="ticketPassPlace" class="ticket-ref-meta-val">-</strong>
+              </div>
+            </div>
           </div>
-          <div class="ticket-pass-meta-row">
-            <span style="color: #94A3B8;">ID Number:</span>
-            <strong id="ticketPassId" style="color: var(--gold-400);">-</strong>
+
+          <!-- Perforated Cutout Divider -->
+          <div class="ticket-ref-cutout-wrap">
+            <span class="ticket-ref-notch left"></span>
+            <div class="ticket-ref-dashed-line"></div>
+            <span class="ticket-ref-notch right"></span>
           </div>
-          <div class="ticket-pass-meta-row">
-            <span style="color: #94A3B8;">Batch Year:</span>
-            <strong id="ticketPassBatch" style="color: #FFFFFF;">-</strong>
+
+          <!-- Bottom Crimson Stub Section with QR Code, Participant Name & ID -->
+          <div class="ticket-ref-bottom">
+            <div class="ticket-pass-qr-box">
+              <canvas id="ticketQrCanvas" width="184" height="184"></canvas>
+              <span id="ticketPassTokenLabel" style="display: none;"></span>
+            </div>
+            <div id="ticketPassName" class="ticket-ref-part-name">-</div>
+            <div id="ticketPassId" class="ticket-ref-part-id">ANWAR 001</div>
+
+            <div class="ticket-ref-scallop-edge" aria-hidden="true">
+              <span class="ticket-ref-scallop-dot"></span>
+              <span class="ticket-ref-scallop-dot"></span>
+              <span class="ticket-ref-scallop-dot"></span>
+              <span class="ticket-ref-scallop-dot"></span>
+              <span class="ticket-ref-scallop-dot"></span>
+              <span class="ticket-ref-scallop-dot"></span>
+              <span class="ticket-ref-scallop-dot"></span>
+              <span class="ticket-ref-scallop-dot"></span>
+              <span class="ticket-ref-scallop-dot"></span>
+              <span class="ticket-ref-scallop-dot"></span>
+              <span class="ticket-ref-scallop-dot"></span>
+            </div>
           </div>
         </div>
-        <div class="ticket-pass-qr-box">
-          <canvas id="ticketQrCanvas" width="184" height="184"></canvas>
-          <span id="ticketPassTokenLabel" style="font-size: 10px; font-weight: 700; color: #0A1628; margin-top: 4px; font-family: monospace;"></span>
-        </div>
+
         <button type="button" id="downloadTicketPngBtn" class="ticket-download-btn">
           <span>⬇ Download QR Code</span>
         </button>
@@ -4414,7 +4859,11 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       var placeInput = document.getElementById('placeInput');
       var batchInput = document.getElementById('batchInput');
       var whatsappInput = document.getElementById('whatsappInput');
-      var studentSearchInput = document.getElementById('studentSearchInput');
+      var step2NameSection = document.getElementById('step2NameSection');
+      var step2RemainingSection = document.getElementById('step2RemainingSection');
+      var studentComboboxContainer = document.getElementById('studentComboboxContainer');
+      var studentComboInput = document.getElementById('studentComboInput');
+      var studentComboDropdown = document.getElementById('studentComboDropdown');
       var studentSelect = document.getElementById('studentSelect');
       var toggleEditNameBtn = document.getElementById('toggleEditNameBtn');
       var editNameBox = document.getElementById('editNameBox');
@@ -4440,6 +4889,20 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       };
       var isNameEditOpen = false;
 
+      function updateTwoStepFormVisibility() {
+        var hasBatch = Boolean(batchInput && String(batchInput.value || '').trim());
+        var hasName = Boolean(
+          (nameInput && String(nameInput.value || '').trim().length >= 2) ||
+          (studentSelect && String(studentSelect.value || '').trim().length >= 2)
+        );
+        if (step2NameSection) {
+          step2NameSection.classList.toggle('step-hidden', !hasBatch);
+        }
+        if (step2RemainingSection) {
+          step2RemainingSection.classList.toggle('step-hidden', !(hasBatch && (hasName || isNameEditOpen)));
+        }
+      }
+
       function fetchPublicStudentsList() {
         apiFetchJson('/api/students', { method: 'GET' })
           .then(function(res) {
@@ -4450,7 +4913,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
                 officialBatchTotalsMap = res.data.officialBatchTotals;
               }
               if (batchInput && batchInput.value) {
-                populateStudentDropdownForBatch(batchInput.value, studentSearchInput ? studentSearchInput.value : '');
+                populateStudentDropdownForBatch(batchInput.value, '');
               }
             }
           })
@@ -4488,18 +4951,58 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         return false;
       }
 
+      function selectStudentOptionRecord(studentName, stuId) {
+        var cleanNm = String(studentName || '').trim();
+        var cleanId = String(stuId || '').trim();
+        if (studentSelect) {
+          for (var i = 0; i < studentSelect.options.length; i++) {
+            var opt = studentSelect.options[i];
+            var optId = opt.getAttribute('data-student-id') || '';
+            if ((cleanId && optId === cleanId) || (!cleanId && opt.value === cleanNm)) {
+              studentSelect.selectedIndex = i;
+              break;
+            }
+          }
+        }
+        if (studentComboInput) {
+          studentComboInput.value = cleanNm;
+        }
+        if (nameInput) {
+          nameInput.value = cleanNm;
+        }
+        if (originalExcelNameInput) {
+          originalExcelNameInput.value = cleanNm;
+        }
+        if (studentIdInput) {
+          studentIdInput.value = cleanId;
+        }
+        if (originalExcelNameBadge) {
+          originalExcelNameBadge.textContent = cleanNm
+            ? ('Original Excel Record: ' + cleanNm)
+            : 'Original Excel Record: Not selected';
+        }
+        if (studentComboboxContainer) {
+          studentComboboxContainer.classList.remove('open');
+        }
+        setFieldError(nameInput, 'nameError', false);
+        setFieldError(studentComboInput, 'nameError', false);
+        updateDuplicateWarningUI();
+        updateTwoStepFormVisibility();
+      }
+
       function populateStudentDropdownForBatch(batchYr, searchFilter) {
         if (!studentSelect) return;
         var cleanBatch = String(batchYr || '').trim();
         var q = String(searchFilter || '').trim().toLowerCase();
         var prevSelectedStuId = studentIdInput ? studentIdInput.value : '';
         studentSelect.innerHTML = '';
+        if (studentComboDropdown) studentComboDropdown.innerHTML = '';
 
         if (!cleanBatch) {
           studentSelect.disabled = true;
-          if (studentSearchInput) {
-            studentSearchInput.disabled = true;
-            studentSearchInput.value = '';
+          if (studentComboInput) {
+            studentComboInput.disabled = true;
+            studentComboInput.value = '';
           }
           var optEmpty = document.createElement('option');
           optEmpty.value = '';
@@ -4508,6 +5011,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           if (batchStudentCountHint) {
             batchStudentCountHint.textContent = '';
           }
+          updateTwoStepFormVisibility();
           return;
         }
 
@@ -4523,7 +5027,10 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         });
 
         studentSelect.disabled = false;
-        if (studentSearchInput) studentSearchInput.disabled = false;
+        if (studentComboInput) {
+          studentComboInput.disabled = false;
+          studentComboInput.placeholder = 'Select or search your name from Batch ' + cleanBatch + '...';
+        }
 
         if (batchStudentCountHint) {
           batchStudentCountHint.textContent = '';
@@ -4542,6 +5049,15 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           var k = String(s.name || '').toUpperCase();
           nameCounts[k] = (nameCounts[k] || 0) + 1;
         });
+
+        if (studentComboDropdown && filteredStudents.length === 0) {
+          var emptyDiv = document.createElement('div');
+          emptyDiv.className = 'student-combo-empty';
+          emptyDiv.textContent = batchStudents.length === 0
+            ? ('No names listed for Batch ' + cleanBatch + '. Click "Edit Name" below to enter your name.')
+            : 'No matching student names found. Click "Edit Name" below if your name is not listed.';
+          studentComboDropdown.appendChild(emptyDiv);
+        }
 
         filteredStudents.forEach(function(s) {
           var opt = document.createElement('option');
@@ -4562,6 +5078,28 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             opt.selected = true;
           }
           studentSelect.appendChild(opt);
+
+          if (studentComboDropdown) {
+            var item = document.createElement('div');
+            item.className = 'student-combo-option' + (dup ? ' is-registered' : '') + ((prevSelectedStuId && s.studentId === prevSelectedStuId) ? ' active' : '');
+            item.setAttribute('role', 'option');
+            item.setAttribute('data-student-name', s.name || '');
+            item.setAttribute('data-student-id', s.studentId || '');
+            var nameSpan = document.createElement('span');
+            nameSpan.textContent = s.name + (nameCounts[String(s.name || '').toUpperCase()] > 1 && s.serialNo ? (' (Sl. ' + s.serialNo + ')') : '');
+            item.appendChild(nameSpan);
+            if (dup) {
+              var regTag = document.createElement('span');
+              regTag.style.cssText = 'font-size: 11px; font-weight: 700; color: #DC2626; background: #FEF2F2; padding: 2px 7px; border-radius: 999px;';
+              regTag.textContent = 'Registered (' + (dup.ticketId || dup.registrationId) + ')';
+              item.appendChild(regTag);
+            }
+            item.addEventListener('mousedown', function(ev) {
+              ev.preventDefault();
+              selectStudentOptionRecord(s.name, s.studentId || '');
+            });
+            studentComboDropdown.appendChild(item);
+          }
         });
 
         if (batchStudents.length === 0 && editNameBox && !isNameEditOpen) {
@@ -4571,26 +5109,74 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             originalExcelNameBadge.textContent = 'Batch ' + cleanBatch + ' has no Excel names yet — please enter your full name below';
           }
         }
+        updateTwoStepFormVisibility();
       }
 
       if (batchInput) {
         batchInput.addEventListener('change', function() {
           var selectedBatch = batchInput.value.trim();
           setFieldError(batchInput, 'batchError', false);
-          if (studentSearchInput) studentSearchInput.value = '';
+          if (studentComboInput) studentComboInput.value = '';
           if (studentIdInput) studentIdInput.value = '';
           if (originalExcelNameInput) originalExcelNameInput.value = '';
-          if (!isNameEditOpen && nameInput) nameInput.value = '';
+          isNameEditOpen = false;
+          if (editNameBox) editNameBox.classList.remove('open');
+          if (nameInput) nameInput.value = '';
           populateStudentDropdownForBatch(selectedBatch, '');
           updateDuplicateWarningUI();
+          updateTwoStepFormVisibility();
         });
       }
 
-      if (studentSearchInput) {
-        studentSearchInput.addEventListener('input', function() {
-          populateStudentDropdownForBatch(batchInput ? batchInput.value : '', studentSearchInput.value);
+      if (studentComboInput && studentComboboxContainer) {
+        studentComboInput.addEventListener('focus', function() {
+          if (batchInput && batchInput.value) {
+            populateStudentDropdownForBatch(batchInput.value, '');
+            studentComboboxContainer.classList.add('open');
+          }
+        });
+        studentComboInput.addEventListener('click', function() {
+          if (batchInput && batchInput.value) {
+            studentComboboxContainer.classList.add('open');
+          }
+        });
+        studentComboInput.addEventListener('input', function() {
+          var typed = studentComboInput.value;
+          if (batchInput && batchInput.value) {
+            populateStudentDropdownForBatch(batchInput.value, typed);
+            studentComboboxContainer.classList.add('open');
+          }
+          // Check if typed string exactly matches a student in the selected batch
+          var exactMatch = allMasterStudents.find(function(s) {
+            return String(s.batchYear) === String(batchInput ? batchInput.value : '') &&
+              String(s.name || '').toLowerCase() === String(typed || '').trim().toLowerCase();
+          });
+          if (exactMatch) {
+            nameInput.value = exactMatch.name;
+            if (originalExcelNameInput) originalExcelNameInput.value = exactMatch.name;
+            if (studentIdInput) studentIdInput.value = exactMatch.studentId || '';
+          } else if (!isNameEditOpen) {
+            nameInput.value = '';
+            if (originalExcelNameInput) originalExcelNameInput.value = '';
+            if (studentIdInput) studentIdInput.value = '';
+          }
+          updateDuplicateWarningUI();
+          updateTwoStepFormVisibility();
+        });
+        studentComboInput.addEventListener('blur', function() {
+          setTimeout(function() {
+            if (studentComboboxContainer) {
+              studentComboboxContainer.classList.remove('open');
+            }
+          }, 160);
         });
       }
+
+      document.addEventListener('click', function(e) {
+        if (studentComboboxContainer && !studentComboboxContainer.contains(e.target)) {
+          studentComboboxContainer.classList.remove('open');
+        }
+      });
 
       if (studentSelect) {
         studentSelect.addEventListener('change', function() {
@@ -4600,6 +5186,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           var stuId = (selOpt && selOpt.getAttribute('data-student-id')) || '';
           if (val) {
             nameInput.value = origNm;
+            if (studentComboInput) studentComboInput.value = origNm;
             if (originalExcelNameInput) originalExcelNameInput.value = origNm;
             if (studentIdInput) studentIdInput.value = stuId;
             if (originalExcelNameBadge) {
@@ -4607,12 +5194,15 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             }
             setFieldError(nameInput, 'nameError', false);
             setFieldError(studentSelect, 'nameError', false);
+            setFieldError(studentComboInput, 'nameError', false);
           } else if (!isNameEditOpen) {
             nameInput.value = '';
+            if (studentComboInput) studentComboInput.value = '';
             if (originalExcelNameInput) originalExcelNameInput.value = '';
             if (studentIdInput) studentIdInput.value = '';
           }
           updateDuplicateWarningUI();
+          updateTwoStepFormVisibility();
         });
       }
 
@@ -4634,6 +5224,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             }
             nameInput.focus();
           }
+          updateTwoStepFormVisibility();
         });
       }
 
@@ -4643,6 +5234,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             setFieldError(nameInput, 'nameError', false);
           }
           updateDuplicateWarningUI();
+          updateTwoStepFormVisibility();
         });
       }
 
@@ -4841,9 +5433,11 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       var lastAlertWasSuccess = false;
       var activeSuccessTicketRecord = null;
       var successTicketPassWrap = document.getElementById('successTicketPassWrap');
+      var ticketPassHeaderId = document.getElementById('ticketPassHeaderId');
       var ticketPassName = document.getElementById('ticketPassName');
       var ticketPassId = document.getElementById('ticketPassId');
       var ticketPassBatch = document.getElementById('ticketPassBatch');
+      var ticketPassPlace = document.getElementById('ticketPassPlace');
       var ticketQrCanvas = document.getElementById('ticketQrCanvas');
       var ticketPassTokenLabel = document.getElementById('ticketPassTokenLabel');
       var downloadTicketPngBtn = document.getElementById('downloadTicketPngBtn');
@@ -4869,10 +5463,10 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
         if (!mat) return;
         var n = mat.length;
-        var border = 3;
+        var border = 2;
         var totalMods = n + border * 2;
         var scale = dim / totalMods;
-        ctx.fillStyle = '#0A1628';
+        ctx.fillStyle = '#064E3B';
         for (var r = 0; r < n; r++) {
           for (var c = 0; c < n; c++) {
             if (mat[r][c]) {
@@ -4886,117 +5480,190 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         }
       }
 
-      function downloadTicketAsPng(rec) {
-        if (!rec) return;
+      function drawRoundedRectPath(ctx, x, y, w, h, r) {
+        var radius = Math.min(r, w / 2, h / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.arcTo(x + w, y, x + w, y + h, radius);
+        ctx.arcTo(x + w, y + h, x, y + h, radius);
+        ctx.arcTo(x, y + h, x, y, radius);
+        ctx.arcTo(x, y, x + w, y, radius);
+        ctx.closePath();
+      }
+
+      function renderReferenceTicketCanvasAndDownload(rec, posterImg) {
         var tId = rec.ticketId || formatAnwarTicketId(rec.registrationId || '001');
         var pName = String(rec.name || 'ANWAR').toUpperCase();
         var pBatch = String(rec.batchYear || '2020');
+        var pPlace = String(rec.place || 'Nilambur');
         var tToken = String(rec.ticketToken || ('AUF26-' + tId.replace(/\s+/g, '')));
 
+        var W = 900;
+        var H = 1920;
+        var splitY = 1040;
         var canvas = document.createElement('canvas');
-        canvas.width = 960;
-        canvas.height = 1360;
+        canvas.width = W;
+        canvas.height = H;
         var ctx = canvas.getContext('2d');
 
-        // Background Gradient
-        var bgGrad = ctx.createLinearGradient(0, 0, 0, 1360);
-        bgGrad.addColorStop(0, '#071020');
-        bgGrad.addColorStop(0.5, '#0F1F3A');
-        bgGrad.addColorStop(1, '#071020');
-        ctx.fillStyle = bgGrad;
-        ctx.fillRect(0, 0, 960, 1360);
-
-        // Outer Gold Border
-        ctx.strokeStyle = '#D4AF37';
-        ctx.lineWidth = 6;
-        ctx.strokeRect(32, 32, 896, 1296);
-
-        ctx.strokeStyle = 'rgba(212, 175, 55, 0.35)';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(48, 48, 864, 1264);
-
-        // Header Badge
-        ctx.fillStyle = 'rgba(212, 175, 55, 0.16)';
-        ctx.fillRect(280, 88, 400, 44);
-        ctx.strokeStyle = '#D4AF37';
-        ctx.lineWidth = 1.5;
-        ctx.strokeRect(280, 88, 400, 44);
-        ctx.fillStyle = '#F3D066';
-        ctx.font = 'bold 18px Sora, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('OFFICIAL EVENT ENTRY TICKET', 480, 117);
-
-        // Main Title: AUFBRUCH / ALUMNI CONCLAVE 2026
-        ctx.fillStyle = '#D4AF37';
-        ctx.font = '800 58px Sora, sans-serif';
-        ctx.fillText('AUFBRUCH', 480, 200);
-
+        // 1. Top White Card Section
         ctx.fillStyle = '#FFFFFF';
-        ctx.font = '700 32px Sora, sans-serif';
-        ctx.fillText('ALUMNI CONCLAVE 2026', 480, 248);
+        ctx.fillRect(0, 0, W, splitY);
 
-        ctx.fillStyle = '#94A3B8';
-        ctx.font = '500 20px Sora, sans-serif';
-        ctx.fillText('Thursday, December 10, 2026 • Majmau Academy, Nilambur', 480, 290);
-
-        // Divider Line
-        ctx.strokeStyle = 'rgba(212, 175, 55, 0.45)';
+        // Top Header Pills Row
+        drawRoundedRectPath(ctx, 64, 70, 290, 58, 29);
+        ctx.fillStyle = '#F8FAFC';
+        ctx.fill();
+        ctx.strokeStyle = '#E2E8F0';
         ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(90, 326);
-        ctx.lineTo(870, 326);
         ctx.stroke();
 
-        // Participant Details Box
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-        ctx.fillRect(90, 360, 780, 240);
-        ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
+        ctx.fillStyle = '#F59E0B';
+        ctx.font = '800 24px Sora, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('✨', 92, 108);
+        ctx.fillStyle = '#1E293B';
+        ctx.font = '800 22px Sora, sans-serif';
+        ctx.fillText('EVENT TICKET', 132, 107);
+
+        drawRoundedRectPath(ctx, W - 64 - 230, 70, 230, 58, 16);
+        ctx.fillStyle = '#F8FAFC';
+        ctx.fill();
+        ctx.strokeStyle = '#E2E8F0';
         ctx.lineWidth = 2;
-        ctx.strokeRect(90, 360, 780, 240);
+        ctx.stroke();
+
+        ctx.fillStyle = '#1E293B';
+        ctx.font = '800 24px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(tId, W - 64 - 115, 108);
+
+        // Subtle Divider below Header
+        ctx.strokeStyle = '#F1F5F9';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(64, 158);
+        ctx.lineTo(W - 64, 158);
+        ctx.stroke();
+
+        // Event Poster Card Frame
+        var posterX = 110;
+        var posterY = 192;
+        var posterW = W - 220;
+        var posterH = 620;
+        ctx.save();
+        drawRoundedRectPath(ctx, posterX, posterY, posterW, posterH, 32);
+        ctx.clip();
+        if (posterImg && posterImg.complete && posterImg.naturalWidth > 0) {
+          ctx.drawImage(posterImg, posterX, posterY, posterW, posterH);
+        } else {
+          var pGrad = ctx.createLinearGradient(posterX, posterY, posterX, posterY + posterH);
+          pGrad.addColorStop(0, '#7F1D1D');
+          pGrad.addColorStop(1, '#450A0A');
+          ctx.fillStyle = pGrad;
+          ctx.fillRect(posterX, posterY, posterW, posterH);
+          ctx.fillStyle = '#F3D066';
+          ctx.textAlign = 'center';
+          ctx.font = '800 58px Sora, sans-serif';
+          ctx.fillText('AUFBRUCH', W / 2, posterY + 280);
+          ctx.fillStyle = '#FFFFFF';
+          ctx.font = '700 34px Sora, sans-serif';
+          ctx.fillText('ALUMNI CONCLAVE 2026', W / 2, posterY + 340);
+        }
+        ctx.restore();
+
+        // Two-Row Metadata Table Below Poster
+        var row1Y = 860;
+        var row2Y = 935;
+        ctx.strokeStyle = '#F1F5F9';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(64, row1Y - 30);
+        ctx.lineTo(W - 64, row1Y - 30);
+        ctx.moveTo(64, row1Y + 40);
+        ctx.lineTo(W - 64, row1Y + 40);
+        ctx.moveTo(64, row2Y + 40);
+        ctx.lineTo(W - 64, row2Y + 40);
+        ctx.stroke();
 
         ctx.textAlign = 'left';
         ctx.fillStyle = '#94A3B8';
         ctx.font = '600 24px Sora, sans-serif';
-        ctx.fillText('Participant Name:', 130, 420);
-        ctx.fillText('ID Number:', 130, 490);
-        ctx.fillText('Batch Year:', 130, 560);
+        ctx.fillText('Batch Year:', 68, row1Y + 14);
+        ctx.fillText('Place / Locality:', 68, row2Y + 14);
 
         ctx.textAlign = 'right';
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = '800 28px Sora, sans-serif';
-        ctx.fillText(pName.substring(0, 32), 830, 420);
+        ctx.fillStyle = '#1E293B';
+        ctx.font = '800 26px Sora, sans-serif';
+        ctx.fillText(pBatch, W - 68, row1Y + 14);
+        ctx.fillText(pPlace.substring(0, 32), W - 68, row2Y + 14);
 
-        ctx.fillStyle = '#F3D066';
-        ctx.font = '800 30px Sora, sans-serif';
-        ctx.fillText(tId, 830, 490);
+        // 2. Bottom Crimson Stub Section
+        var stubGrad = ctx.createLinearGradient(0, splitY, 0, H);
+        stubGrad.addColorStop(0, '#E11D48');
+        stubGrad.addColorStop(1, '#BE123C');
+        ctx.fillStyle = stubGrad;
+        ctx.fillRect(0, splitY, W, H - splitY);
 
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = '800 28px Sora, sans-serif';
-        ctx.fillText(pBatch, 830, 560);
+        // Subtle Radial Dot Pattern on Bottom Stub
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+        for (var dy = splitY + 24; dy < H - 40; dy += 28) {
+          for (var dx = 24; dx < W - 20; dx += 28) {
+            ctx.beginPath();
+            ctx.arc(dx, dy, 2, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
 
-        // QR Code Frame
-        var qrBoxSize = 480;
-        var qrBoxX = (960 - qrBoxSize) / 2;
-        var qrBoxY = 650;
+        // Perforated Dashed Line & Semicircular Side Cutout Notches
+        ctx.save();
+        ctx.setLineDash([10, 10]);
+        ctx.strokeStyle = '#CBD5E1';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(40, splitY - 12);
+        ctx.lineTo(W - 40, splitY - 12);
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.fillStyle = '#E2E8F0';
+        ctx.beginPath();
+        ctx.arc(0, splitY, 32, 0, Math.PI * 2);
+        ctx.arc(W, splitY, 32, 0, Math.PI * 2);
+        ctx.fill();
+
+        // White Rounded QR Code Frame
+        var qrFrameSize = 470;
+        var qrFrameX = (W - qrFrameSize) / 2;
+        var qrFrameY = splitY + 86;
+        drawRoundedRectPath(ctx, qrFrameX, qrFrameY, qrFrameSize, qrFrameSize, 52);
         ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(qrBoxX, qrBoxY, qrBoxSize, qrBoxSize);
-        ctx.strokeStyle = '#D4AF37';
-        ctx.lineWidth = 6;
-        ctx.strokeRect(qrBoxX, qrBoxY, qrBoxSize, qrBoxSize);
+        ctx.fill();
 
         var tempQrCanvas = document.createElement('canvas');
-        drawQrMatrixToCanvas(tempQrCanvas, rec.qrMatrix, 440);
-        ctx.drawImage(tempQrCanvas, qrBoxX + 20, qrBoxY + 20, 440, 440);
+        drawQrMatrixToCanvas(tempQrCanvas, rec.qrMatrix, 390);
+        ctx.drawImage(tempQrCanvas, qrFrameX + 40, qrFrameY + 40, 390, 390);
 
-        // Token & Footer
+        // Participant Name & Ticket ID in Bold Uppercase White below QR Code
         ctx.textAlign = 'center';
-        ctx.fillStyle = '#F3D066';
-        ctx.font = '700 22px monospace';
-        ctx.fillText(tToken, 480, 1185);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '800 44px Sora, sans-serif';
+        ctx.fillText(pName.substring(0, 28), W / 2, qrFrameY + qrFrameSize + 100);
 
-        ctx.fillStyle = '#CBD5E1';
-        ctx.font = '600 20px Sora, sans-serif';
-        ctx.fillText('Present this QR Code at the registration desk for one-time check-in', 480, 1245);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '900 64px Sora, sans-serif';
+        ctx.fillText(tId, W / 2, qrFrameY + qrFrameSize + 185);
+
+        // Scalloped Bottom Edge Cutouts
+        ctx.fillStyle = '#FFFFFF';
+        var scallopCount = 11;
+        var scallopSpacing = (W - 140) / (scallopCount - 1);
+        for (var sc = 0; sc < scallopCount; sc++) {
+          var sx = 70 + sc * scallopSpacing;
+          ctx.beginPath();
+          ctx.arc(sx, H, 28, Math.PI, 0, false);
+          ctx.fill();
+        }
 
         var dataUrl = canvas.toDataURL('image/png');
         var link = document.createElement('a');
@@ -5007,6 +5674,24 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         link.click();
         document.body.removeChild(link);
         showToast('🎫 Downloaded QR Ticket (' + tId + ') as PNG.');
+      }
+
+      function downloadTicketAsPng(rec) {
+        if (!rec) return;
+        var domPoster = document.querySelector('.ticket-ref-poster-img');
+        if (domPoster && domPoster.complete && domPoster.naturalWidth > 0) {
+          renderReferenceTicketCanvasAndDownload(rec, domPoster);
+          return;
+        }
+        var img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = function() {
+          renderReferenceTicketCanvasAndDownload(rec, img);
+        };
+        img.onerror = function() {
+          renderReferenceTicketCanvasAndDownload(rec, null);
+        };
+        img.src = '/aufbruch_poster.png';
       }
 
       if (downloadTicketPngBtn) {
@@ -5035,9 +5720,11 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
         if (successTicketPassWrap && res) {
           var tId = res.ticketId || formatAnwarTicketId(res.registrationId || '001');
-          if (ticketPassName) ticketPassName.textContent = res.name || '-';
+          if (ticketPassHeaderId) ticketPassHeaderId.textContent = tId;
+          if (ticketPassName) ticketPassName.textContent = String(res.name || '-').toUpperCase();
           if (ticketPassId) ticketPassId.textContent = tId;
           if (ticketPassBatch) ticketPassBatch.textContent = res.batchYear || '-';
+          if (ticketPassPlace) ticketPassPlace.textContent = res.place || '-';
           if (ticketPassTokenLabel) ticketPassTokenLabel.textContent = res.ticketToken || '';
           if (ticketQrCanvas) {
             drawQrMatrixToCanvas(ticketQrCanvas, res.qrMatrix, 184);
@@ -5085,6 +5772,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         }
         isNameEditOpen = false;
         if (editNameBox) editNameBox.classList.remove('open');
+        if (studentComboInput) studentComboInput.value = '';
         if (originalExcelNameInput) originalExcelNameInput.value = '';
         if (studentIdInput) studentIdInput.value = '';
         if (duplicateNameWarning) {
@@ -5092,6 +5780,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           duplicateNameWarning.classList.remove('visible');
         }
         populateStudentDropdownForBatch('', '');
+        updateTwoStepFormVisibility();
         var selectedCards = document.querySelectorAll('.selected-yes, .selected-no');
         for (var i = 0; i < selectedCards.length; i++) {
           selectedCards[i].classList.remove('selected-yes', 'selected-no');
@@ -5788,36 +6477,51 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         var totalBadge = document.getElementById('masterStudentTotalBadge');
         if (totalBadge) totalBadge.textContent = String(allMasterStudents.length || 290);
 
-        var waStatusText = document.getElementById('waCloudApiBadgeText');
-        if (waStatusText && dashboardWhatsappCloudApi) {
-          waStatusText.textContent = dashboardWhatsappCloudApi.configured
-            ? 'Meta Cloud API Active (Verified Sender 8606140996)'
-            : 'Click-to-Chat Active (Set WHATSAPP_CLOUD_API_TOKEN & WHATSAPP_PHONE_NUMBER_ID in env for automated Cloud API)';
-        }
-
         var batchSel = document.getElementById('adminStudentBatchFilter');
         var listEl = document.getElementById('adminStudentMasterList');
         if (!batchSel || !listEl) return;
-        var selectedBatch = batchSel.value || '2020';
-        var batchSt = allMasterStudents.filter(function(s) {
-          return String(s.batchYear) === selectedBatch;
-        });
+        var selectedBatch = batchSel.value || 'NONE';
+
+        var batchSt = (selectedBatch === 'NONE')
+          ? allMasterStudents.slice()
+          : allMasterStudents.filter(function(s) {
+              return String(s.batchYear) === selectedBatch;
+            });
+
         listEl.innerHTML = '';
 
         if (batchSt.length === 0) {
-          listEl.innerHTML = '<div style="color: #FDE68A; font-size: 13px; font-weight: 600;">No student names imported from Excel for Batch ' + escapeHtml(selectedBatch) + ' yet (Official Batch Total: ' + (officialBatchTotalsMap[selectedBatch] || 0) + '). Use "+ Add Student" above to add names.</div>';
+          listEl.innerHTML = '<div style="padding: 12px 14px; color: #94A3B8; font-size: 12.5px; font-weight: 600;">No student names listed for Batch ' + escapeHtml(selectedBatch) + '.</div>';
           return;
         }
 
-        batchSt.forEach(function(st) {
-          var chip = document.createElement('div');
-          chip.style.cssText = 'display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.06); border: 1px solid rgba(212,175,55,0.3); border-radius: 8px; padding: 5px 10px; font-size: 12px; color: #E2E8F0;';
-          var slPrefix = st.serialNo ? ('#' + st.serialNo + ' ') : '';
-          chip.innerHTML =
-            '<span>' + escapeHtml(slPrefix + st.name) + '</span>' +
-            '<button type="button" class="master-stu-del-btn" data-stu-id="' + escapeAttr(st.studentId) + '" title="Remove Student" style="background: transparent; border: none; color: #FCA5A5; cursor: pointer; font-weight: 800; padding: 0 2px;">✕</button>';
-          listEl.appendChild(chip);
+        var tableHtml =
+          '<table class="master-student-compact-table">' +
+            '<thead>' +
+              '<tr>' +
+                '<th style="width: 64px;">Sl.</th>' +
+                '<th style="width: 90px;">Batch</th>' +
+                '<th>Student Name</th>' +
+                '<th style="width: 90px; text-align: right;">Action</th>' +
+              '</tr>' +
+            '</thead>' +
+            '<tbody>';
+
+        batchSt.forEach(function(st, idx) {
+          var slText = st.serialNo ? String(st.serialNo) : String(idx + 1);
+          tableHtml +=
+            '<tr>' +
+              '<td style="color: #94A3B8; font-weight: 600;">' + escapeHtml(slText) + '</td>' +
+              '<td style="font-weight: 700; color: var(--gold-300);">' + escapeHtml(st.batchYear) + '</td>' +
+              '<td style="font-weight: 700; color: #FFFFFF;">' + escapeHtml(st.name) + '</td>' +
+              '<td style="text-align: right;">' +
+                '<button type="button" class="master-stu-del-btn" data-stu-id="' + escapeAttr(st.studentId) + '" data-stu-name="' + escapeAttr(st.name) + '" data-stu-batch="' + escapeAttr(st.batchYear) + '" title="Remove Student" style="background: rgba(239, 68, 68, 0.14); border: 1px solid rgba(239, 68, 68, 0.35); color: #FCA5A5; border-radius: 6px; font-size: 11.5px; font-weight: 700; padding: 3px 9px; cursor: pointer;">Remove</button>' +
+              '</td>' +
+            '</tr>';
         });
+
+        tableHtml += '</tbody></table>';
+        listEl.innerHTML = tableHtml;
       }
 
       function renderResponsesTable() {
@@ -6701,6 +7405,53 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         });
       }
 
+      var scannerTopNotificationBanner = document.getElementById('scannerTopNotificationBanner');
+      var scannerTopToastIcon = document.getElementById('scannerTopToastIcon');
+      var scannerTopToastHeadline = document.getElementById('scannerTopToastHeadline');
+      var scannerTopToastSubtext = document.getElementById('scannerTopToastSubtext');
+      var scannerTopToastCloseBtn = document.getElementById('scannerTopToastCloseBtn');
+      var scannerTopToastTimer = null;
+
+      function triggerScannerDeviceVibration(pattern) {
+        try {
+          if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+            navigator.vibrate(pattern || [120]);
+          }
+        } catch (e) {}
+      }
+
+      function showScannerTopNotification(variant, headlineText, subText) {
+        if (!scannerTopNotificationBanner) return;
+        scannerTopNotificationBanner.classList.remove('toast-valid', 'toast-already', 'toast-invalid');
+        if (variant === 'already') {
+          scannerTopNotificationBanner.classList.add('toast-already');
+          if (scannerTopToastIcon) scannerTopToastIcon.textContent = '⚠️';
+        } else if (variant === 'invalid') {
+          scannerTopNotificationBanner.classList.add('toast-invalid');
+          if (scannerTopToastIcon) scannerTopToastIcon.textContent = '✕';
+        } else {
+          scannerTopNotificationBanner.classList.add('toast-valid');
+          if (scannerTopToastIcon) scannerTopToastIcon.textContent = '✓';
+        }
+        if (scannerTopToastHeadline) scannerTopToastHeadline.textContent = headlineText || '';
+        if (scannerTopToastSubtext) scannerTopToastSubtext.textContent = subText || '';
+        scannerTopNotificationBanner.classList.add('visible');
+
+        if (scannerTopToastTimer) clearTimeout(scannerTopToastTimer);
+        scannerTopToastTimer = setTimeout(function() {
+          if (scannerTopNotificationBanner) {
+            scannerTopNotificationBanner.classList.remove('visible');
+          }
+        }, 4500);
+      }
+
+      if (scannerTopToastCloseBtn && scannerTopNotificationBanner) {
+        scannerTopToastCloseBtn.addEventListener('click', function() {
+          if (scannerTopToastTimer) clearTimeout(scannerTopToastTimer);
+          scannerTopNotificationBanner.classList.remove('visible');
+        });
+      }
+
       function renderScannerVerificationState(data) {
         if (!scannedTicketResultCard) return;
         scannedTicketResultCard.classList.remove('status-pending', 'status-confirmed', 'status-already', 'status-invalid');
@@ -6710,17 +7461,24 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
         if (status === 'INVALID' || !p) {
           scannedTicketResultCard.classList.add('status-invalid');
-          scanResultHeadline.textContent = 'INVALID TICKET – PLEASE VERIFY';
+          scanResultHeadline.textContent = 'INVALID TICKET – PLEASE CHECK THE QR CODE';
           scanResultHeadline.style.color = '#F87171';
-          scanResultSubtext.textContent = 'The scanned QR code does not match any valid registration record in the database.';
+          scanResultSubtext.textContent = 'INVALID TICKET – PLEASE VERIFY: The scanned QR code does not match any valid registration record in the database.';
           if (scanParticipantDetailsBox) scanParticipantDetailsBox.style.display = 'none';
           if (confirmTicketCheckinBtn) confirmTicketCheckinBtn.style.display = 'none';
+          triggerScannerDeviceVibration([200, 80, 200]);
+          showScannerTopNotification(
+            'invalid',
+            'INVALID TICKET – PLEASE CHECK THE QR CODE',
+            'Unrecognized or invalid QR ticket token. Please verify the participant pass.'
+          );
           return;
         }
 
+        var partDisplayId = p.ticketId || formatAnwarTicketId(p.registrationId);
         if (scanParticipantDetailsBox) scanParticipantDetailsBox.style.display = 'block';
         if (scanPartName) scanPartName.textContent = p.name || '-';
-        if (scanPartId) scanPartId.textContent = p.ticketId || formatAnwarTicketId(p.registrationId);
+        if (scanPartId) scanPartId.textContent = partDisplayId;
         if (scanPartBatch) scanPartBatch.textContent = p.batchYear || '-';
         if (scanRegStatus) scanRegStatus.textContent = 'REGISTERED';
 
@@ -6728,7 +7486,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           scannedTicketResultCard.classList.add('status-pending');
           scanResultHeadline.textContent = '< TICKET CONFIRMED >';
           scanResultHeadline.style.color = 'var(--gold-400)';
-          scanResultSubtext.textContent = 'Valid participant ticket verified. Click CONFIRM TICKET below to complete check-in.';
+          scanResultSubtext.textContent = 'QR SCANNED SUCCESSFULLY — Click CONFIRM TICKET below to complete check-in.';
           if (scanCheckinStatus) {
             scanCheckinStatus.textContent = 'NOT CHECKED IN';
             scanCheckinStatus.style.color = '#FBBF24';
@@ -6739,6 +7497,12 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             confirmTicketCheckinBtn.disabled = false;
             confirmTicketCheckinBtn.textContent = 'CONFIRM TICKET';
           }
+          triggerScannerDeviceVibration([120]);
+          showScannerTopNotification(
+            'valid',
+            'QR SCANNED SUCCESSFULLY',
+            (p.name || 'Participant') + ' (' + partDisplayId + ' • Batch ' + (p.batchYear || '-') + ') — Ready to confirm entry'
+          );
           return;
         }
 
@@ -6746,7 +7510,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           scannedTicketResultCard.classList.add('status-confirmed');
           scanResultHeadline.textContent = 'TICKET CONFIRMED SUCCESSFULLY';
           scanResultHeadline.style.color = '#34D399';
-          scanResultSubtext.textContent = 'Participant entry has been permanently recorded in the database.';
+          scanResultSubtext.textContent = 'CHECK-IN SUCCESSFUL — Participant entry has been permanently recorded in the database.';
           if (scanCheckinStatus) {
             scanCheckinStatus.textContent = 'CHECKED IN';
             scanCheckinStatus.style.color = '#34D399';
@@ -6759,10 +7523,17 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             confirmTicketCheckinBtn.style.display = 'none';
             confirmTicketCheckinBtn.disabled = true;
           }
+          triggerScannerDeviceVibration([140, 60, 140]);
+          showScannerTopNotification(
+            'valid',
+            'CHECK-IN SUCCESSFUL — TICKET CONFIRMED SUCCESSFULLY',
+            (p.name || 'Participant') + ' (' + partDisplayId + ') checked in at ' + (data.checkInTimestamp || p.checkInTimestamp || 'now')
+          );
           return;
         }
 
         if (status === 'ALREADY_CONFIRMED') {
+          var prevTs = data.checkInTimestamp || p.checkInTimestamp || '-';
           scannedTicketResultCard.classList.add('status-already');
           scanResultHeadline.textContent = 'ALREADY CONFIRMED – ENTRY COMPLETED';
           scanResultHeadline.style.color = '#FBBF24';
@@ -6772,13 +7543,19 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             scanCheckinStatus.style.color = '#34D399';
           }
           if (scanPrevCheckinInfo) {
-            scanPrevCheckinInfo.textContent = 'Previous Check-in Date & Time: ' + (data.checkInTimestamp || p.checkInTimestamp || '-') + ' (Confirmed by: ' + (data.checkedInBy || p.checkedInBy || 'admin') + ')';
+            scanPrevCheckinInfo.textContent = 'Previous Check-in Date & Time: ' + prevTs + ' (Confirmed by: ' + (data.checkedInBy || p.checkedInBy || 'admin') + ')';
             scanPrevCheckinInfo.style.display = 'block';
           }
           if (confirmTicketCheckinBtn) {
             confirmTicketCheckinBtn.style.display = 'none';
             confirmTicketCheckinBtn.disabled = true;
           }
+          triggerScannerDeviceVibration([80, 60, 80]);
+          showScannerTopNotification(
+            'already',
+            'ALREADY CONFIRMED – ENTRY COMPLETED',
+            (p.name || 'Participant') + ' (' + partDisplayId + ') was already checked in at ' + prevTs
+          );
         }
       }
 
@@ -6937,6 +7714,12 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       var addMasterStudentBtn = document.getElementById('addMasterStudentBtn');
       var importExcelFileInput = document.getElementById('importExcelFileInput');
       var adminStudentMasterList = document.getElementById('adminStudentMasterList');
+      var deleteStudentConfirmModal = document.getElementById('deleteStudentConfirmModal');
+      var deleteStudentTargetSummary = document.getElementById('deleteStudentTargetSummary');
+      var cancelDeleteStudentBtn = document.getElementById('cancelDeleteStudentBtn');
+      var confirmDeleteStudentBtn = document.getElementById('confirmDeleteStudentBtn');
+      var pendingDeleteStudentId = '';
+      var pendingDeleteStudentName = '';
 
       if (adminStudentBatchFilter) {
         adminStudentBatchFilter.addEventListener('change', renderMasterStudentsUI);
@@ -6946,6 +7729,10 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         addMasterStudentBtn.addEventListener('click', function() {
           if (!isAdminAuthenticated) return;
           var by = adminStudentBatchFilter.value;
+          if (!by || by === 'NONE') {
+            showToast('Please select a specific Batch Year (2001–2026) before adding a student.');
+            return;
+          }
           var nm = newStudentNameInput.value.trim();
           if (nm.length < 2) {
             showToast('Please enter a valid student name to add.');
@@ -6967,21 +7754,72 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         });
       }
 
+      function closeDeleteStudentModal() {
+        pendingDeleteStudentId = '';
+        pendingDeleteStudentName = '';
+        if (deleteStudentConfirmModal) {
+          deleteStudentConfirmModal.classList.remove('open');
+        }
+      }
+
+      if (cancelDeleteStudentBtn) {
+        cancelDeleteStudentBtn.addEventListener('click', closeDeleteStudentModal);
+      }
+
+      if (deleteStudentConfirmModal) {
+        deleteStudentConfirmModal.addEventListener('click', function(e) {
+          if (e.target === deleteStudentConfirmModal) {
+            closeDeleteStudentModal();
+          }
+        });
+      }
+
       if (adminStudentMasterList) {
         adminStudentMasterList.addEventListener('click', function(e) {
           var delBtn = e.target.closest('.master-stu-del-btn');
           if (!delBtn || !isAdminAuthenticated) return;
           var stuId = delBtn.getAttribute('data-stu-id');
           if (!stuId) return;
+          var stuName = delBtn.getAttribute('data-stu-name') || 'Selected Student';
+          var stuBatch = delBtn.getAttribute('data-stu-batch') || '';
+          pendingDeleteStudentId = stuId;
+          pendingDeleteStudentName = stuName;
+          if (deleteStudentTargetSummary) {
+            deleteStudentTargetSummary.innerHTML =
+              '<div><strong>Student Name:</strong> ' + escapeHtml(stuName) + '</div>' +
+              (stuBatch ? ('<div><strong>Batch Year:</strong> ' + escapeHtml(stuBatch) + '</div>') : '');
+          }
+          if (deleteStudentConfirmModal) {
+            deleteStudentConfirmModal.classList.add('open');
+          }
+        });
+      }
+
+      if (confirmDeleteStudentBtn) {
+        confirmDeleteStudentBtn.addEventListener('click', function() {
+          if (!isAdminAuthenticated || !pendingDeleteStudentId) return;
+          var stuIdToDelete = pendingDeleteStudentId;
+          confirmDeleteStudentBtn.disabled = true;
+          confirmDeleteStudentBtn.textContent = 'Removing...';
           apiFetchJson('/api/admin/students/delete', {
             method: 'POST',
             headers: getAuthHeaders(true),
-            body: JSON.stringify({ studentId: stuId })
+            body: JSON.stringify({ studentId: stuIdToDelete })
           }).then(function(res) {
+            confirmDeleteStudentBtn.disabled = false;
+            confirmDeleteStudentBtn.textContent = 'Confirm Delete';
+            closeDeleteStudentModal();
             if (res.ok && res.data && res.data.success) {
               showAuthenticatedDashboard(res.data);
               showToast('🗑️ Removed student from master list.');
+            } else {
+              showToast(extractReadableMessage(res.data && res.data.error, 'Unable to remove student.'));
             }
+          }).catch(function() {
+            confirmDeleteStudentBtn.disabled = false;
+            confirmDeleteStudentBtn.textContent = 'Confirm Delete';
+            closeDeleteStudentModal();
+            showToast('Unable to remove student.');
           });
         });
       }

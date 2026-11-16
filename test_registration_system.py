@@ -280,7 +280,19 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertIn("/api/admin/session", index_html)
         self.assertIn("/fonts/Sora-Regular.ttf", index_html)
         self.assertNotIn("./fonts/Sora-", index_html)
+        self.assertIn('id="step1BatchSection"', index_html)
+        self.assertIn('id="step2NameSection"', index_html)
+        self.assertIn('id="step2RemainingSection"', index_html)
+        self.assertIn('id="studentComboboxContainer"', index_html)
+        self.assertNotIn("Type to search your name in the selected batch", index_html)
+        self.assertIn('id="ticketPassHeaderId"', index_html)
+        self.assertIn("/aufbruch_poster.png", index_html)
+        self.assertIn('id="scannerTopNotificationBanner"', index_html)
+        self.assertIn('<option value="NONE" selected>None</option>', index_html)
+        self.assertIn('id="deleteStudentConfirmModal"', index_html)
+        self.assertIn("Are you sure you want to remove this student?", index_html)
         self.assertTrue((WORKSPACE_DIR / "public" / "index.html").exists())
+        self.assertTrue((WORKSPACE_DIR / "public" / "aufbruch_poster.png").exists())
         self.assertTrue((WORKSPACE_DIR / "public" / "fonts" / "Sora-Regular.ttf").exists())
         self.assertTrue((WORKSPACE_DIR / "vercel.json").exists())
         self.assertTrue((WORKSPACE_DIR / "api" / "index.py").exists())
@@ -386,6 +398,16 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         _, st_2026, _ = http_json_request("/api/students?batchYear=2026", "GET")
         self.assertEqual(len(st_2026.get("students", [])), 0)
 
+        # Clean up any leftover temporary test records from an interrupted run
+        for existing_r in dash_body.get("registrations", []):
+            if "Temp Alumni" in str(existing_r.get("name", "")) or "Second Alumni" in str(existing_r.get("name", "")):
+                http_json_request(
+                    "/api/admin/delete",
+                    "POST",
+                    {"registrationId": existing_r["registrationId"]},
+                    headers=auth_headers,
+                )
+
         # 5. Create a temporary registration (with edited name), verify QR ticket & strict JSON schema
         reg_status, reg_res, reg_headers = http_json_request(
             "/api/register",
@@ -433,7 +455,7 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertTrue(dup_res.get("duplicate"))
 
         # 5-QR. Verify QR Scanner verification & One-Time Check-in Confirmation
-        # (a) Invalid QR code must return INVALID TICKET – PLEASE VERIFY
+        # (a) Invalid QR code must return INVALID TICKET – PLEASE CHECK THE QR CODE
         inv_status, inv_body, _ = http_json_request(
             "/api/admin/checkin/verify",
             "POST",
@@ -443,9 +465,11 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertEqual(inv_status, 200)
         self.assertFalse(inv_body.get("valid", True))
         self.assertEqual(inv_body.get("status"), "INVALID")
-        self.assertEqual(inv_body.get("headline"), "INVALID TICKET – PLEASE VERIFY")
+        self.assertEqual(inv_body.get("headline"), "INVALID TICKET – PLEASE CHECK THE QR CODE")
+        self.assertEqual(inv_body.get("toastHeadline"), "INVALID TICKET – PLEASE CHECK THE QR CODE")
+        self.assertEqual(inv_body.get("legacyHeadline"), "INVALID TICKET – PLEASE VERIFY")
 
-        # (b) Valid unconfirmed QR code must return VALID_PENDING & < TICKET CONFIRMED >
+        # (b) Valid unconfirmed QR code must return VALID_PENDING & < TICKET CONFIRMED > + QR SCANNED SUCCESSFULLY
         ver_status, ver_body, _ = http_json_request(
             "/api/admin/checkin/verify",
             "POST",
@@ -457,6 +481,7 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertFalse(ver_body.get("alreadyCheckedIn", True))
         self.assertEqual(ver_body.get("status"), "VALID_PENDING")
         self.assertEqual(ver_body.get("headline"), "< TICKET CONFIRMED >")
+        self.assertEqual(ver_body.get("toastHeadline"), "QR SCANNED SUCCESSFULLY")
         self.assertEqual(ver_body["participant"]["ticketId"], created_ticket_id)
 
         # (c) First check-in confirmation must succeed with 200 & TICKET CONFIRMED SUCCESSFULLY

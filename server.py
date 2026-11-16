@@ -1982,8 +1982,10 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                         "success": False,
                         "valid": False,
                         "status": "INVALID",
-                        "headline": "INVALID TICKET – PLEASE VERIFY",
-                        "message": "INVALID TICKET – PLEASE VERIFY",
+                        "headline": "INVALID TICKET – PLEASE CHECK THE QR CODE",
+                        "toastHeadline": "INVALID TICKET – PLEASE CHECK THE QR CODE",
+                        "legacyHeadline": "INVALID TICKET – PLEASE VERIFY",
+                        "message": "INVALID TICKET – PLEASE CHECK THE QR CODE (INVALID TICKET – PLEASE VERIFY)",
                     },
                 )
                 return
@@ -2029,8 +2031,10 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                         "success": False,
                         "valid": False,
                         "status": "INVALID",
-                        "headline": "INVALID TICKET – PLEASE VERIFY",
-                        "message": "INVALID TICKET – PLEASE VERIFY",
+                        "headline": "INVALID TICKET – PLEASE CHECK THE QR CODE",
+                        "toastHeadline": "INVALID TICKET – PLEASE CHECK THE QR CODE",
+                        "legacyHeadline": "INVALID TICKET – PLEASE VERIFY",
+                        "message": "INVALID TICKET – PLEASE CHECK THE QR CODE (INVALID TICKET – PLEASE VERIFY)",
                     },
                 )
                 return
@@ -2044,6 +2048,7 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                         "alreadyCheckedIn": True,
                         "status": "ALREADY_CONFIRMED",
                         "headline": "ALREADY CONFIRMED – ENTRY COMPLETED",
+                        "toastHeadline": "ALREADY CONFIRMED – ENTRY COMPLETED",
                         "message": "ALREADY CONFIRMED – ENTRY COMPLETED",
                         "checkInTimestamp": found_rec.get("checkInTimestamp", ""),
                         "checkedInBy": found_rec.get("checkedInBy", ""),
@@ -2060,7 +2065,8 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                     "alreadyCheckedIn": False,
                     "status": "VALID_PENDING",
                     "headline": "< TICKET CONFIRMED >",
-                    "message": "Valid registration ticket verified. Ready for check-in confirmation.",
+                    "toastHeadline": "QR SCANNED SUCCESSFULLY",
+                    "message": "QR SCANNED SUCCESSFULLY — Valid registration ticket verified. Ready for check-in confirmation.",
                     "participant": found_rec,
                 },
             )
@@ -2081,8 +2087,10 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                     {
                         "success": False,
                         "status": "INVALID",
-                        "headline": "INVALID TICKET – PLEASE VERIFY",
-                        "message": "INVALID TICKET – PLEASE VERIFY",
+                        "headline": "INVALID TICKET – PLEASE CHECK THE QR CODE",
+                        "toastHeadline": "INVALID TICKET – PLEASE CHECK THE QR CODE",
+                        "legacyHeadline": "INVALID TICKET – PLEASE VERIFY",
+                        "message": "INVALID TICKET – PLEASE CHECK THE QR CODE (INVALID TICKET – PLEASE VERIFY)",
                     },
                 )
                 return
@@ -2104,8 +2112,10 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                         "success": False,
                         "valid": False,
                         "status": "INVALID",
-                        "headline": "INVALID TICKET – PLEASE VERIFY",
-                        "message": "INVALID TICKET – PLEASE VERIFY",
+                        "headline": "INVALID TICKET – PLEASE CHECK THE QR CODE",
+                        "toastHeadline": "INVALID TICKET – PLEASE CHECK THE QR CODE",
+                        "legacyHeadline": "INVALID TICKET – PLEASE VERIFY",
+                        "message": "INVALID TICKET – PLEASE CHECK THE QR CODE (INVALID TICKET – PLEASE VERIFY)",
                     },
                 )
                 return
@@ -2120,6 +2130,7 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                         "alreadyCheckedIn": True,
                         "status": "ALREADY_CONFIRMED",
                         "headline": "ALREADY CONFIRMED – ENTRY COMPLETED",
+                        "toastHeadline": "ALREADY CONFIRMED – ENTRY COMPLETED",
                         "message": "ALREADY CONFIRMED – ENTRY COMPLETED",
                         "checkInTimestamp": existing_rec.get("checkInTimestamp", ""),
                         "checkedInBy": existing_rec.get("checkedInBy", ""),
@@ -2146,7 +2157,8 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                     "alreadyCheckedIn": False,
                     "status": "CONFIRMED_NOW",
                     "headline": "TICKET CONFIRMED SUCCESSFULLY",
-                    "message": "TICKET CONFIRMED SUCCESSFULLY",
+                    "toastHeadline": "CHECK-IN SUCCESSFUL",
+                    "message": "TICKET CONFIRMED SUCCESSFULLY — CHECK-IN SUCCESSFUL",
                     "checkInTimestamp": updated_rec["checkInTimestamp"],
                     "checkedInBy": updated_rec["checkedInBy"],
                     "participant": updated_rec,
