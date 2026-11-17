@@ -424,7 +424,7 @@ def build_checkin_whatsapp_message(name: str, batch_year: str, ticket_id: str) -
     clean_batch = str(batch_year or "-").strip() or "-"
     clean_ticket = str(ticket_id or "ANWAR 001").strip() or "ANWAR 001"
     return (
-        "🛎️ *TICKET CONFIRMED...!*\n\n"
+        "🛎️ *TICKET CONFIRMED...!*\n"
         "Assalamu Alaikum \n\n"
         f"*{clean_name},*\n\n"
         "Your entry for *AUFBRUCH ALUMNI CONCLAVE 2026* has been successfully confirmed. 🤝\n\n"

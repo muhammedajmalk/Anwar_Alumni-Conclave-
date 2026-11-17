@@ -3728,7 +3728,7 @@
         <form id="registrationForm" novalidate>
           <!-- STEP 1: Batch Year Selection (Displayed Initially) -->
           <div id="step1BatchSection" class="field-group">
-            <div class="step-indicator-pill">Step 1 of 2 • Select Your Batch</div>
+            <div class="step-indicator-pill">Select Your Batch</div>
             <label class="field-label" for="batchInput">
               <span>1. Batch Year <span class="req">*</span></span>
               <span class="field-type-tag">2001–2026</span>
@@ -4753,7 +4753,6 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           <div class="event-pass-inner-frame">
             <div class="event-pass-header">
               <div class="event-pass-top-bar">
-                <span id="ticketPassStatus" class="event-pass-status-pill">✓ VALID ENTRY PASS</span>
                 <span class="event-pass-official-tag">OFFICIAL EVENT ENTRY TICKET</span>
               </div>
               <div class="event-pass-hero-word">AUFBRUCH</div>
@@ -4783,8 +4782,6 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
                 <canvas id="ticketQrCanvas" width="184" height="184"></canvas>
               </div>
               <span id="ticketPassTokenLabel" class="event-pass-verify-code">AUF26-ANWAR001</span>
-              <span id="ticketPassStubId" style="display: none;">ANWAR 001</span>
-              <div class="event-pass-stub-note">Present this QR Code at the registration desk for one-time check-in</div>
             </div>
           </div>
         </div>
@@ -6003,13 +6000,11 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       var activeSuccessTicketRecord = null;
       var activeViewedTicketRecord = null;
       var successTicketPassWrap = document.getElementById('successTicketPassWrap');
-      var ticketPassStatus = document.getElementById('ticketPassStatus');
       var ticketPassHeaderId = document.getElementById('ticketPassHeaderId');
       var ticketPassName = document.getElementById('ticketPassName');
       var ticketPassId = document.getElementById('ticketPassId');
       var ticketPassBatch = document.getElementById('ticketPassBatch');
       var ticketPassPlace = document.getElementById('ticketPassPlace');
-      var ticketPassStubId = document.getElementById('ticketPassStubId');
       var ticketQrCanvas = document.getElementById('ticketQrCanvas');
       var ticketPassTokenLabel = document.getElementById('ticketPassTokenLabel');
       var downloadTicketPngBtn = document.getElementById('downloadTicketPngBtn');
@@ -6082,15 +6077,11 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         var tToken = String(rec.ticketToken || ('AUF26-' + tId.replace(/\s+/g, '')));
         var pName = String(rec.name || '-').toUpperCase();
         var pBatch = String(rec.batchYear || '-');
-        var isChecked = Boolean(rec.checkedIn);
-        var statusText = isChecked ? '✓ CONFIRMED / CHECKED IN' : '✓ VALID ENTRY PASS';
-        var pillClass = 'event-pass-status-pill' + (isChecked ? ' is-confirmed' : '');
         return (
           '<div class="event-pass-shell" style="max-width: 416px; margin: 0 auto;">' +
             '<div class="event-pass-inner-frame">' +
               '<div class="event-pass-header">' +
                 '<div class="event-pass-top-bar">' +
-                  '<span class="' + pillClass + '">' + statusText + '</span>' +
                   '<span class="event-pass-official-tag">OFFICIAL EVENT ENTRY TICKET</span>' +
                 '</div>' +
                 '<div class="event-pass-hero-word">AUFBRUCH</div>' +
@@ -6116,7 +6107,6 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
                   '<canvas id="' + escapeAttr(canvasId) + '" width="200" height="200"></canvas>' +
                 '</div>' +
                 '<span class="event-pass-verify-code">' + escapeHtml(tToken) + '</span>' +
-                '<div class="event-pass-stub-note">Present this QR Code at the registration desk for one-time check-in</div>' +
               '</div>' +
             '</div>' +
           '</div>'
@@ -6197,27 +6187,11 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         ctx.lineWidth = 2;
         ctx.strokeRect(52, 52, W - 104, H - 104);
 
-        // 2. Green VALID ENTRY PASS Badge + OFFICIAL EVENT ENTRY TICKET Box (Top Centered)
-        var greenW = 316;
-        var greenH = 44;
-        var greenX = (W - greenW) / 2;
-        var greenY = 76;
-        drawRoundedRectPath(ctx, greenX, greenY, greenW, greenH, 22);
-        ctx.fillStyle = rec.checkedIn ? '#059669' : 'rgba(16, 185, 129, 0.24)';
-        ctx.fill();
-        ctx.strokeStyle = rec.checkedIn ? '#6EE7B7' : 'rgba(52, 211, 153, 0.72)';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        ctx.fillStyle = '#ECFDF5';
-        ctx.font = '800 18px Sora, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(statusBadgeText, W / 2, greenY + 28);
-
+        // 2. OFFICIAL EVENT ENTRY TICKET Box (Top Centered)
         var tagW = 470;
         var tagH = 54;
         var tagX = (W - tagW) / 2;
-        var tagY = 142;
+        var tagY = 104;
         ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
         ctx.fillRect(tagX, tagY, tagW, tagH);
         ctx.strokeStyle = 'rgba(212, 175, 55, 0.55)';
@@ -6226,6 +6200,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
         ctx.fillStyle = '#E8C547';
         ctx.font = '800 22px Sora, sans-serif';
+        ctx.textAlign = 'center';
         ctx.fillText('OFFICIAL EVENT ENTRY TICKET', W / 2, tagY + 35);
 
         // 3. Large Gold AUFBRUCH + White Subtitle + Date/Venue
@@ -6290,15 +6265,11 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         drawQrMatrixToCanvas(tempQrCanvas, rec.qrMatrix, 456);
         ctx.drawImage(tempQrCanvas, qrBoxX + 27, qrBoxY + 27, 456, 456);
 
-        // 6. Gold Verification Token & Bottom Check-in Instruction
+        // 6. Gold Verification Token
         ctx.textAlign = 'center';
         ctx.fillStyle = '#E8C547';
         ctx.font = '700 24px monospace';
-        ctx.fillText(tToken, W / 2, qrBoxY + qrBoxSize + 58);
-
-        ctx.fillStyle = '#F8FAFC';
-        ctx.font = '700 24px Sora, sans-serif';
-        ctx.fillText('Present this QR Code at the registration desk for one-time check-in', W / 2, qrBoxY + qrBoxSize + 114);
+        ctx.fillText(tToken, W / 2, qrBoxY + qrBoxSize + 64);
 
         var dataUrl = canvas.toDataURL('image/png');
         var link = document.createElement('a');
@@ -6386,17 +6357,11 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
           if (successTicketPassWrap && res) {
             var tId = res.ticketId || formatAnwarTicketId(res.registrationId || '001');
-            var isChecked = Boolean(res.checkedIn);
-            if (ticketPassStatus) {
-              ticketPassStatus.textContent = isChecked ? '✓ CONFIRMED / CHECKED IN' : '✓ VALID ENTRY PASS';
-              ticketPassStatus.classList.toggle('is-confirmed', isChecked);
-            }
             if (ticketPassHeaderId) ticketPassHeaderId.textContent = tId;
             if (ticketPassName) ticketPassName.textContent = String(res.name || '-').toUpperCase();
             if (ticketPassId) ticketPassId.textContent = tId;
             if (ticketPassBatch) ticketPassBatch.textContent = res.batchYear || '-';
             if (ticketPassPlace) ticketPassPlace.textContent = res.place || '-';
-            if (ticketPassStubId) ticketPassStubId.textContent = tId;
             if (ticketPassTokenLabel) ticketPassTokenLabel.textContent = res.ticketToken || '';
             if (ticketQrCanvas) {
               drawQrMatrixToCanvas(ticketQrCanvas, res.qrMatrix, 184);
@@ -6427,7 +6392,6 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           if (ticketPassId) ticketPassId.textContent = '';
           if (ticketPassBatch) ticketPassBatch.textContent = '';
           if (ticketPassPlace) ticketPassPlace.textContent = '';
-          if (ticketPassStubId) ticketPassStubId.textContent = '';
           if (ticketPassTokenLabel) ticketPassTokenLabel.textContent = '';
           if (ticketQrCanvas) {
             drawQrMatrixToCanvas(ticketQrCanvas, null, 184);
