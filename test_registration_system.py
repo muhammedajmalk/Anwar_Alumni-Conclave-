@@ -314,14 +314,19 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertIn('<meta name="twitter:description" content="Majmau Ssaqafathil Islamiyya, Nilambur" />', index_html)
         self.assertIn('<meta name="twitter:image" content="https://anwar-alumni-conclave.vercel.app/aufbruch-og-preview.jpg" />', index_html)
         self.assertTrue((WORKSPACE_DIR / "public" / "aufbruch-og-preview.jpg").exists())
-        # 13. Verify Separated Check-in Management sections & Ticket ID search
+        # 13. Verify Unified CHECKED IN STUDENTS portal, S.No., Checked Status badges & Place-wise Chart removal
         self.assertIn('id="checkedInStudentsSection"', index_html)
-        self.assertIn('id="notCheckedInStudentsSection"', index_html)
+        self.assertNotIn('id="notCheckedInStudentsSection"', index_html)
         self.assertIn('id="checkedInStudentsTableBody"', index_html)
-        self.assertIn('id="notCheckedInStudentsTableBody"', index_html)
+        self.assertNotIn('id="notCheckedInStudentsTableBody"', index_html)
         self.assertIn('id="searchCheckinTicketInput"', index_html)
-        self.assertIn("CHECKED-IN STUDENTS", index_html)
-        self.assertIn("NOT CHECKED-IN STUDENTS", index_html)
+        self.assertIn("CHECKED IN STUDENTS", index_html)
+        self.assertIn("S.No.", index_html)
+        self.assertIn("Checked Status", index_html)
+        self.assertIn("status-badge-checked-in", index_html)
+        self.assertIn("status-badge-not-checked-in", index_html)
+        self.assertNotIn("Place-wise Registration Count", index_html)
+        self.assertNotIn('id="placeChartContainer"', index_html)
         # 10. Verify Sticky Navbar Admin Dashboard exclusivity, Red Register Now CTA, Logo-Free Ticket & Conditional Non-Attending Screen
         self.assertNotIn('id="heroDashboardBtn"', index_html)
         body_part = index_html.split("<body", 1)[1].split("<script", 1)[0]
