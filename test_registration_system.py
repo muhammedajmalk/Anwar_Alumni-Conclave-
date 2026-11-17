@@ -583,11 +583,12 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertTrue(first_checkin_ts)
 
         wa_info = conf1_body.get("checkinWhatsapp", {})
-        self.assertIn("🛎️ TICKET CONFIRMED...!", wa_info.get("messageText", ""))
-        self.assertIn("Assalamu Alaikum,\nTemp Alumni Corrected,", wa_info.get("messageText", ""))
-        self.assertIn("Your entry for AUFBRUCH ALUMNI CONCLAVE 2026 has been successfully confirmed. 🤝", wa_info.get("messageText", ""))
+        self.assertIn("🛎️ *TICKET CONFIRMED...!*", wa_info.get("messageText", ""))
+        self.assertIn("Assalamu Alaikum,\n*Temp Alumni Corrected*", wa_info.get("messageText", ""))
+        self.assertIn("Your Entry for *AUFBRUCH ALUMNI CONCLAVE 2026* has been Successfully Confirmed. 🤝", wa_info.get("messageText", ""))
+        self.assertIn("*Ticket Details:*", wa_info.get("messageText", ""))
         self.assertIn("- Status: CONFIRMED ✅", wa_info.get("messageText", ""))
-        self.assertIn("Majmau Ssaqafathil Islamiyya\nDa'wa College Alumni", wa_info.get("messageText", ""))
+        self.assertIn("*Majmau Ssaqafathil Islamiyya*\nDa'wa College Alumni", wa_info.get("messageText", ""))
         # Without Cloud API env vars configured, sent MUST be False and status MUST NOT falsely claim SENT
         if not wa_info.get("configured"):
             self.assertFalse(wa_info.get("sent", True))
@@ -1007,14 +1008,15 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
 
         # 3. Verify WhatsApp Business Cloud API payload formatting & failure isolation
         msg_text = server.build_checkin_whatsapp_message("Test Alumni", "2020", "ANWAR 007")
-        self.assertIn("🛎️ TICKET CONFIRMED...!", msg_text)
-        self.assertIn("Assalamu Alaikum,\nTest Alumni,", msg_text)
-        self.assertIn("Your entry for AUFBRUCH ALUMNI CONCLAVE 2026 has been successfully confirmed. 🤝", msg_text)
+        self.assertIn("🛎️ *TICKET CONFIRMED...!*", msg_text)
+        self.assertIn("Assalamu Alaikum,\n*Test Alumni*", msg_text)
+        self.assertIn("Your Entry for *AUFBRUCH ALUMNI CONCLAVE 2026* has been Successfully Confirmed. 🤝", msg_text)
+        self.assertIn("*Ticket Details:*", msg_text)
         self.assertIn("- Name: Test Alumni", msg_text)
         self.assertIn("- Batch: 2020", msg_text)
         self.assertIn("- Ticket ID: ANWAR 007", msg_text)
         self.assertIn("- Status: CONFIRMED ✅", msg_text)
-        self.assertIn("Majmau Ssaqafathil Islamiyya\nDa'wa College Alumni", msg_text)
+        self.assertIn("*Majmau Ssaqafathil Islamiyya*\nDa'wa College Alumni", msg_text)
 
         orig_wa_tok = os.environ.get("WHATSAPP_CLOUD_API_TOKEN")
         orig_wa_pid = os.environ.get("WHATSAPP_PHONE_NUMBER_ID")
