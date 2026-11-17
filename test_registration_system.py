@@ -297,7 +297,16 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertIn('id="studentComboboxContainer"', index_html)
         self.assertNotIn("Type to search your name in the selected batch", index_html)
         self.assertIn('id="ticketPassHeaderId"', index_html)
-        self.assertIn("/aufbruch_poster.png", index_html)
+        # 12. Verify Open Graph (WhatsApp/Facebook/Telegram) & Twitter Card metadata + public preview image
+        self.assertIn('<meta property="og:title" content="Anwar Alumni Conclave – Aufbruch – Alumni Conclave 2026" />', index_html)
+        self.assertIn('<meta property="og:description" content="Official Alumni Conclave 2026 of Majmau Ssaqafathil Islamiyya Da\'wa College Alumni." />', index_html)
+        self.assertIn('<meta property="og:image" content="https://anwar-alumni-conclave.vercel.app/aufbruch-og-preview.jpg" />', index_html)
+        self.assertIn('<meta property="og:url" content="https://anwar-alumni-conclave.vercel.app/" />', index_html)
+        self.assertIn('<meta property="og:type" content="website" />', index_html)
+        self.assertIn('property="og:site_name"', index_html)
+        self.assertIn('<meta name="twitter:card" content="summary_large_image" />', index_html)
+        self.assertIn('<meta name="twitter:image" content="https://anwar-alumni-conclave.vercel.app/aufbruch-og-preview.jpg" />', index_html)
+        self.assertTrue((WORKSPACE_DIR / "public" / "aufbruch-og-preview.jpg").exists())
         # 10. Verify Sticky Navbar Admin Dashboard exclusivity, Red Register Now CTA, Logo-Free Ticket & Conditional Non-Attending Screen
         self.assertNotIn('id="heroDashboardBtn"', index_html)
         body_part = index_html.split("<body", 1)[1].split("<script", 1)[0]
@@ -827,6 +836,12 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
                 self.assertIn("text/html", resp.headers.get("Content-Type", ""))
                 body_preview = resp.read(256).decode("utf-8", errors="ignore")
                 self.assertIn("<!DOCTYPE html>", body_preview)
+
+        # Static Open Graph preview image & fonts must load with HTTP 200 and sensitive files must NOT be publicly served
+        with urllib.request.urlopen(f"{BASE_URL}/aufbruch-og-preview.jpg", timeout=5) as resp:
+            self.assertEqual(resp.status, 200)
+            self.assertIn("image/jpeg", resp.headers.get("Content-Type", ""))
+            self.assertGreater(len(resp.read()), 10000)
 
         # Static fonts must load with HTTP 200 and sensitive files must NOT be publicly served
         with urllib.request.urlopen(f"{BASE_URL}/fonts/Sora-Regular.ttf", timeout=5) as resp:
