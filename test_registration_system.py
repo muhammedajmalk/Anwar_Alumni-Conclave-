@@ -525,8 +525,9 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertTrue(first_checkin_ts)
 
         wa_info = conf1_body.get("checkinWhatsapp", {})
-        self.assertIn("*ANWAR ALUMNI – SEAT CONFIRMED!*", wa_info.get("messageText", ""))
-        self.assertIn("Assalamu Alaikum Temp Alumni Corrected", wa_info.get("messageText", ""))
+        self.assertIn("🛎️ *TICKET CONFIRMED...!*", wa_info.get("messageText", ""))
+        self.assertIn("*Temp Alumni Corrected,*", wa_info.get("messageText", ""))
+        self.assertIn("has been successfully confirmed. 🤝", wa_info.get("messageText", ""))
         self.assertIn("*Majmau Ssaqafathil Islamiyya*", wa_info.get("messageText", ""))
         # Without Cloud API env vars configured, sent MUST be False and status MUST NOT falsely claim SENT
         if not wa_info.get("configured"):
@@ -869,7 +870,9 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
 
         # 3. Verify WhatsApp Business Cloud API payload formatting & failure isolation
         msg_text = server.build_checkin_whatsapp_message("Test Alumni", "2020", "ANWAR 007")
-        self.assertIn("*ANWAR ALUMNI – SEAT CONFIRMED!*", msg_text)
+        self.assertIn("🛎️ *TICKET CONFIRMED...!*", msg_text)
+        self.assertIn("*Test Alumni,*", msg_text)
+        self.assertIn("has been successfully confirmed. 🤝", msg_text)
         self.assertIn("- Name: Test Alumni", msg_text)
         self.assertIn("- Batch: 2020", msg_text)
         self.assertIn("- Ticket ID: ANWAR 007", msg_text)
