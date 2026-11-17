@@ -8698,13 +8698,13 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       if (verifyQrTokenBtn && qrManualTokenInput) {
         verifyQrTokenBtn.addEventListener('click', function() {
           lastScannedValue = '';
-          verifyQrTicketOnBackend(qrManualTokenInput.value, false);
+          verifyQrTicketOnBackend(qrManualTokenInput.value, true);
         });
         qrManualTokenInput.addEventListener('keydown', function(e) {
           if (e.key === 'Enter') {
             e.preventDefault();
             lastScannedValue = '';
-            verifyQrTicketOnBackend(qrManualTokenInput.value, false);
+            verifyQrTicketOnBackend(qrManualTokenInput.value, true);
           }
         });
       }

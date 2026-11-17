@@ -141,16 +141,53 @@ def _get_blob_config() -> bool:
     return bool(os.environ.get("BLOB_READ_WRITE_TOKEN", "").strip() and vercel_blob is not None)
 
 
+def _resolve_blob_store_id() -> str:
+    raw_store = os.environ.get("BLOB_STORE_ID", "").strip()
+    if raw_store:
+        return raw_store.removeprefix("store_").strip().lower()
+    token = (
+        os.environ.get("BLOB_READ_WRITE_TOKEN", "").strip()
+        or os.environ.get("VERCEL_BLOB_READ_WRITE_TOKEN", "").strip()
+    )
+    if token.startswith("vercel_blob_rw_"):
+        store_part, sep, _ = token[len("vercel_blob_rw_"):].partition("_")
+        if sep and store_part.strip():
+            return store_part.strip().removeprefix("store_").lower()
+    return ""
+
+
+def _blob_uncached_target(pathname: str) -> str:
+    """Bypass Vercel Blob CDN edge cache using ?cache=0 (useCache=false) on live store."""
+    clean_path = str(pathname or "").lstrip("/")
+    if not clean_path or not hasattr(vercel_blob, "stream_blob"):
+        return clean_path
+    store_id = _resolve_blob_store_id()
+    if not store_id:
+        return clean_path
+    quoted_path = urllib.parse.quote(clean_path, safe="/")
+    return f"https://{store_id}.private.blob.vercel-storage.com/{quoted_path}?cache=0"
+
+
 def _blob_load_json(pathname: str):
     if not _get_blob_config():
         return None
     not_found_exc = getattr(vercel_blob, "BlobNotFoundError", FileNotFoundError)
+    target = _blob_uncached_target(pathname)
     try:
-        res = vercel_blob.get_blob(pathname, access="private")
+        res = vercel_blob.get_blob(target, access="private")
         raw = res.body.decode("utf-8") if isinstance(res.body, (bytes, bytearray)) else str(res.body)
         return json.loads(raw)
     except (not_found_exc, FileNotFoundError):
         return None
+    except Exception:
+        if target != pathname:
+            try:
+                res = vercel_blob.get_blob(pathname, access="private")
+                raw = res.body.decode("utf-8") if isinstance(res.body, (bytes, bytearray)) else str(res.body)
+                return json.loads(raw)
+            except (not_found_exc, FileNotFoundError):
+                return None
+        raise
 
 
 def _blob_save_json(pathname: str, payload_text: str) -> None:
@@ -1444,8 +1481,8 @@ def build_checkin_xlsx_bytes(records: list[dict]) -> bytes:
     return buf.getvalue()
 
 
-def build_dashboard_payload() -> dict:
-    records = load_db()
+def build_dashboard_payload(preloaded_records: list[dict] | None = None) -> dict:
+    records = [enrich_registration(r) for r in preloaded_records] if preloaded_records is not None else load_db()
     students = load_students_db()
     total = len(records)
     participating = sum(1 for r in records if r["participation"] == "പങ്കെടുക്കും")
@@ -2197,7 +2234,7 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                     found_rec = r
                     break
                 if allow_id_lookup and (
-                    (r_tid and r_tid.upper() == candidate_token.upper())
+                    (r_tid and re.sub(r"\s+", "", r_tid).upper() == re.sub(r"\s+", "", candidate_token).upper())
                     or (candidate_token.isdigit() and str(r.get("registrationId", "")).strip() == normalize_reg_id(candidate_token))
                 ):
                     found_rec = r
@@ -2425,7 +2462,7 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                     records[re_idx] = updated_rec
                     save_db(records)
 
-            dash_payload = build_dashboard_payload()
+            dash_payload = build_dashboard_payload(preloaded_records=records)
             self._send_json(
                 200,
                 {
@@ -2523,7 +2560,7 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
             records[found_index] = updated_rec
             save_db(records)
 
-            dash_payload = build_dashboard_payload()
+            dash_payload = build_dashboard_payload(preloaded_records=records)
             dash_payload["updatedRecord"] = updated_rec
             dash_payload["cloudApi"] = cloud_res
             dash_payload["message"] = (
@@ -2565,7 +2602,7 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
             updated_rec = enrich_registration(target_rec)
             records[found_index] = updated_rec
             save_db(records)
-            dash_payload = build_dashboard_payload()
+            dash_payload = build_dashboard_payload(preloaded_records=records)
             dash_payload["updatedRecord"] = updated_rec
             self._send_json(200, dash_payload)
             return

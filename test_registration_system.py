@@ -987,6 +987,15 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
             server.revoke_session(tok)
             server.REVOKED_TOKENS.clear()
             self.assertIsNone(server._verify_signed_token(tok))
+
+            # Verify uncached ?cache=0 delivery URL resolution when stream_blob exists
+            FakeBlobSync.stream_blob = staticmethod(lambda *a, **kw: None)
+            os.environ["BLOB_READ_WRITE_TOKEN"] = "vercel_blob_rw_abc123store_secretpart"
+            self.assertEqual(
+                server._blob_uncached_target(server.BLOB_RECORDS_PATH),
+                f"https://abc123store.private.blob.vercel-storage.com/{server.BLOB_RECORDS_PATH}?cache=0",
+            )
+            delattr(FakeBlobSync, "stream_blob")
         finally:
             server.vercel_blob = orig_blob
             server.REVOKED_TOKENS.clear()
