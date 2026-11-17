@@ -330,11 +330,20 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertIn('id="successModalCheckedStatus"', index_html)
         self.assertNotIn("Place-wise Registration Count", index_html)
         self.assertNotIn('id="placeChartContainer"', index_html)
-        # 10. Verify Sticky Navbar Admin Dashboard exclusivity, Red Register Now CTA, Logo-Free Ticket & Conditional Non-Attending Screen
+        # 10. Verify Sticky Navbar exclusivity (no top Register button), Red Hero Register Now CTA, Celebration & Conditional Screen
         self.assertNotIn('id="heroDashboardBtn"', index_html)
+        self.assertNotIn('id="navRegisterBtn"', index_html)
+        self.assertNotIn("Complete Registration", index_html)
         body_part = index_html.split("<body", 1)[1].split("<script", 1)[0]
         self.assertEqual(body_part.count("Admin Dashboard"), 1)
-        self.assertIn('id="navRegisterBtn">Register Now →</a>', index_html)
+        self.assertIn('id="heroRegisterBtn"', index_html)
+        self.assertIn("btn-hero-register-red", index_html)
+        self.assertIn("<span>Register Now</span>", index_html)
+        self.assertIn('id="registrationWishesBanner"', index_html)
+        self.assertIn("Welcome to ANWAR ALUMNI CONCLAVE!", index_html)
+        self.assertIn('id="ticketCelebrationStage"', index_html)
+        self.assertIn('id="celebrationRibbonBanner"', index_html)
+        self.assertIn("triggerTicketCelebration", index_html)
         self.assertIn("#DC2626", index_html)
         self.assertNotIn("event-pass-artwork-frame", index_html)
         self.assertIn("isTicketEligibleRecord", index_html)

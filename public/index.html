@@ -560,23 +560,33 @@
     .btn-gold-lg {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 10px;
-      background: linear-gradient(135deg, var(--gold-400) 0%, var(--gold-500) 100%);
-      color: var(--navy-950);
-      font-size: 15px;
-      font-weight: 700;
-      padding: 15px 30px;
+      background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+      color: #FFFFFF;
+      font-size: 15.5px;
+      font-weight: 800;
+      letter-spacing: 0.25px;
+      padding: 15px 32px;
       border-radius: 12px;
       text-decoration: none;
-      border: none;
+      border: 1px solid rgba(254, 202, 202, 0.34);
       cursor: pointer;
-      box-shadow: 0 10px 25px rgba(212, 175, 55, 0.35);
-      transition: all 0.2s ease;
+      box-shadow: 0 10px 26px rgba(220, 38, 38, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
     }
 
     .btn-gold-lg:hover {
+      background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+      color: #FFFFFF;
       transform: translateY(-2px);
-      box-shadow: 0 14px 30px rgba(212, 175, 55, 0.5);
+      box-shadow: 0 14px 32px rgba(220, 38, 38, 0.56), inset 0 1px 0 rgba(255, 255, 255, 0.26);
+    }
+
+    .btn-gold-lg:active {
+      background: #991B1B;
+      color: #FFFFFF;
+      transform: translateY(0) scale(0.98);
     }
 
     .btn-outline-gold {
@@ -2820,12 +2830,16 @@
 
     /* Centered Large Gold-Bordered QR Code Block */
     .event-pass-qr-stub {
+      position: relative;
+      z-index: 8;
       text-align: center;
       padding: 0;
       background: transparent;
     }
 
     .event-pass-qr-dock {
+      position: relative;
+      z-index: 12;
       display: inline-flex;
       flex-direction: column;
       align-items: center;
@@ -2836,6 +2850,197 @@
       border: 2.5px solid #E5C158;
       box-shadow: 0 8px 22px rgba(2, 6, 18, 0.45);
       margin-bottom: 9px;
+    }
+
+    /* Registration Success Ribbon-Cutting + Confetti & Wishes Banner */
+    .ticket-celebration-stage {
+      position: absolute;
+      inset: 0;
+      z-index: 9;
+      pointer-events: none;
+      overflow: hidden;
+      border-radius: 20px;
+    }
+
+    .celebration-ribbon-split {
+      position: relative;
+      height: 26px;
+      margin: 2px auto 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .celebration-ribbon-half {
+      position: relative;
+      height: 10px;
+      width: 44%;
+      background: linear-gradient(90deg, #DC2626 0%, #F59E0B 50%, #DC2626 100%);
+      border-top: 1px solid rgba(254, 240, 138, 0.85);
+      border-bottom: 1px solid rgba(254, 240, 138, 0.85);
+      box-shadow: 0 3px 12px rgba(220, 38, 38, 0.45);
+      opacity: 0;
+    }
+
+    .celebration-ribbon-half.left {
+      border-radius: 999px 0 0 999px;
+      transform-origin: left center;
+    }
+
+    .celebration-ribbon-half.right {
+      border-radius: 0 999px 999px 0;
+      transform-origin: right center;
+    }
+
+    .celebration-ribbon-seal {
+      position: relative;
+      z-index: 2;
+      width: 26px;
+      height: 26px;
+      margin: 0 -6px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #FEF08A 0%, #D4AF37 65%, #991B1B 100%);
+      border: 1.5px solid #FFFFFF;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      box-shadow: 0 0 14px rgba(250, 204, 21, 0.85);
+      opacity: 0;
+      flex-shrink: 0;
+    }
+
+    .celebration-ribbon-split.is-cutting .celebration-ribbon-half.left {
+      animation: ribbonCutLeft 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .celebration-ribbon-split.is-cutting .celebration-ribbon-half.right {
+      animation: ribbonCutRight 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .celebration-ribbon-split.is-cutting .celebration-ribbon-seal {
+      animation: ribbonSealBurst 1.1s ease-out forwards;
+    }
+
+    @keyframes ribbonCutLeft {
+      0% { opacity: 1; transform: translateX(0) rotate(0deg); }
+      25% { opacity: 1; transform: translateX(0) scaleX(1.03); }
+      100% { opacity: 0; transform: translateX(-115%) rotate(-8deg); }
+    }
+
+    @keyframes ribbonCutRight {
+      0% { opacity: 1; transform: translateX(0) rotate(0deg); }
+      25% { opacity: 1; transform: translateX(0) scaleX(1.03); }
+      100% { opacity: 0; transform: translateX(115%) rotate(8deg); }
+    }
+
+    @keyframes ribbonSealBurst {
+      0% { opacity: 1; transform: scale(0.75); }
+      30% { opacity: 1; transform: scale(1.25) rotate(12deg); }
+      100% { opacity: 0; transform: scale(1.6) rotate(32deg); }
+    }
+
+    .celebration-confetti-piece {
+      position: absolute;
+      top: -18px;
+      will-change: transform, opacity;
+      pointer-events: none;
+      animation: confettiFallSpread var(--fall-dur, 2.8s) cubic-bezier(0.2, 0.7, 0.4, 1) var(--fall-delay, 0s) forwards;
+    }
+
+    @keyframes confettiFallSpread {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) rotate(0deg) scale(0.7);
+      }
+      12% {
+        opacity: 0.96;
+      }
+      85% {
+        opacity: 0.85;
+      }
+      100% {
+        opacity: 0;
+        transform: translate3d(var(--drift-x, 24px), var(--fall-y, 520px), 0) rotate(var(--spin-deg, 540deg)) scale(0.95);
+      }
+    }
+
+    .ticket-wishes-banner {
+      position: relative;
+      z-index: 6;
+      margin: 0 0 11px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, rgba(220, 38, 38, 0.16) 0%, rgba(212, 175, 55, 0.16) 50%, rgba(16, 185, 129, 0.12) 100%);
+      border: 1px solid rgba(232, 197, 71, 0.55);
+      box-shadow: 0 0 22px rgba(212, 175, 55, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      text-align: center;
+    }
+
+    .ticket-wishes-banner.animate-in {
+      animation: wishesEntranceGlow 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes wishesEntranceGlow {
+      0% {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.97);
+        box-shadow: 0 0 0 rgba(212, 175, 55, 0);
+      }
+      60% {
+        opacity: 1;
+        transform: translateY(0) scale(1.01);
+        box-shadow: 0 0 28px rgba(232, 197, 71, 0.34);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        box-shadow: 0 0 22px rgba(212, 175, 55, 0.18);
+      }
+    }
+
+    .ticket-wishes-heading {
+      font-size: 13px;
+      font-weight: 800;
+      color: #FDE047;
+      letter-spacing: 0.45px;
+      margin-bottom: 2px;
+    }
+
+    .ticket-wishes-sub {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: 0.25px;
+      margin-bottom: 5px;
+    }
+
+    .ticket-wishes-body {
+      font-size: 10.5px;
+      line-height: 1.42;
+      color: #E2E8F0;
+      margin-bottom: 5px;
+    }
+
+    .ticket-wishes-closing {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #FCA5A5;
+      letter-spacing: 0.2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .celebration-ribbon-split.is-cutting .celebration-ribbon-half,
+      .celebration-ribbon-split.is-cutting .celebration-ribbon-seal,
+      .celebration-confetti-piece,
+      .ticket-wishes-banner.animate-in {
+        animation: none !important;
+      }
+      .celebration-ribbon-split {
+        display: none;
+      }
     }
 
     .event-pass-qr-dock canvas {
@@ -3682,7 +3887,6 @@
           <span class="status-dot"></span>
           <span class="designed-by-text">Designed by: Ajmal Kattichira</span>
         </div>
-        <a href="#register" class="nav-cta-btn" id="navRegisterBtn">Register Now →</a>
         <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation">☰</button>
       </div>
     </div>
@@ -3730,8 +3934,8 @@
         </div>
 
         <div class="hero-cta-row">
-          <a href="#register" class="btn-gold-lg" id="heroRegisterBtn">
-            <span>Complete Registration</span>
+          <a href="#register" class="btn-gold-lg btn-hero-register-red" id="heroRegisterBtn">
+            <span>Register Now</span>
             <span>→</span>
           </a>
         </div>
@@ -4779,18 +4983,24 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
   <!-- Custom Form Submission Alert Modal (Replaces Native Browser Alert & Displays QR Ticket Pass) -->
   <div id="submissionAlertModal" class="submission-alert-overlay" role="dialog" aria-modal="true" aria-labelledby="submissionAlertTitle" aria-hidden="true">
     <div id="submissionAlertBox" class="submission-alert-box">
+      <div id="ticketCelebrationStage" class="ticket-celebration-stage" aria-hidden="true"></div>
       <button type="button" id="submissionAlertCloseIcon" class="submission-alert-close-icon" aria-label="Close alert">✕</button>
-      <div class="submission-alert-head-row">
+      <div class="submission-alert-head-row" style="position: relative; z-index: 6;">
         <div id="submissionAlertIcon" class="submission-alert-icon" aria-hidden="true">✓</div>
         <div id="submissionAlertTitle" class="submission-alert-title">Registration Successful!</div>
       </div>
-      <div id="submissionAlertBadge" class="submission-alert-badge" style="display: none;">Registration Not Saved</div>
-      <p id="submissionAlertMessage" class="submission-alert-message">
+      <div id="submissionAlertBadge" class="submission-alert-badge" style="display: none; position: relative; z-index: 6;">Registration Not Saved</div>
+      <p id="submissionAlertMessage" class="submission-alert-message" style="position: relative; z-index: 6;">
         Your registration has been submitted successfully. Thank you for registering.
       </p>
 
       <!-- Automatic QR Code Event Pass (Shown ONLY for "പങ്കെടുക്കും") -->
-      <div id="successTicketPassWrap" class="ticket-pass-card">
+      <div id="successTicketPassWrap" class="ticket-pass-card" style="position: relative; z-index: 6;">
+        <div id="celebrationRibbonBanner" class="celebration-ribbon-split" aria-hidden="true" style="display: none;">
+          <span class="celebration-ribbon-half left"></span>
+          <span class="celebration-ribbon-seal">🎀</span>
+          <span class="celebration-ribbon-half right"></span>
+        </div>
         <div class="event-pass-shell">
           <div class="event-pass-inner-frame">
             <div class="event-pass-header">
@@ -4817,6 +5027,16 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
                 <span id="ticketPassBatch" class="event-pass-detail-val">-</span>
               </div>
               <span id="ticketPassPlace" style="display: none;">-</span>
+            </div>
+
+            <div id="registrationWishesBanner" class="ticket-wishes-banner">
+              <div class="ticket-wishes-heading">🎉 CONGRATULATIONS! 🎉</div>
+              <div class="ticket-wishes-sub">Welcome to ANWAR ALUMNI CONCLAVE!</div>
+              <p class="ticket-wishes-body">
+                Your registration has been successfully completed. We are delighted to welcome you.
+                Get ready for a memorable reunion filled with friendship, memories and celebration!
+              </p>
+              <div class="ticket-wishes-closing">✨ We look forward to seeing you! ✨</div>
             </div>
 
             <div class="event-pass-qr-stub">
@@ -5441,11 +5661,6 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       });
 
       navRegisterLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        showRegistrationSection(true);
-      });
-
-      document.getElementById('navRegisterBtn').addEventListener('click', function(e) {
         e.preventDefault();
         showRegistrationSection(true);
       });
@@ -6383,6 +6598,76 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         });
       }
 
+      var celebrationCleanupTimer = null;
+
+      function clearTicketCelebration() {
+        if (celebrationCleanupTimer) {
+          clearTimeout(celebrationCleanupTimer);
+          celebrationCleanupTimer = null;
+        }
+        var stage = document.getElementById('ticketCelebrationStage');
+        if (stage) stage.innerHTML = '';
+        var ribbon = document.getElementById('celebrationRibbonBanner');
+        if (ribbon) {
+          ribbon.classList.remove('is-cutting');
+          ribbon.style.display = 'none';
+        }
+        var wishesBanner = document.getElementById('registrationWishesBanner');
+        if (wishesBanner) {
+          wishesBanner.classList.remove('animate-in');
+        }
+      }
+
+      function triggerTicketCelebration() {
+        clearTicketCelebration();
+        var ribbon = document.getElementById('celebrationRibbonBanner');
+        var wishesBanner = document.getElementById('registrationWishesBanner');
+        var stage = document.getElementById('ticketCelebrationStage');
+        if (ribbon) {
+          ribbon.style.display = 'flex';
+          void ribbon.offsetWidth;
+          ribbon.classList.add('is-cutting');
+        }
+        if (wishesBanner) {
+          void wishesBanner.offsetWidth;
+          wishesBanner.classList.add('animate-in');
+        }
+        if (stage) {
+          var colors = ['#FACC15', '#DC2626', '#E8C547', '#EF4444', '#10B981', '#FFFBEB'];
+          var pieceCount = 44;
+          for (var i = 0; i < pieceCount; i++) {
+            var piece = document.createElement('span');
+            piece.className = 'celebration-confetti-piece';
+            var isRibbon = (i % 3 === 0);
+            var startLeft = 6 + ((i * 89) % 88);
+            var driftX = ((i % 2 === 0 ? 1 : -1) * (14 + (i * 19) % 68)) + 'px';
+            var fallY = (440 + (i * 29) % 240) + 'px';
+            var fallDur = (2.15 + ((i * 7) % 12) * 0.1) + 's';
+            var fallDelay = ((i % 10) * 0.06) + 's';
+            var spinDeg = ((i % 2 === 0 ? 1 : -1) * (340 + (i * 53) % 420)) + 'deg';
+            piece.style.left = startLeft + '%';
+            piece.style.width = isRibbon ? '6px' : (7 + (i % 5)) + 'px';
+            piece.style.height = isRibbon ? (16 + (i % 8)) + 'px' : (7 + (i % 5)) + 'px';
+            piece.style.borderRadius = isRibbon ? '3px' : (i % 4 === 0 ? '50%' : '2px');
+            piece.style.background = colors[i % colors.length];
+            piece.style.opacity = '0';
+            piece.style.setProperty('--drift-x', driftX);
+            piece.style.setProperty('--fall-y', fallY);
+            piece.style.setProperty('--fall-dur', fallDur);
+            piece.style.setProperty('--fall-delay', fallDelay);
+            piece.style.setProperty('--spin-deg', spinDeg);
+            stage.appendChild(piece);
+          }
+          celebrationCleanupTimer = setTimeout(function() {
+            if (stage) stage.innerHTML = '';
+            if (ribbon) {
+              ribbon.classList.remove('is-cutting');
+              ribbon.style.display = 'none';
+            }
+          }, 3500);
+        }
+      }
+
       function openSubmissionAlertModal(res) {
         if (!submissionAlertModal) return;
         lastAlertWasSuccess = true;
@@ -6416,7 +6701,9 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             }
             successTicketPassWrap.classList.add('visible');
           }
+          triggerTicketCelebration();
         } else {
+          clearTicketCelebration();
           if (submissionAlertBox) {
             submissionAlertBox.classList.remove('is-error', 'has-ticket');
             submissionAlertBox.classList.add('is-non-attending');
@@ -6447,15 +6734,25 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         }
 
         fetchPublicStudentsList();
+        if (submissionAlertBox) submissionAlertBox.scrollTop = 0;
         submissionAlertModal.setAttribute('aria-hidden', 'false');
         submissionAlertModal.classList.add('active');
         setTimeout(function() {
-          if (submissionAlertOkBtn) submissionAlertOkBtn.focus();
+          if (submissionAlertBox) submissionAlertBox.scrollTop = 0;
+          if (submissionAlertOkBtn && submissionAlertOkBtn.focus) {
+            try {
+              submissionAlertOkBtn.focus({ preventScroll: true });
+            } catch (focusErr) {
+              submissionAlertOkBtn.focus();
+            }
+          }
+          if (submissionAlertBox) submissionAlertBox.scrollTop = 0;
         }, 50);
       }
 
       function openSubmissionErrorModal(errMsg) {
         if (!submissionAlertModal) return;
+        clearTicketCelebration();
         lastAlertWasSuccess = false;
         activeSuccessTicketRecord = null;
         if (submissionAlertBox) {
@@ -6532,6 +6829,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
       function closeSubmissionAlertModal() {
         if (!submissionAlertModal) return;
+        clearTicketCelebration();
         var shouldRedirectHome = lastAlertWasSuccess;
         lastAlertWasSuccess = false;
         submissionAlertModal.classList.remove('active');
