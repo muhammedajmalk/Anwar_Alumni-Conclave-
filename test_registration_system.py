@@ -325,6 +325,8 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertIn("Checked Status", index_html)
         self.assertIn("status-badge-checked-in", index_html)
         self.assertIn("status-badge-not-checked-in", index_html)
+        self.assertIn("🟢 CHECKED-IN", index_html)
+        self.assertIn("🔴 NOT CHECKED IN", index_html)
         self.assertIn('id="successModalCheckedStatus"', index_html)
         self.assertNotIn("Place-wise Registration Count", index_html)
         self.assertNotIn('id="placeChartContainer"', index_html)
