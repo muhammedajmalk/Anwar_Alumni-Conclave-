@@ -206,6 +206,7 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertIn("Sora-Light.ttf", index_html)
         self.assertIn("--font-primary: 'Sora'", index_html)
         self.assertIn("Designed by: Ajmal Kattichira", index_html)
+        self.assertIn("© 2026 Ajmal Kattichira. All Rights Reserved.", index_html)
         self.assertIn("authenticateAdminFromWebApp", code_gs)
         self.assertIn("logoutAdminFromWebApp", code_gs)
 
