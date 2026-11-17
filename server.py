@@ -2359,7 +2359,21 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                 updated_rec = enrich_registration(existing_rec)
                 records[found_index] = updated_rec
                 # Persist check-in immediately before external WhatsApp API call (separate failure domain)
-                save_db(records)
+                try:
+                    save_db(records)
+                except Exception as db_exc:
+                    self._send_json(
+                        500,
+                        {
+                            "success": False,
+                            "valid": True,
+                            "checkedIn": False,
+                            "status": "DB_ERROR",
+                            "headline": "CHECK-IN FAILED – DATABASE ERROR",
+                            "error": f"Database update failed; participant remains NOT CHECKED IN ({db_exc}).",
+                        },
+                    )
+                    return
 
             # Automatically send WhatsApp Confirmation via WhatsApp Business Cloud API
             wa_confirm_msg = updated_rec["checkinWhatsappMessage"]

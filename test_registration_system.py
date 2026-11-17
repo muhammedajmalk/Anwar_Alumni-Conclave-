@@ -325,6 +325,7 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertIn("Checked Status", index_html)
         self.assertIn("status-badge-checked-in", index_html)
         self.assertIn("status-badge-not-checked-in", index_html)
+        self.assertIn('id="successModalCheckedStatus"', index_html)
         self.assertNotIn("Place-wise Registration Count", index_html)
         self.assertNotIn('id="placeChartContainer"', index_html)
         # 10. Verify Sticky Navbar Admin Dashboard exclusivity, Red Register Now CTA, Logo-Free Ticket & Conditional Non-Attending Screen
@@ -554,9 +555,26 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertEqual(ver_body["participant"]["ticketId"], created_ticket_id)
         self.assertTrue(ver_body["participant"].get("formattedPhone"))
 
-        # Before check-in, CONFIRMED WhatsApp message must NOT be generated or allowed
+        # Before check-in, CONFIRMED WhatsApp message must NOT be generated or allowed,
+        # and marking regular whatsapp-status sent must NOT mark checkedIn=True
         self.assertEqual(ver_body["participant"].get("checkinWhatsappMessage"), "")
         self.assertEqual(ver_body["participant"].get("checkinWhatsappClickToChatUrl"), "")
+        wa_only_status, wa_only_body, _ = http_json_request(
+            "/api/admin/whatsapp-status",
+            "POST",
+            {"registrationId": created_id, "whatsappSent": True},
+            headers=auth_headers,
+        )
+        self.assertEqual(wa_only_status, 200)
+        self.assertFalse(wa_only_body["updatedRecord"]["checkedIn"])
+        self.assertEqual(wa_only_body["updatedRecord"]["checkInStatus"], "NOT CHECKED IN")
+        # Reset temporary regular whatsappSent state so downstream reminder count assertions start from 0
+        http_json_request(
+            "/api/admin/whatsapp-status",
+            "POST",
+            {"registrationId": created_id, "whatsappSent": False},
+            headers=auth_headers,
+        )
         pre_wa_status, _, _ = http_json_request(
             "/api/admin/checkin/whatsapp-manual",
             "POST",

@@ -4928,7 +4928,11 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           <div class="view-detail-label">Batch Year</div>
           <div id="successModalPartBatch" class="view-detail-value">-</div>
         </div>
-        <div class="view-detail-item" style="grid-column: span 2;">
+        <div class="view-detail-item">
+          <div class="view-detail-label">Checked Status</div>
+          <div id="successModalCheckedStatus" class="view-detail-value"><span class="status-badge-checked-in">🟢 CHECKED IN</span></div>
+        </div>
+        <div class="view-detail-item">
           <div class="view-detail-label">Check-in Time</div>
           <div id="successModalCheckinTime" class="view-detail-value" style="color: #6EE7B7;">-</div>
         </div>
@@ -8434,8 +8438,9 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         if (confirmModalPartId) confirmModalPartId.textContent = tId;
         if (confirmModalPartPhone) confirmModalPartPhone.textContent = participant.formattedPhone || participant.whatsappNumber || '-';
         if (confirmModalPartStatus) {
-          confirmModalPartStatus.textContent = participant.checkedIn ? 'CONFIRMED / CHECKED IN' : 'REGISTERED • NOT CHECKED IN';
-          confirmModalPartStatus.style.color = participant.checkedIn ? '#34D399' : '#FBBF24';
+          confirmModalPartStatus.innerHTML = participant.checkedIn
+            ? '<span class="status-badge-checked-in">🟢 CHECKED IN</span>'
+            : '<span class="status-badge-not-checked-in">🔴 NOT CHECKED IN</span>';
         }
         if (submitQrConfirmBtn) {
           submitQrConfirmBtn.disabled = false;
@@ -8504,8 +8509,8 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             successModalWaBox.style.borderColor = '#EF4444';
             successModalWaBox.style.background = 'rgba(239, 68, 68, 0.14)';
             successModalWaHeadline.style.color = '#FCA5A5';
-            successModalWaHeadline.textContent = '✕ WhatsApp Cloud API Delivery Failed';
-            successModalWaDetail.textContent = wa.error || 'Unable to deliver WhatsApp message via Cloud API.';
+            successModalWaHeadline.textContent = '✕ WhatsApp Cloud API Delivery Failed (Check-in Saved)';
+            successModalWaDetail.textContent = (wa.error || 'Unable to deliver WhatsApp message via Cloud API.') + ' Participant status remains GREEN CHECKED IN.';
             if (successModalRetryWaBtn) {
               successModalRetryWaBtn.style.display = 'inline-flex';
               successModalRetryWaBtn.disabled = false;
@@ -8567,8 +8572,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           scanResultHeadline.style.color = 'var(--gold-400)';
           scanResultSubtext.textContent = 'Valid ticket verified. Confirm check-in in the confirmation dialog or click CONFIRM TICKET below.';
           if (scanCheckinStatus) {
-            scanCheckinStatus.textContent = 'NOT CHECKED IN';
-            scanCheckinStatus.style.color = '#FBBF24';
+            scanCheckinStatus.innerHTML = '<span class="status-badge-not-checked-in">🔴 NOT CHECKED IN</span>';
           }
           if (scanPrevCheckinInfo) scanPrevCheckinInfo.style.display = 'none';
           if (confirmTicketCheckinBtn) {
@@ -8592,8 +8596,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           scanResultHeadline.style.color = '#34D399';
           scanResultSubtext.textContent = 'ANWAR ALUMNI SEAT CONFIRMED! Participant entry has been permanently recorded.';
           if (scanCheckinStatus) {
-            scanCheckinStatus.textContent = 'CONFIRMED / CHECKED IN';
-            scanCheckinStatus.style.color = '#34D399';
+            scanCheckinStatus.innerHTML = '<span class="status-badge-checked-in">🟢 CHECKED IN</span>';
           }
           if (scanPrevCheckinInfo) {
             scanPrevCheckinInfo.textContent = 'Checked in at: ' + (data.checkInTimestamp || p.checkInTimestamp || '-') + ' (Confirmed by: ' + (data.checkedInBy || p.checkedInBy || 'admin') + ')';
@@ -8620,8 +8623,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           scanResultHeadline.style.color = '#FBBF24';
           scanResultSubtext.textContent = 'This ticket has already been confirmed and cannot be checked in again.';
           if (scanCheckinStatus) {
-            scanCheckinStatus.textContent = 'CONFIRMED / CHECKED IN';
-            scanCheckinStatus.style.color = '#34D399';
+            scanCheckinStatus.innerHTML = '<span class="status-badge-checked-in">🟢 CHECKED IN</span>';
           }
           if (scanPrevCheckinInfo) {
             scanPrevCheckinInfo.textContent = 'Previous Check-in Date & Time: ' + prevTs + ' (Confirmed by: ' + (data.checkedInBy || p.checkedInBy || 'admin') + ')';
@@ -8793,12 +8795,24 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
               triggerBtn.textContent = origLabel || '✓ CONFIRM TICKET';
             }
             closeQrConfirmationModal();
+            if (!res.ok && res.status !== 409 && (!res.data || (res.data.status !== 'INVALID' && res.data.status !== 'ALREADY_CONFIRMED'))) {
+              var dbErrMsg = extractReadableMessage(res.data && res.data.error, 'Database update failed. Status remains NOT CHECKED IN.');
+              if (scanCheckinStatus) {
+                scanCheckinStatus.innerHTML = '<span class="status-badge-not-checked-in">🔴 NOT CHECKED IN</span>';
+              }
+              if (scanResultSubtext) {
+                scanResultSubtext.textContent = dbErrMsg;
+              }
+              showScannerTopNotification('invalid', 'CHECK-IN FAILED – NOT CHECKED IN', dbErrMsg);
+              showToast('✕ ' + dbErrMsg);
+              return;
+            }
             if (res.data && res.data.dashboard) {
               showAuthenticatedDashboard(res.data.dashboard);
             }
             renderScannerVerificationState(res.data || { status: 'INVALID' });
             if (res.status === 200 && res.data && res.data.status === 'CONFIRMED_NOW') {
-              showToast('✓ TICKET CONFIRMED SUCCESSFULLY — ANWAR ALUMNI SEAT CONFIRMED!');
+              showToast('✓ TICKET CONFIRMED SUCCESSFULLY — STATUS: CHECKED IN');
             } else if (res.data && res.data.status === 'ALREADY_CONFIRMED') {
               showToast('⚠️ ALREADY CONFIRMED – ENTRY COMPLETED');
             }
