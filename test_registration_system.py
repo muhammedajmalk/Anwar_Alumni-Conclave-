@@ -298,6 +298,17 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertNotIn("Type to search your name in the selected batch", index_html)
         self.assertIn('id="ticketPassHeaderId"', index_html)
         self.assertIn("/aufbruch_poster.png", index_html)
+        # 10. Verify Sticky Navbar Admin Dashboard exclusivity, Red Register Now CTA, Logo-Free Ticket & Conditional Non-Attending Screen
+        self.assertNotIn('id="heroDashboardBtn"', index_html)
+        body_part = index_html.split("<body", 1)[1].split("<script", 1)[0]
+        self.assertEqual(body_part.count("Admin Dashboard"), 1)
+        self.assertIn('id="navRegisterBtn">Register Now →</a>', index_html)
+        self.assertIn("#DC2626", index_html)
+        self.assertNotIn("event-pass-artwork-frame", index_html)
+        self.assertIn("isTicketEligibleRecord", index_html)
+        self.assertIn("REGISTRATION SUCCESSFUL!", index_html)
+        self.assertIn("Thank you for registering with Aufbruch Alumni Conclave 2026.", index_html)
+        self.assertIn("We appreciate your response. We hope to meet you at another event!", index_html)
         self.assertIn('id="scannerTopNotificationBanner"', index_html)
         self.assertIn('<option value="NONE" selected>None</option>', index_html)
         self.assertIn('id="deleteStudentConfirmModal"', index_html)
@@ -666,10 +677,64 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertEqual(upd_body["updatedRecord"]["batchYear"], "2021")
         self.assertEqual(upd_body["updatedRecord"]["participation"], "സാധിക്കില്ല")
         self.assertFalse(upd_body["updatedRecord"]["shouldSendWhatsApp"])
+        self.assertFalse(upd_body["updatedRecord"]["hasTicket"])
+        self.assertEqual(upd_body["updatedRecord"]["ticketId"], "")
+        self.assertEqual(upd_body["updatedRecord"]["ticketToken"], "")
+        self.assertEqual(upd_body["updatedRecord"]["qrMatrix"], [])
+        self.assertFalse(upd_body["updatedRecord"]["checkedIn"])
+        self.assertEqual(upd_body["updatedRecord"]["checkInStatus"], "NOT ELIGIBLE")
         self.assertTrue(upd_body["updatedRecord"]["whatsappSent"])
         self.assertEqual(upd_body["updatedRecord"]["whatsappSentCount"], 2)
-        self.assertEqual(upd_body["updatedRecord"]["ticketId"], created_ticket_id)
-        self.assertTrue(upd_body["updatedRecord"]["checkedIn"])
+
+        # 5B-2. Direct Non-Attending ("സാധിക്കില്ല") Registration Enforcement Test
+        no_status, no_res, _ = http_json_request(
+            "/api/register",
+            "POST",
+            {
+                "name": "Temp Alumni Unable",
+                "place": "Manjeri",
+                "batchYear": "2017",
+                "whatsappNumber": "9847055667",
+                "participation": "സാധിക്കില്ല",
+            },
+        )
+        self.assertEqual(no_status, 200)
+        self.assertTrue(no_res.get("success"))
+        self.assertFalse(no_res.get("hasTicket", True))
+        self.assertFalse(no_res.get("ticketEligible", True))
+        self.assertEqual(no_res.get("ticketId"), "")
+        self.assertEqual(no_res.get("ticketToken"), "")
+        self.assertEqual(no_res.get("qrMatrix"), [])
+        self.assertIn("REGISTRATION SUCCESSFUL!", no_res.get("confirmationMessage", ""))
+        self.assertIn("We hope to meet you at another event!", no_res.get("confirmationMessage", ""))
+        no_reg_id = no_res["registrationId"]
+
+        # Public/Admin ticket lookup & QR check-in verification/confirm must deny non-attending registrations
+        t_no_status, _, _ = http_json_request(f"/api/ticket?id={no_reg_id}", "GET", headers=auth_headers)
+        self.assertEqual(t_no_status, 404)
+
+        v_no_status, v_no_body, _ = http_json_request(
+            "/api/admin/checkin/verify",
+            "POST",
+            {"qrData": no_reg_id, "allowIdLookup": True},
+            headers=auth_headers,
+        )
+        self.assertEqual(v_no_status, 200)
+        self.assertFalse(v_no_body.get("valid", True))
+        self.assertTrue(v_no_body.get("notAttending"))
+        self.assertEqual(v_no_body.get("status"), "INVALID")
+
+        c_no_status, c_no_body, _ = http_json_request(
+            "/api/admin/checkin/confirm",
+            "POST",
+            {"registrationId": no_reg_id},
+            headers=auth_headers,
+        )
+        self.assertEqual(c_no_status, 403)
+        self.assertFalse(c_no_body.get("success", True))
+        self.assertTrue(c_no_body.get("notAttending"))
+
+        http_json_request("/api/admin/delete", "POST", {"registrationId": no_reg_id}, headers=auth_headers)
 
         # 5C. Delete the registration via /api/admin/delete
         del_status, del_body, _ = http_json_request(

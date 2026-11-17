@@ -809,8 +809,9 @@ def enrich_registration(rec: dict) -> dict:
 
     place_str = str(rec.get("place", "")).strip().title()
     raw_id = normalize_reg_id(rec.get("registrationId") or rec.get("ticketId") or "001")
-    ticket_id = format_anwar_id(raw_id)
-    ticket_token = str(rec.get("ticketToken") or "").strip() or generate_ticket_token(raw_id)
+    has_ticket = bool(is_participating)
+    ticket_id = format_anwar_id(raw_id) if has_ticket else ""
+    ticket_token = (str(rec.get("ticketToken") or "").strip() or generate_ticket_token(raw_id)) if has_ticket else ""
 
     orig_excel_name = re.sub(r"\s+", " ", str(rec.get("originalExcelName") or clean_name).strip())
     name_edited = bool(rec.get("nameEdited") or (orig_excel_name and orig_excel_name.upper() != clean_name.upper()))
@@ -823,28 +824,38 @@ def enrich_registration(rec: dict) -> dict:
     except (ValueError, TypeError):
         wa_sent_count = 1 if wa_sent else 0
 
-    checked_in = bool(rec.get("checkedIn", False))
+    checked_in = bool(rec.get("checkedIn", False)) if has_ticket else False
     checkin_ts = str(rec.get("checkInTimestamp") or "").strip() if checked_in else ""
     checked_in_by = str(rec.get("checkedInBy") or "").strip() if checked_in else ""
     batch_year_str = str(rec.get("batchYear", "")).strip()
 
-    checkin_wa_msg = build_checkin_whatsapp_message(clean_name, batch_year_str, ticket_id)
+    checkin_wa_msg = build_checkin_whatsapp_message(clean_name, batch_year_str, ticket_id) if has_ticket else ""
     checkin_wa_url = (
         f"https://wa.me/{phone_data['waNumber']}?text={urllib.parse.quote(checkin_wa_msg, safe='')}"
-        if phone_data["isValid"]
+        if (has_ticket and phone_data["isValid"])
         else ""
     )
-    checkin_wa_status = str(rec.get("checkinWhatsappStatus") or "").strip().upper()
-    if not checkin_wa_status:
-        checkin_wa_status = "PENDING"
-    checkin_wa_sent = bool(rec.get("checkinWhatsappSent", False) or checkin_wa_status == "SENT")
-    checkin_wa_sent_at = str(rec.get("checkinWhatsappSentAt") or "").strip() if (checkin_wa_sent or checkin_wa_status == "MANUAL_FALLBACK") else ""
-    checkin_wa_msg_id = str(rec.get("checkinWhatsappMessageId") or "").strip()
-    checkin_wa_error = str(rec.get("checkinWhatsappError") or "").strip()
-    checkin_wa_resp = str(rec.get("checkinWhatsappApiResponse") or "").strip()
+    if not has_ticket:
+        checkin_wa_status = "NOT_ELIGIBLE"
+        checkin_wa_sent = False
+        checkin_wa_sent_at = ""
+        checkin_wa_msg_id = ""
+        checkin_wa_error = ""
+        checkin_wa_resp = ""
+    else:
+        checkin_wa_status = str(rec.get("checkinWhatsappStatus") or "").strip().upper()
+        if not checkin_wa_status or checkin_wa_status == "NOT_ELIGIBLE":
+            checkin_wa_status = "PENDING"
+        checkin_wa_sent = bool(rec.get("checkinWhatsappSent", False) or checkin_wa_status == "SENT")
+        checkin_wa_sent_at = str(rec.get("checkinWhatsappSentAt") or "").strip() if (checkin_wa_sent or checkin_wa_status == "MANUAL_FALLBACK") else ""
+        checkin_wa_msg_id = str(rec.get("checkinWhatsappMessageId") or "").strip()
+        checkin_wa_error = str(rec.get("checkinWhatsappError") or "").strip()
+        checkin_wa_resp = str(rec.get("checkinWhatsappApiResponse") or "").strip()
 
     return {
         "registrationId": raw_id,
+        "hasTicket": has_ticket,
+        "ticketEligible": has_ticket,
         "ticketId": ticket_id,
         "ticketToken": ticket_token,
         "timestamp": rec.get("timestamp") or now_ist().strftime("%Y-%m-%d %H:%M:%S"),
@@ -866,9 +877,13 @@ def enrich_registration(rec: dict) -> dict:
         "whatsappSentCount": wa_sent_count,
         "whatsappCloudApiMessageId": str(rec.get("whatsappCloudApiMessageId") or "").strip(),
         "registrationStatus": "REGISTERED",
-        "ticketStatusLabel": "CONFIRMED / CHECKED IN" if checked_in else "VALID ENTRY PASS",
+        "ticketStatusLabel": (
+            ("CONFIRMED / CHECKED IN" if checked_in else "VALID ENTRY PASS")
+            if has_ticket
+            else "NOT ATTENDING (NO PASS)"
+        ),
         "checkedIn": checked_in,
-        "checkInStatus": "CHECKED IN" if checked_in else "NOT CHECKED IN",
+        "checkInStatus": ("CHECKED IN" if checked_in else "NOT CHECKED IN") if has_ticket else "NOT ELIGIBLE",
         "checkInTimestamp": checkin_ts,
         "checkedInBy": checked_in_by,
         "checkinWhatsappStatus": checkin_wa_status,
@@ -879,7 +894,7 @@ def enrich_registration(rec: dict) -> dict:
         "checkinWhatsappApiResponse": checkin_wa_resp,
         "checkinWhatsappMessage": checkin_wa_msg,
         "checkinWhatsappClickToChatUrl": checkin_wa_url,
-        "qrMatrix": make_qr_matrix(ticket_token),
+        "qrMatrix": make_qr_matrix(ticket_token) if has_ticket else [],
     }
 
 
@@ -1436,8 +1451,12 @@ def build_dashboard_payload() -> dict:
     not_participating = total - participating
     rate = round((participating / total) * 100, 1) if total > 0 else 0
 
-    checked_in_total = sum(1 for r in records if r.get("checkedIn"))
-    pending_checkin_total = max(0, total - checked_in_total)
+    checked_in_total = sum(
+        1
+        for r in records
+        if r.get("hasTicket", r["participation"] == "പങ്കെടുക്കും") and r.get("checkedIn")
+    )
+    pending_checkin_total = max(0, participating - checked_in_total)
     checkin_wa_sent_total = sum(
         1 for r in records if r.get("checkinWhatsappSent") or r.get("checkinWhatsappStatus") == "SENT"
     )
@@ -1725,17 +1744,23 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                 records = load_db()
                 found = None
                 for r in records:
-                    if q_token and str(r.get("ticketToken", "")).strip().upper() == q_token.upper():
+                    if q_token and r.get("ticketToken") and str(r.get("ticketToken", "")).strip().upper() == q_token.upper():
                         found = r
                         break
                     if admin_sess and q_id and (
                         str(r.get("registrationId", "")).strip() == normalize_reg_id(q_id)
-                        or str(r.get("ticketId", "")).strip().upper() == q_id.upper()
+                        or (r.get("ticketId") and str(r.get("ticketId", "")).strip().upper() == q_id.upper())
                     ):
                         found = r
                         break
-                if not found:
-                    self._send_json(404, {"success": False, "error": "Ticket not found."})
+                if not found or not found.get("hasTicket", found.get("participation") == "പങ്കെടുക്കും"):
+                    self._send_json(
+                        404,
+                        {
+                            "success": False,
+                            "error": "No valid entry ticket exists for this registration.",
+                        },
+                    )
                     return
                 if admin_sess:
                     self._send_json(200, {"success": True, "ticket": found})
@@ -2165,11 +2190,13 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
             records = load_db()
             found_rec = None
             for r in records:
-                if str(r.get("ticketToken", "")).strip().upper() == candidate_token.upper():
+                r_tok = str(r.get("ticketToken", "")).strip()
+                r_tid = str(r.get("ticketId", "")).strip()
+                if r_tok and r_tok.upper() == candidate_token.upper():
                     found_rec = r
                     break
                 if allow_id_lookup and (
-                    str(r.get("ticketId", "")).strip().upper() == candidate_token.upper()
+                    (r_tid and r_tid.upper() == candidate_token.upper())
                     or (candidate_token.isdigit() and str(r.get("registrationId", "")).strip() == normalize_reg_id(candidate_token))
                 ):
                     found_rec = r
@@ -2186,6 +2213,22 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                         "toastHeadline": "INVALID TICKET – ACCESS DENIED",
                         "legacyHeadline": "INVALID TICKET – PLEASE VERIFY",
                         "message": "INVALID TICKET – ACCESS DENIED",
+                    },
+                )
+                return
+
+            if not found_rec.get("hasTicket", found_rec.get("participation") == "പങ്കെടുക്കും"):
+                self._send_json(
+                    200,
+                    {
+                        "success": False,
+                        "valid": False,
+                        "notAttending": True,
+                        "status": "INVALID",
+                        "headline": "INVALID TICKET – ACCESS DENIED",
+                        "toastHeadline": "NOT ATTENDING – NO ENTRY PASS",
+                        "legacyHeadline": "INVALID TICKET – PLEASE VERIFY",
+                        "message": "Participant selected Unable to Attend (സാധിക്കില്ല). Entry pass and check-in are not permitted.",
                     },
                 )
                 return
@@ -2250,7 +2293,8 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                 records = load_db()
                 found_index = -1
                 for idx, r in enumerate(records):
-                    if target_token and str(r.get("ticketToken", "")).strip().upper() == target_token.upper():
+                    r_tok = str(r.get("ticketToken", "")).strip()
+                    if target_token and r_tok and r_tok.upper() == target_token.upper():
                         found_index = idx
                         break
                     if not target_token and target_reg_id and str(r.get("registrationId", "")).strip() == normalize_reg_id(target_reg_id):
@@ -2273,6 +2317,20 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                     return
 
                 existing_rec = dict(records[found_index])
+                if not existing_rec.get("hasTicket", existing_rec.get("participation") == "പങ്കെടുക്കും"):
+                    self._send_json(
+                        403,
+                        {
+                            "success": False,
+                            "valid": False,
+                            "notAttending": True,
+                            "status": "INVALID",
+                            "headline": "INVALID TICKET – ACCESS DENIED",
+                            "toastHeadline": "NOT ATTENDING – CHECK-IN BLOCKED",
+                            "message": "Cannot confirm check-in: Participant selected Unable to Attend (സാധിക്കില്ല) and has no valid entry pass.",
+                        },
+                    )
+                    return
                 if existing_rec.get("checkedIn"):
                     self._send_json(
                         409,
@@ -2728,15 +2786,15 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                     or norm_name_up in (ex_name_up, ex_orig_up)
                     or norm_orig_up in (ex_name_up, ex_orig_up)
                 ):
-                    ex_ticket = existing.get("ticketId") or format_anwar_id(existing.get("registrationId", "001"))
+                    ex_ticket = existing.get("ticketId") or f"Reg #{existing.get('registrationId', '001')}"
                     self._send_json(
                         409,
                         {
                             "success": False,
                             "duplicate": True,
                             "existingTicketId": ex_ticket,
-                            "message": f"Duplicate registration: {name} (Batch {batch_year}) is already registered under ID {ex_ticket}.",
-                            "error": f"Duplicate registration: {name} (Batch {batch_year}) is already registered under ID {ex_ticket}.",
+                            "message": f"Duplicate registration: {name} (Batch {batch_year}) is already registered ({ex_ticket}).",
+                            "error": f"Duplicate registration: {name} (Batch {batch_year}) is already registered ({ex_ticket}).",
                         },
                     )
                     return
@@ -2788,10 +2846,16 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                     "whatsappCloudApi": cloud_api_res,
                     "storageMode": get_storage_mode(),
                     "registrationId": new_rec["registrationId"],
+                    "hasTicket": new_rec["hasTicket"],
+                    "ticketEligible": new_rec["ticketEligible"],
                     "ticketId": new_rec["ticketId"],
                     "ticketToken": new_rec["ticketToken"],
                     "qrMatrix": new_rec["qrMatrix"],
-                    "confirmationMessage": EXACT_CONFIRMATION_MESSAGE,
+                    "confirmationMessage": (
+                        EXACT_CONFIRMATION_MESSAGE
+                        if new_rec["hasTicket"]
+                        else "REGISTRATION SUCCESSFUL!\nThank you for registering with Aufbruch Alumni Conclave 2026.\nWe appreciate your response. We hope to meet you at another event!"
+                    ),
                     "name": new_rec["name"],
                     "originalExcelName": new_rec["originalExcelName"],
                     "nameEdited": new_rec["nameEdited"],

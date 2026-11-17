@@ -309,22 +309,37 @@
     }
 
     .nav-cta-btn {
-      background: linear-gradient(135deg, var(--gold-400) 0%, var(--gold-500) 100%);
-      color: var(--navy-950);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+      color: #FFFFFF;
       text-decoration: none;
       font-size: 13px;
       font-weight: 700;
-      padding: 9px 18px;
+      letter-spacing: 0.15px;
+      padding: 9px 17px;
       border-radius: 8px;
-      box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      border: 1px solid rgba(254, 202, 202, 0.28);
+      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
       white-space: nowrap;
       cursor: pointer;
     }
 
     .nav-cta-btn:hover {
+      background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+      color: #FFFFFF;
       transform: translateY(-1px);
-      box-shadow: 0 6px 18px rgba(212, 175, 55, 0.45);
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    }
+
+    .nav-cta-btn:active {
+      background: #991B1B;
+      color: #FFFFFF;
+      transform: translateY(0) scale(0.98);
+      box-shadow: 0 2px 8px rgba(153, 27, 27, 0.45);
     }
 
     .mobile-menu-btn {
@@ -582,67 +597,72 @@
       max-width: 1240px;
       width: 100%;
       margin: 0 auto;
-      padding: 60px 24px 72px;
+      padding: 46px 24px 64px;
       flex: 1;
     }
 
     .section-header {
       text-align: center;
-      margin-bottom: 36px;
+      margin-bottom: 24px;
     }
 
     .section-eyebrow {
       display: inline-block;
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 1.6px;
+      letter-spacing: 1.5px;
       color: var(--gold-600);
       background: var(--gold-100);
-      border: 1px solid rgba(212, 175, 55, 0.4);
-      padding: 5px 14px;
+      border: 1px solid rgba(212, 175, 55, 0.42);
+      padding: 4px 13px;
       border-radius: 999px;
-      margin-bottom: 12px;
+      margin-bottom: 9px;
     }
 
     .section-title {
       font-family: var(--font-primary);
-      font-size: clamp(24px, 3.4vw, 34px);
+      font-size: clamp(22px, 3.1vw, 32px);
       font-weight: 800;
-      letter-spacing: -0.6px;
+      letter-spacing: -0.5px;
+      line-height: 1.24;
       color: var(--navy-900);
-      margin-bottom: 10px;
+      margin-bottom: 7px;
     }
 
     .section-desc {
-      font-size: 15px;
+      font-size: 14.5px;
       font-weight: 400;
+      line-height: 1.48;
       color: var(--text-secondary);
-      max-width: 640px;
+      max-width: 580px;
       margin: 0 auto;
     }
 
     .registration-centered-container {
-      max-width: 700px;
+      max-width: 640px;
       width: 100%;
       margin: 0 auto;
     }
 
     .form-card {
-      background: var(--surface-white);
-      border-radius: var(--radius-xl);
-      border: 1px solid var(--border-light);
-      border-top: 5px solid var(--gold-500);
-      box-shadow: var(--shadow-card);
-      padding: 40px 38px;
+      position: relative;
+      background: linear-gradient(180deg, #FFFFFF 0%, #FCFDFE 100%);
+      border-radius: 18px;
+      border: 1px solid rgba(15, 31, 58, 0.12);
+      border-top: 4px solid var(--gold-500);
+      box-shadow:
+        0 20px 44px -12px rgba(10, 22, 40, 0.14),
+        0 4px 12px rgba(10, 22, 40, 0.05);
+      padding: 30px 32px 32px;
     }
 
     @media (max-width: 580px) {
       .section-wrap {
-        padding: 42px 16px 56px;
+        padding: 20px 12px 36px;
       }
       .form-card {
-        padding: 26px 20px;
+        padding: 18px 15px 20px;
       }
     }
 
@@ -652,76 +672,89 @@
       align-items: center;
       flex-wrap: wrap;
       gap: 10px;
-      padding-bottom: 20px;
-      margin-bottom: 26px;
-      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 16px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid #E2E8F0;
     }
 
     .form-card-title {
       font-family: var(--font-primary);
-      font-size: 19px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.35px;
       color: var(--navy-900);
     }
 
     .required-badge {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--danger);
+      font-size: 11px;
+      font-weight: 700;
+      color: #991B1B;
       background: #FEF2F2;
-      padding: 4px 12px;
+      padding: 4px 11px;
       border-radius: 999px;
-      border: 1px solid #FECACA;
+      border: 1px solid rgba(220, 38, 38, 0.24);
     }
 
     .field-group {
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
     .field-label {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 14.5px;
+      gap: 8px;
+      font-size: 13.5px;
       font-weight: 700;
       color: var(--navy-900);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .field-label .req {
       color: var(--danger);
-      margin-left: 4px;
+      margin-left: 3px;
     }
 
     .field-type-tag {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-      background: var(--surface-soft);
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #475569;
+      background: #F1F5F9;
+      border: 1px solid #E2E8F0;
       padding: 2px 8px;
       border-radius: 6px;
+      white-space: nowrap;
     }
 
     .field-help {
-      font-size: 12.5px;
+      font-size: 12px;
       font-weight: 400;
       color: var(--text-secondary);
-      margin-bottom: 10px;
+      margin-bottom: 7px;
+      line-height: 1.4;
     }
 
     .text-input {
       width: 100%;
-      padding: 14px 16px;
-      font-size: 14.5px;
+      padding: 11px 14px;
+      font-size: 14px;
       font-family: var(--font-primary);
       font-weight: 500;
-      color: var(--text-primary);
-      background: var(--surface-slate);
+      color: #0F172A;
+      background: #F8FAFC;
       border: 1.5px solid #CBD5E1;
       border-radius: 10px;
-      transition: all 0.2s ease;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
       outline: none;
+    }
+
+    select.text-input {
+      cursor: pointer;
+    }
+
+    .text-input:hover:not(:focus) {
+      border-color: #94A3B8;
+      background: #FFFFFF;
     }
 
     .text-input::placeholder {
@@ -731,8 +764,8 @@
 
     .text-input:focus {
       background: #FFFFFF;
-      border-color: var(--navy-700);
-      box-shadow: 0 0 0 3.5px rgba(27, 54, 93, 0.13);
+      border-color: var(--navy-800);
+      box-shadow: 0 0 0 3px rgba(15, 31, 58, 0.1);
     }
 
     .text-input.invalid {
@@ -750,7 +783,7 @@
       align-items: center;
       justify-content: space-between;
       margin-top: 6px;
-      font-size: 12.5px;
+      font-size: 12px;
     }
 
     .phone-normalized-pill {
@@ -762,15 +795,15 @@
       padding: 3px 10px;
       border-radius: 999px;
       font-weight: 600;
-      font-size: 12px;
+      font-size: 11.5px;
     }
 
     .error-text {
       display: none;
       color: var(--danger);
-      font-size: 12.5px;
+      font-size: 12px;
       font-weight: 600;
-      margin-top: 6px;
+      margin-top: 5px;
     }
 
     .error-text.visible {
@@ -781,48 +814,49 @@
     .radio-group {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-top: 8px;
+      gap: 10px;
+      margin-top: 6px;
     }
 
     @media (max-width: 520px) {
       .radio-group {
         grid-template-columns: 1fr;
+        gap: 8px;
       }
     }
 
     .radio-card {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 16px 18px;
+      gap: 11px;
+      padding: 13px 15px;
       border: 1.5px solid #CBD5E1;
-      border-radius: 12px;
-      background: var(--surface-slate);
+      border-radius: 10px;
+      background: #F8FAFC;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
     }
 
     .radio-card:hover {
       border-color: var(--navy-700);
-      background: #F1F5F9;
+      background: #FFFFFF;
     }
 
     .radio-card.selected-yes {
       border-color: #059669;
       background: #ECFDF5;
-      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.22);
     }
 
     .radio-card.selected-no {
       border-color: #DC2626;
       background: #FEF2F2;
-      box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+      box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.18);
     }
 
     .radio-card input[type="radio"] {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       accent-color: var(--navy-800);
       cursor: pointer;
       flex-shrink: 0;
@@ -835,7 +869,7 @@
 
     .radio-label-text {
       font-family: var(--font-primary);
-      font-size: 15.5px;
+      font-size: 14.5px;
       font-weight: 700;
       color: var(--navy-900);
     }
@@ -848,27 +882,32 @@
 
     .submit-btn {
       width: 100%;
-      margin-top: 10px;
-      padding: 16px 24px;
-      font-size: 15.5px;
-      font-weight: 700;
-      letter-spacing: 0.1px;
+      margin-top: 6px;
+      padding: 13px 22px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.15px;
       color: var(--navy-950);
       background: linear-gradient(135deg, var(--gold-400) 0%, var(--gold-500) 100%);
-      border: none;
-      border-radius: 12px;
+      border: 1px solid rgba(180, 83, 9, 0.28);
+      border-radius: 10px;
       cursor: pointer;
-      box-shadow: 0 8px 22px rgba(212, 175, 55, 0.38);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 8px 20px rgba(212, 175, 55, 0.34);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 9px;
     }
 
     .submit-btn:hover:not(:disabled) {
       transform: translateY(-1px);
-      box-shadow: 0 12px 28px rgba(212, 175, 55, 0.5);
+      box-shadow: 0 12px 26px rgba(212, 175, 55, 0.46);
+      filter: brightness(1.02);
+    }
+
+    .submit-btn:active:not(:disabled) {
+      transform: translateY(0) scale(0.99);
     }
 
     .submit-btn:disabled {
@@ -2084,6 +2123,70 @@
                   opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
+    .submission-alert-head-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .submission-alert-box.is-non-attending {
+      max-width: 460px;
+      border-color: rgba(16, 185, 129, 0.48);
+      border-top-color: #10B981;
+      box-shadow: 0 28px 68px rgba(0, 0, 0, 0.75),
+                  0 0 36px rgba(16, 185, 129, 0.16);
+    }
+
+    .submission-alert-box.is-non-attending .submission-alert-icon {
+      background: rgba(16, 185, 129, 0.16);
+      border-color: #10B981;
+      color: #6EE7B7;
+      box-shadow: 0 0 24px rgba(16, 185, 129, 0.28);
+    }
+
+    .submission-alert-box.is-non-attending .submission-alert-message {
+      white-space: normal;
+      font-size: 14.5px;
+      line-height: 1.65;
+      color: #E2E8F0;
+      margin-bottom: 24px;
+    }
+
+    .submission-alert-box.has-ticket .submission-alert-head-row {
+      flex-direction: row;
+      gap: 8px;
+      margin-bottom: 3px;
+    }
+
+    .submission-alert-box.has-ticket .submission-alert-icon {
+      width: 28px;
+      height: 28px;
+      font-size: 14px;
+      margin: 0;
+      border-width: 1.5px;
+      box-shadow: 0 0 12px rgba(255, 194, 26, 0.25);
+      flex-shrink: 0;
+    }
+
+    .submission-alert-box.has-ticket .submission-alert-title {
+      font-size: 17px;
+      margin-bottom: 0;
+    }
+
+    .submission-alert-box.has-ticket .submission-alert-message {
+      font-size: 12px;
+      line-height: 1.35;
+      margin-bottom: 8px;
+      color: #CBD5E1;
+    }
+
+    .submission-alert-box.has-ticket .submission-alert-btn {
+      padding: 10px 18px;
+      font-size: 13.5px;
+      border-radius: 10px;
+    }
+
     .submission-alert-overlay.active .submission-alert-box {
       transform: translateY(0) scale(1);
       opacity: 1;
@@ -2470,16 +2573,26 @@
        PREMIUM OFFICIAL EVENT ENTRY PASS (AUFBRUCH ALUMNI CONCLAVE 2026)
        ========================================================================= */
     .submission-alert-box.has-ticket {
-      max-width: 490px;
-      max-height: 94vh;
+      max-width: 452px;
+      max-height: 98vh;
+      max-height: 98dvh;
       overflow-y: auto;
-      padding: 20px 18px 18px;
+      overflow-x: hidden;
+      padding: 14px 14px 12px;
+    }
+
+    .submission-alert-box.has-ticket .submission-alert-close-icon {
+      top: 10px;
+      right: 10px;
+      width: 28px;
+      height: 28px;
+      font-size: 13px;
     }
 
     .ticket-pass-card {
       display: none;
-      margin: 12px auto 14px;
-      max-width: 416px;
+      margin: 4px auto 8px;
+      max-width: 408px;
       text-align: left;
     }
 
@@ -2489,21 +2602,21 @@
 
     .event-pass-shell {
       position: relative;
-      border-radius: 22px;
+      border-radius: 18px;
       overflow: hidden;
       background: #FAF8F3;
       border: 2px solid #D4AF37;
-      box-shadow: 0 24px 52px rgba(3, 7, 18, 0.58), 0 0 0 1px rgba(243, 208, 102, 0.25);
+      box-shadow: 0 20px 44px rgba(3, 7, 18, 0.56), 0 0 0 1px rgba(243, 208, 102, 0.25);
       color: #0F172A;
     }
 
-    /* Executive Sapphire & Gold Header Banner */
+    /* Executive Sapphire & Gold Header Banner (Logo-Free Clean Layout) */
     .event-pass-header {
       position: relative;
       background: linear-gradient(135deg, #071426 0%, #0E2342 58%, #16325C 100%);
-      padding: 18px 18px 16px;
+      padding: 12px 15px 11px;
       color: #FFFFFF;
-      border-bottom: 3px solid #D4AF37;
+      border-bottom: 2.5px solid #D4AF37;
       overflow: hidden;
     }
 
@@ -2522,23 +2635,24 @@
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
+      margin-bottom: 8px;
+      flex-wrap: nowrap;
     }
 
     .event-pass-status-pill {
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      padding: 4px 10px;
+      padding: 3px 9px;
       border-radius: 999px;
       background: rgba(16, 185, 129, 0.2);
       border: 1px solid rgba(52, 211, 153, 0.65);
       color: #6EE7B7;
-      font-size: 10px;
+      font-size: 9.5px;
       font-weight: 800;
-      letter-spacing: 0.7px;
+      letter-spacing: 0.65px;
       text-transform: uppercase;
+      white-space: nowrap;
     }
 
     .event-pass-status-pill.is-confirmed {
@@ -2551,130 +2665,113 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 4px 11px;
-      border-radius: 8px;
+      padding: 3px 10px;
+      border-radius: 7px;
       background: linear-gradient(135deg, #D4AF37 0%, #F3D066 100%);
       color: #071426;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 900;
-      letter-spacing: 0.8px;
-      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.35);
+      letter-spacing: 0.75px;
+      box-shadow: 0 3px 10px rgba(212, 175, 55, 0.35);
+      white-space: nowrap;
     }
 
     .event-pass-brand-row {
       position: relative;
       z-index: 1;
-      display: flex;
-      align-items: center;
-      gap: 13px;
-    }
-
-    .event-pass-artwork-frame {
-      width: 68px;
-      height: 68px;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 2px solid rgba(243, 208, 102, 0.8);
-      background: #4A0E17;
-      flex-shrink: 0;
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
-    }
-
-    .event-pass-artwork-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
       display: block;
+      text-align: left;
     }
 
     .event-pass-org {
-      font-size: 10px;
+      font-size: 9.5px;
       font-weight: 700;
       color: #F3D066;
-      letter-spacing: 0.65px;
+      letter-spacing: 0.55px;
       text-transform: uppercase;
-      line-height: 1.35;
-      margin-bottom: 3px;
+      line-height: 1.28;
+      margin-bottom: 2px;
     }
 
     .event-pass-title {
       font-family: 'Cinzel', 'Sora', Georgia, serif;
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 800;
       color: #FFFFFF;
-      letter-spacing: 0.5px;
-      line-height: 1.22;
-      margin-bottom: 4px;
+      letter-spacing: 0.45px;
+      line-height: 1.2;
+      margin-bottom: 3px;
     }
 
     .event-pass-venue {
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 500;
       color: #CBD5E1;
-      line-height: 1.35;
+      line-height: 1.28;
     }
 
     /* Pass Body (Participant Details) */
     .event-pass-body {
       background: #FFFFFF;
-      padding: 16px 18px 14px;
+      padding: 11px 15px 10px;
     }
 
     .event-pass-holder-row {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 10px;
-      padding-bottom: 12px;
-      margin-bottom: 12px;
+      gap: 8px;
+      padding-bottom: 8px;
+      margin-bottom: 8px;
       border-bottom: 1px solid #E2E8F0;
     }
 
     .event-pass-field-label {
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.7px;
+      letter-spacing: 0.6px;
       color: #64748B;
-      margin-bottom: 3px;
+      margin-bottom: 2px;
     }
 
     .event-pass-holder-name {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 800;
       color: #071426;
       text-transform: uppercase;
-      letter-spacing: 0.3px;
-      line-height: 1.25;
+      letter-spacing: 0.25px;
+      line-height: 1.2;
       word-break: break-word;
     }
 
     .event-pass-meta-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      grid-template-columns: 1.1fr 0.78fr 1.12fr;
+      gap: 7px;
     }
 
     .event-pass-meta-cell {
       background: #F8FAFC;
       border: 1px solid #E2E8F0;
-      border-radius: 10px;
-      padding: 8px 10px;
+      border-radius: 8px;
+      padding: 6px 8px;
+      min-width: 0;
     }
 
     .event-pass-meta-val {
-      font-size: 13.5px;
+      font-size: 12.5px;
       font-weight: 800;
       color: #0F172A;
-      line-height: 1.25;
+      line-height: 1.2;
       word-break: break-word;
     }
 
     /* Perforated Ticket Stub Tear Line */
     .event-pass-perforation {
       position: relative;
-      height: 26px;
+      height: 16px;
       background: linear-gradient(180deg, #FFFFFF 50%, #F1F5F9 50%);
       display: flex;
       align-items: center;
@@ -2687,32 +2784,32 @@
       content: "";
       position: absolute;
       top: 50%;
-      width: 24px;
-      height: 24px;
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
-      background: #0D1B2A;
+      background: #171A22;
       border: 2px solid #D4AF37;
       transform: translateY(-50%);
       z-index: 2;
     }
 
     .event-pass-perforation::before {
-      left: -13px;
+      left: -10px;
     }
 
     .event-pass-perforation::after {
-      right: -13px;
+      right: -10px;
     }
 
     .event-pass-tear-line {
-      width: calc(100% - 34px);
+      width: calc(100% - 28px);
       border-top: 2px dashed #CBD5E1;
     }
 
     /* Dedicated QR Stub Section */
     .event-pass-qr-stub {
       background: linear-gradient(180deg, #F1F5F9 0%, #E2E8F0 100%);
-      padding: 14px 18px 18px;
+      padding: 9px 14px 10px;
       text-align: center;
     }
 
@@ -2720,45 +2817,47 @@
       display: inline-flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       background: #FFFFFF;
-      padding: 12px;
-      border-radius: 16px;
+      padding: 7px;
+      border-radius: 13px;
       border: 2px solid #0E2342;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
-      margin-bottom: 10px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.14);
+      margin-bottom: 5px;
+    }
+
+    .event-pass-qr-dock canvas {
+      display: block;
+      width: 164px;
+      height: 164px;
+      aspect-ratio: 1 / 1;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
     }
 
     .event-pass-stub-id {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 20px;
+      font-size: 16.5px;
       font-weight: 900;
       color: #071426;
-      letter-spacing: 1.8px;
-      margin-bottom: 3px;
+      letter-spacing: 1.5px;
+      margin-bottom: 1px;
     }
 
     .event-pass-stub-note {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
       color: #475569;
-      letter-spacing: 0.25px;
+      letter-spacing: 0.2px;
+      line-height: 1.25;
     }
 
     /* 3 Ticket Action Buttons Row */
     .ticket-actions-bar {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    @media (max-width: 440px) {
-      .ticket-actions-bar {
-        grid-template-columns: 1fr;
-      }
-      .event-pass-meta-grid {
-        grid-template-columns: 1fr 1fr;
-      }
+      grid-template-columns: 1.25fr 1fr 1fr;
+      gap: 7px;
+      margin-top: 8px;
     }
 
     .ticket-download-btn,
@@ -2766,21 +2865,22 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 10px 10px;
-      border-radius: 10px;
+      gap: 5px;
+      padding: 9px 8px;
+      border-radius: 9px;
       font-family: var(--font-primary);
-      font-size: 12.5px;
+      font-size: 11.5px;
       font-weight: 800;
       cursor: pointer;
       transition: all 0.15s ease;
+      white-space: nowrap;
     }
 
     .ticket-download-btn {
       border: 1.5px solid #10B981;
       background: linear-gradient(135deg, #10B981 0%, #059669 100%);
       color: #FFFFFF;
-      box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+      box-shadow: 0 5px 14px rgba(16, 185, 129, 0.3);
     }
 
     .ticket-download-btn:hover {
@@ -2797,6 +2897,114 @@
     .ticket-action-secondary-btn:hover {
       background: rgba(212, 175, 55, 0.2);
       border-color: var(--gold-400);
+    }
+
+    @media (max-width: 580px), (max-height: 760px) {
+      .submission-alert-overlay {
+        padding: 6px;
+      }
+      .submission-alert-box.has-ticket {
+        padding: 10px 10px 9px;
+        border-radius: 15px;
+      }
+      .submission-alert-box.has-ticket .submission-alert-title {
+        font-size: 15px;
+      }
+      .submission-alert-box.has-ticket .submission-alert-icon {
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+      }
+      .submission-alert-box.has-ticket .submission-alert-message {
+        font-size: 11px;
+        margin-bottom: 6px;
+      }
+      .ticket-pass-card {
+        margin: 2px auto 6px;
+      }
+      .event-pass-header {
+        padding: 9px 11px 8px;
+      }
+      .event-pass-top-bar {
+        margin-bottom: 5px;
+      }
+      .event-pass-org {
+        font-size: 8.5px;
+      }
+      .event-pass-title {
+        font-size: 13px;
+        letter-spacing: 0.2px;
+      }
+      .event-pass-venue {
+        font-size: 9.5px;
+      }
+      .event-pass-body {
+        padding: 8px 11px 7px;
+      }
+      .event-pass-holder-row {
+        padding-bottom: 5px;
+        margin-bottom: 5px;
+      }
+      .event-pass-holder-name {
+        font-size: 14.5px;
+      }
+      .event-pass-meta-grid {
+        gap: 5px;
+      }
+      .event-pass-meta-cell {
+        padding: 4px 6px;
+      }
+      .event-pass-meta-cell .event-pass-field-label {
+        font-size: 8px;
+        letter-spacing: 0.35px;
+        white-space: nowrap;
+      }
+      .event-pass-meta-val {
+        font-size: 11.5px;
+      }
+      .event-pass-perforation {
+        height: 12px;
+      }
+      .event-pass-qr-stub {
+        padding: 7px 10px 8px;
+      }
+      .event-pass-qr-dock {
+        padding: 5px;
+        border-radius: 10px;
+        margin-bottom: 3px;
+      }
+      .event-pass-qr-dock canvas {
+        width: 136px;
+        height: 136px;
+      }
+      .event-pass-stub-id {
+        font-size: 14.5px;
+      }
+      .event-pass-stub-note {
+        font-size: 9.5px;
+      }
+      .ticket-actions-bar {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 5px;
+        margin-top: 6px;
+      }
+      .ticket-download-btn,
+      .ticket-action-secondary-btn {
+        padding: 7px 4px;
+        font-size: 10.5px;
+        border-radius: 8px;
+        min-width: 0;
+      }
+      .submission-alert-box.has-ticket .submission-alert-btn {
+        padding: 8px 14px;
+        font-size: 12.5px;
+      }
+    }
+
+    @media (max-width: 440px) {
+      .ticket-btn-suffix {
+        display: none;
+      }
     }
 
     /* Dedicated Print Target Layer */
@@ -3218,12 +3426,13 @@
         box-shadow: 0 18px 36px rgba(0, 0, 0, 0.55);
       }
       .nav-actions {
-        gap: 8px;
+        gap: 7px;
         flex-shrink: 0;
       }
       .nav-cta-btn {
-        padding: 7px 12px;
+        padding: 7px 11px;
         font-size: 12px;
+        border-radius: 7px;
       }
       .text-input,
       .admin-input,
@@ -3299,21 +3508,51 @@
         font-size: 14px;
       }
       .section-wrap {
-        padding: 32px 12px 44px;
+        padding: 18px 12px 34px;
       }
       .section-header {
-        margin-bottom: 24px;
+        margin-bottom: 12px;
+      }
+      .section-eyebrow {
+        font-size: 9.5px;
+        letter-spacing: 1.1px;
+        padding: 3px 10px;
+        margin-bottom: 5px;
+      }
+      .section-title {
+        font-size: 20px;
+        line-height: 1.22;
+        margin-bottom: 4px;
+        letter-spacing: -0.35px;
+      }
+      .section-desc {
+        font-size: 13px;
+        line-height: 1.38;
       }
       .form-card {
-        padding: 22px 16px;
-        border-radius: 16px;
+        padding: 18px 14px 20px;
+        border-radius: 15px;
       }
       .form-card-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-        padding-bottom: 16px;
-        margin-bottom: 20px;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        padding-bottom: 10px;
+        margin-bottom: 14px;
+      }
+      .form-card-title {
+        font-size: 13.5px;
+        white-space: nowrap;
+      }
+      .required-badge {
+        font-size: 9.5px;
+        padding: 3px 7px;
+        white-space: nowrap;
+      }
+      .field-group {
+        margin-bottom: 16px;
       }
       .confirmation-box {
         padding: 28px 16px;
@@ -3371,14 +3610,25 @@
     }
 
     @media (max-width: 400px) {
+      .nav-container {
+        padding: 0 10px;
+        gap: 6px;
+      }
       .nav-cta-btn {
-        display: none;
+        display: inline-flex;
+        padding: 6px 9px;
+        font-size: 11px;
+      }
+      .brand-emblem {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
       }
       .brand-title {
-        font-size: 13.5px;
+        font-size: 12.5px;
       }
       .brand-sub {
-        font-size: 9.5px;
+        font-size: 9px;
       }
     }
   </style>
@@ -3408,7 +3658,7 @@
           <span class="status-dot"></span>
           <span class="designed-by-text">Designed by: Ajmal Kattichira</span>
         </div>
-        <a href="#register" class="nav-cta-btn" id="navRegisterBtn">Register Now</a>
+        <a href="#register" class="nav-cta-btn" id="navRegisterBtn">Register Now →</a>
         <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation">☰</button>
       </div>
     </div>
@@ -3459,9 +3709,6 @@
           <a href="#register" class="btn-gold-lg" id="heroRegisterBtn">
             <span>Complete Registration</span>
             <span>→</span>
-          </a>
-          <a href="#dashboard" class="btn-outline-gold" id="heroDashboardBtn">
-            <span>🔒 Admin Dashboard</span>
           </a>
         </div>
       </div>
@@ -4502,14 +4749,16 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
   <div id="submissionAlertModal" class="submission-alert-overlay" role="dialog" aria-modal="true" aria-labelledby="submissionAlertTitle" aria-hidden="true">
     <div id="submissionAlertBox" class="submission-alert-box">
       <button type="button" id="submissionAlertCloseIcon" class="submission-alert-close-icon" aria-label="Close alert">✕</button>
-      <div id="submissionAlertIcon" class="submission-alert-icon" aria-hidden="true">✓</div>
-      <div id="submissionAlertTitle" class="submission-alert-title">Registration Successful!</div>
+      <div class="submission-alert-head-row">
+        <div id="submissionAlertIcon" class="submission-alert-icon" aria-hidden="true">✓</div>
+        <div id="submissionAlertTitle" class="submission-alert-title">Registration Successful!</div>
+      </div>
       <div id="submissionAlertBadge" class="submission-alert-badge" style="display: none;">Registration Not Saved</div>
       <p id="submissionAlertMessage" class="submission-alert-message">
         Your registration has been submitted successfully. Thank you for registering.
       </p>
 
-      <!-- Automatic QR Code Event Pass (Redesigned Executive Entry Ticket) -->
+      <!-- Automatic QR Code Event Pass (Shown ONLY for "പങ്കെടുക്കും") -->
       <div id="successTicketPassWrap" class="ticket-pass-card">
         <div class="event-pass-shell">
           <div class="event-pass-header">
@@ -4518,19 +4767,9 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
               <span id="ticketPassHeaderId" class="event-pass-id-chip">ANWAR 001</span>
             </div>
             <div class="event-pass-brand-row">
-              <div class="event-pass-artwork-frame" style="background: linear-gradient(145deg, #091930 0%, #132C52 100%); display: flex; align-items: center; justify-content: center;">
-                <svg viewBox="0 0 64 64" width="54" height="54" role="img" aria-label="Aufbruch 2026 Crest">
-                  <circle cx="32" cy="32" r="28" fill="none" stroke="#D4AF37" stroke-width="2" />
-                  <circle cx="32" cy="32" r="23" fill="none" stroke="rgba(243,208,102,0.45)" stroke-width="1" stroke-dasharray="2.5 2.5" />
-                  <text x="32" y="34" text-anchor="middle" fill="#F3D066" font-family="Cinzel, Georgia, serif" font-weight="800" font-size="24">A</text>
-                  <text x="32" y="48" text-anchor="middle" fill="#E2E8F0" font-family="Sora, sans-serif" font-weight="800" font-size="8" letter-spacing="1.4">2026</text>
-                </svg>
-              </div>
-              <div>
-                <div class="event-pass-org">Majmau Ssaqafathil Islamiyya – Da'wa College Alumni</div>
-                <div class="event-pass-title">AUFBRUCH ALUMNI CONCLAVE 2026</div>
-                <div class="event-pass-venue">Thu, Dec 10, 2026 • Majmau Academy, Nilambur</div>
-              </div>
+              <div class="event-pass-org">Majmau Ssaqafathil Islamiyya – Da'wa College Alumni</div>
+              <div class="event-pass-title">AUFBRUCH ALUMNI CONCLAVE 2026</div>
+              <div class="event-pass-venue">Thu, Dec 10, 2026 • Majmau Academy, Nilambur</div>
             </div>
           </div>
 
@@ -4573,14 +4812,14 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         </div>
 
         <div class="ticket-actions-bar">
-          <button type="button" id="downloadTicketPngBtn" class="ticket-download-btn">
-            <span>⬇ Download Ticket</span>
+          <button type="button" id="downloadTicketPngBtn" class="ticket-download-btn" aria-label="Download Ticket">
+            <span>⬇ Download<span class="ticket-btn-suffix"> Ticket</span></span>
           </button>
-          <button type="button" id="viewTicketBtn" class="ticket-action-secondary-btn">
-            <span>🎟️ View Ticket</span>
+          <button type="button" id="viewTicketBtn" class="ticket-action-secondary-btn" aria-label="View Ticket">
+            <span>🎟️ View<span class="ticket-btn-suffix"> Ticket</span></span>
           </button>
-          <button type="button" id="printTicketBtn" class="ticket-action-secondary-btn">
-            <span>🖨️ Print Ticket</span>
+          <button type="button" id="printTicketBtn" class="ticket-action-secondary-btn" aria-label="Print Ticket">
+            <span>🖨️ Print<span class="ticket-btn-suffix"> Ticket</span></span>
           </button>
         </div>
       </div>
@@ -5195,11 +5434,6 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       });
 
       navDashboardLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        showAdminDashboardSection();
-      });
-
-      document.getElementById('heroDashboardBtn').addEventListener('click', function(e) {
         e.preventDefault();
         showAdminDashboardSection();
       });
@@ -5825,26 +6059,30 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         var ctx = canvasEl.getContext('2d');
         var mat = (Array.isArray(qrMatrix) && qrMatrix.length > 0 && Array.isArray(qrMatrix[0])) ? qrMatrix : null;
         var dim = sizePx || canvasEl.width || 184;
-        canvasEl.width = dim;
-        canvasEl.height = dim;
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, dim, dim);
-
-        if (!mat) return;
+        if (!mat) {
+          canvasEl.width = dim;
+          canvasEl.height = dim;
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, dim, dim);
+          return;
+        }
         var n = mat.length;
         // ISO 18004 requires at least 4 modules of white quiet zone for universal scanner reliability
         var border = 4;
         var totalMods = n + border * 2;
-        var scale = dim / totalMods;
-        ctx.fillStyle = '#071426';
+        var targetPx = dim < 300 ? Math.max(dim * 2, 280) : dim;
+        var modPx = Math.max(4, Math.floor(targetPx / totalMods));
+        var pxDim = modPx * totalMods;
+        canvasEl.width = pxDim;
+        canvasEl.height = pxDim;
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, pxDim, pxDim);
+
+        ctx.fillStyle = '#000000';
         for (var r = 0; r < n; r++) {
           for (var c = 0; c < n; c++) {
             if (mat[r][c]) {
-              var x = Math.floor((c + border) * scale);
-              var y = Math.floor((r + border) * scale);
-              var w = Math.ceil((c + border + 1) * scale) - x;
-              var h = Math.ceil((r + border + 1) * scale) - y;
-              ctx.fillRect(x, y, w, h);
+              ctx.fillRect((c + border) * modPx, (r + border) * modPx, modPx, modPx);
             }
           }
         }
@@ -5870,26 +6108,16 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         var statusText = isChecked ? '✓ CONFIRMED / CHECKED IN' : '✓ VALID ENTRY PASS';
         var pillClass = 'event-pass-status-pill' + (isChecked ? ' is-confirmed' : '');
         return (
-          '<div class="event-pass-shell" style="max-width: 416px; margin: 0 auto;">' +
+          '<div class="event-pass-shell" style="max-width: 408px; margin: 0 auto;">' +
             '<div class="event-pass-header">' +
               '<div class="event-pass-top-bar">' +
                 '<span class="' + pillClass + '">' + statusText + '</span>' +
                 '<span class="event-pass-id-chip">' + escapeHtml(tId) + '</span>' +
               '</div>' +
               '<div class="event-pass-brand-row">' +
-                '<div class="event-pass-artwork-frame" style="background: linear-gradient(145deg, #091930 0%, #132C52 100%); display: flex; align-items: center; justify-content: center;">' +
-                  '<svg viewBox="0 0 64 64" width="54" height="54" role="img" aria-label="Aufbruch 2026 Crest">' +
-                    '<circle cx="32" cy="32" r="28" fill="none" stroke="#D4AF37" stroke-width="2" />' +
-                    '<circle cx="32" cy="32" r="23" fill="none" stroke="rgba(243,208,102,0.45)" stroke-width="1" stroke-dasharray="2.5 2.5" />' +
-                    '<text x="32" y="34" text-anchor="middle" fill="#F3D066" font-family="Cinzel, Georgia, serif" font-weight="800" font-size="24">A</text>' +
-                    '<text x="32" y="48" text-anchor="middle" fill="#E2E8F0" font-family="Sora, sans-serif" font-weight="800" font-size="8" letter-spacing="1.4">2026</text>' +
-                  '</svg>' +
-                '</div>' +
-                '<div>' +
-                  '<div class="event-pass-org">Majmau Ssaqafathil Islamiyya – Da\'wa College Alumni</div>' +
-                  '<div class="event-pass-title">AUFBRUCH ALUMNI CONCLAVE 2026</div>' +
-                  '<div class="event-pass-venue">Thu, Dec 10, 2026 • Majmau Academy, Nilambur</div>' +
-                '</div>' +
+                '<div class="event-pass-org">Majmau Ssaqafathil Islamiyya – Da\'wa College Alumni</div>' +
+                '<div class="event-pass-title">AUFBRUCH ALUMNI CONCLAVE 2026</div>' +
+                '<div class="event-pass-venue">Thu, Dec 10, 2026 • Majmau Academy, Nilambur</div>' +
               '</div>' +
             '</div>' +
             '<div class="event-pass-body">' +
@@ -5928,8 +6156,20 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         );
       }
 
+      function isTicketEligibleRecord(rec) {
+        return Boolean(
+          rec &&
+          String(rec.participation || '').trim() === 'പങ്കെടുക്കും' &&
+          rec.hasTicket !== false &&
+          rec.ticketToken
+        );
+      }
+
       function openFullTicketViewerModal(rec) {
-        if (!rec || !fullTicketViewerModal || !fullTicketViewerBody) return;
+        if (!isTicketEligibleRecord(rec) || !fullTicketViewerModal || !fullTicketViewerBody) {
+          showToast('No entry pass exists for non-attending registrations.');
+          return;
+        }
         activeViewedTicketRecord = rec;
         fullTicketViewerBody.innerHTML = buildStandaloneEventPassMarkup(rec, 'viewerTicketQrCanvas');
         var vCanvas = document.getElementById('viewerTicketQrCanvas');
@@ -5946,7 +6186,10 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       }
 
       function printEventTicketPass(rec) {
-        if (!rec || !printTicketArea) return;
+        if (!isTicketEligibleRecord(rec) || !printTicketArea) {
+          showToast('No entry pass exists for non-attending registrations.');
+          return;
+        }
         printTicketArea.innerHTML = buildStandaloneEventPassMarkup(rec, 'printTicketQrCanvas');
         var pCanvas = document.getElementById('printTicketQrCanvas');
         if (pCanvas) {
@@ -5957,7 +6200,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         }, 120);
       }
 
-      function renderPremiumTicketCanvasAndDownload(rec, posterImg) {
+      function renderPremiumTicketCanvasAndDownload(rec) {
         var tId = rec.ticketId || formatAnwarTicketId(rec.registrationId || '001');
         var pName = String(rec.name || 'ANWAR').toUpperCase();
         var pBatch = String(rec.batchYear || '-');
@@ -5966,13 +6209,13 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         var statusBadgeText = rec.checkedIn ? 'CONFIRMED / CHECKED IN' : 'VALID ENTRY PASS';
 
         var W = 1080;
-        var H = 1720;
+        var H = 1600;
         var cardX = 54;
         var cardY = 54;
         var cardW = W - 108;
         var cardH = H - 108;
-        var headerH = 440;
-        var perfY = cardY + headerH + 490;
+        var headerH = 355;
+        var perfY = cardY + headerH + 460;
         var canvas = document.createElement('canvas');
         canvas.width = W;
         canvas.height = H;
@@ -5992,7 +6235,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         ctx.fill();
         ctx.clip();
 
-        // 1. Top Executive Sapphire Header
+        // 1. Top Executive Sapphire Header (Logo-Free Clean Typography)
         var hdrGrad = ctx.createLinearGradient(cardX, cardY, cardX + cardW, cardY + headerH);
         hdrGrad.addColorStop(0, '#071426');
         hdrGrad.addColorStop(0.6, '#0E2342');
@@ -6001,7 +6244,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         ctx.fillRect(cardX, cardY, cardW, headerH);
 
         // Status Pill (top left inside header)
-        drawRoundedRectPath(ctx, cardX + 46, cardY + 42, 340, 52, 26);
+        drawRoundedRectPath(ctx, cardX + 46, cardY + 40, 340, 52, 26);
         ctx.fillStyle = rec.checkedIn ? 'rgba(212, 175, 55, 0.22)' : 'rgba(16, 185, 129, 0.2)';
         ctx.fill();
         ctx.strokeStyle = rec.checkedIn ? '#F3D066' : '#34D399';
@@ -6011,13 +6254,13 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         ctx.fillStyle = rec.checkedIn ? '#FDE68A' : '#6EE7B7';
         ctx.font = '800 22px Sora, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('✓ ' + statusBadgeText, cardX + 46 + 170, cardY + 76);
+        ctx.fillText('✓ ' + statusBadgeText, cardX + 46 + 170, cardY + 74);
 
         // Gold Unique Ticket ID Chip (top right inside header)
         var chipW = 260;
         var chipX = cardX + cardW - 46 - chipW;
-        drawRoundedRectPath(ctx, chipX, cardY + 38, chipW, 60, 18);
-        var chipGrad = ctx.createLinearGradient(chipX, cardY + 38, chipX + chipW, cardY + 98);
+        drawRoundedRectPath(ctx, chipX, cardY + 36, chipW, 60, 18);
+        var chipGrad = ctx.createLinearGradient(chipX, cardY + 36, chipX + chipW, cardY + 96);
         chipGrad.addColorStop(0, '#D4AF37');
         chipGrad.addColorStop(1, '#F3D066');
         ctx.fillStyle = chipGrad;
@@ -6026,69 +6269,22 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         ctx.fillStyle = '#071426';
         ctx.font = '900 28px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText(tId, chipX + chipW / 2, cardY + 78);
+        ctx.fillText(tId, chipX + chipW / 2, cardY + 76);
 
-        // Gold Monogram Crest Seal + Brand Copy
-        var artX = cardX + 46;
-        var artY = cardY + 132;
-        var artSize = 230;
-        var cxSeal = artX + artSize / 2;
-        var cySeal = artY + artSize / 2;
-        ctx.save();
-        drawRoundedRectPath(ctx, artX, artY, artSize, artSize, 32);
-        var sealGrad = ctx.createLinearGradient(artX, artY, artX + artSize, artY + artSize);
-        sealGrad.addColorStop(0, '#091930');
-        sealGrad.addColorStop(1, '#132C52');
-        ctx.fillStyle = sealGrad;
-        ctx.fill();
-        ctx.clip();
-
-        ctx.strokeStyle = '#D4AF37';
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.arc(cxSeal, cySeal, 84, 0, Math.PI * 2);
-        ctx.stroke();
-
-        ctx.save();
-        ctx.setLineDash([6, 6]);
-        ctx.strokeStyle = 'rgba(243, 208, 102, 0.55)';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(cxSeal, cySeal, 68, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.restore();
-
-        ctx.fillStyle = '#F3D066';
-        ctx.textAlign = 'center';
-        ctx.font = '800 84px Cinzel, Georgia, serif';
-        ctx.fillText('A', cxSeal, cySeal + 14);
-
-        ctx.fillStyle = '#E2E8F0';
-        ctx.font = '800 24px Sora, sans-serif';
-        ctx.fillText('2026', cxSeal, cySeal + 52);
-        ctx.restore();
-
-        ctx.strokeStyle = '#F3D066';
-        ctx.lineWidth = 4;
-        drawRoundedRectPath(ctx, artX, artY, artSize, artSize, 32);
-        ctx.stroke();
-
-        var textX = artX + artSize + 36;
+        // Clean Aligned Full-Width Brand Text (No Left Logo)
+        var textX = cardX + 46;
         ctx.textAlign = 'left';
         ctx.fillStyle = '#F3D066';
-        ctx.font = '700 21px Sora, sans-serif';
-        ctx.fillText("MAJMAU SSAQAFATHIL ISLAMIYYA", textX, artY + 46);
-        ctx.fillText("DA'WA COLLEGE ALUMNI", textX, artY + 76);
+        ctx.font = '700 20px Sora, sans-serif';
+        ctx.fillText("MAJMAU SSAQAFATHIL ISLAMIYYA • DA'WA COLLEGE ALUMNI", textX, cardY + 150);
 
         ctx.fillStyle = '#FFFFFF';
-        ctx.font = '800 40px Cinzel, Sora, Georgia, serif';
-        ctx.fillText('AUFBRUCH', textX, artY + 134);
-        ctx.font = '800 30px Cinzel, Sora, Georgia, serif';
-        ctx.fillText('ALUMNI CONCLAVE 2026', textX, artY + 174);
+        ctx.font = '800 42px Cinzel, Sora, Georgia, serif';
+        ctx.fillText('AUFBRUCH ALUMNI CONCLAVE 2026', textX, cardY + 216);
 
         ctx.fillStyle = '#CBD5E1';
-        ctx.font = '500 22px Sora, sans-serif';
-        ctx.fillText('Thu, Dec 10, 2026 • Majmau Academy, Nilambur', textX, artY + 218);
+        ctx.font = '500 24px Sora, sans-serif';
+        ctx.fillText('Thu, Dec 10, 2026 • Majmau Academy, Nilambur', textX, cardY + 266);
 
         // Brushed Gold Accent Line below Header
         ctx.fillStyle = '#D4AF37';
@@ -6102,27 +6298,27 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         ctx.textAlign = 'left';
         ctx.fillStyle = '#64748B';
         ctx.font = '800 22px Sora, sans-serif';
-        ctx.fillText('PARTICIPANT NAME', cardX + 48, bodyTop + 68);
+        ctx.fillText('PARTICIPANT NAME', cardX + 48, bodyTop + 66);
 
         // Fit participant name gracefully if long
         ctx.fillStyle = '#071426';
         var nameFontSize = pName.length > 26 ? 34 : 42;
         ctx.font = '800 ' + nameFontSize + 'px Sora, sans-serif';
-        ctx.fillText(pName.substring(0, 36), cardX + 48, bodyTop + 122);
+        ctx.fillText(pName.substring(0, 36), cardX + 48, bodyTop + 118);
 
         // Hairline divider
         ctx.strokeStyle = '#E2E8F0';
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(cardX + 48, bodyTop + 162);
-        ctx.lineTo(cardX + cardW - 48, bodyTop + 162);
+        ctx.moveTo(cardX + 48, bodyTop + 156);
+        ctx.lineTo(cardX + cardW - 48, bodyTop + 156);
         ctx.stroke();
 
         // 3 Clean Metadata Boxes: Ticket ID, Batch Year, Place
-        var gridY = bodyTop + 198;
+        var gridY = bodyTop + 190;
         var boxGap = 24;
         var boxW = (cardW - 96 - boxGap * 2) / 3;
-        var boxH = 220;
+        var boxH = 210;
         var metaCells = [
           { label: 'TICKET ID', value: tId, color: '#B45309', mono: true },
           { label: 'BATCH YEAR', value: pBatch, color: '#0F172A', mono: false },
@@ -6143,7 +6339,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
           ctx.fillStyle = metaCells[mc].color;
           ctx.font = metaCells[mc].mono ? '900 32px monospace' : '800 30px Sora, sans-serif';
-          ctx.fillText(metaCells[mc].value, cx + 22, gridY + 124);
+          ctx.fillText(metaCells[mc].value, cx + 22, gridY + 122);
         }
 
         // 3. Dedicated Entry QR Stub Section
@@ -6167,7 +6363,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         // Dedicated White High-Contrast QR Code Frame
         var qrBoxSize = 440;
         var qrBoxX = cardX + (cardW - qrBoxSize) / 2;
-        var qrBoxY = perfY + 62;
+        var qrBoxY = perfY + 48;
         drawRoundedRectPath(ctx, qrBoxX, qrBoxY, qrBoxSize, qrBoxSize, 32);
         ctx.fillStyle = '#FFFFFF';
         ctx.fill();
@@ -6182,11 +6378,11 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         ctx.textAlign = 'center';
         ctx.fillStyle = '#071426';
         ctx.font = '900 44px monospace';
-        ctx.fillText(tId, W / 2, qrBoxY + qrBoxSize + 68);
+        ctx.fillText(tId, W / 2, qrBoxY + qrBoxSize + 66);
 
         ctx.fillStyle = '#475569';
         ctx.font = '700 22px Sora, sans-serif';
-        ctx.fillText('Present this pass at the entrance • One-time QR entry', W / 2, qrBoxY + qrBoxSize + 114);
+        ctx.fillText('Present this pass at the entrance • One-time QR entry', W / 2, qrBoxY + qrBoxSize + 112);
 
         ctx.restore();
 
@@ -6222,21 +6418,11 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       }
 
       function downloadTicketAsPng(rec) {
-        if (!rec) return;
-        var domPoster = document.querySelector('.event-pass-artwork-img');
-        if (domPoster && domPoster.complete && domPoster.naturalWidth > 0) {
-          renderPremiumTicketCanvasAndDownload(rec, domPoster);
+        if (!isTicketEligibleRecord(rec)) {
+          showToast('No entry ticket exists for non-attending registrations.');
           return;
         }
-        var img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = function() {
-          renderPremiumTicketCanvasAndDownload(rec, img);
-        };
-        img.onerror = function() {
-          renderPremiumTicketCanvasAndDownload(rec, null);
-        };
-        img.src = '/aufbruch_poster.png';
+        renderPremiumTicketCanvasAndDownload(rec);
       }
 
       if (downloadTicketPngBtn) {
@@ -6288,38 +6474,71 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       function openSubmissionAlertModal(res) {
         if (!submissionAlertModal) return;
         lastAlertWasSuccess = true;
-        activeSuccessTicketRecord = res || null;
-        if (submissionAlertBox) {
-          submissionAlertBox.classList.remove('is-error');
-          submissionAlertBox.classList.add('has-ticket');
-        }
-        if (submissionAlertIcon) submissionAlertIcon.textContent = '✓';
-        submissionAlertTitle.textContent = 'Registration Successful!';
-        if (submissionAlertBadge) {
-          submissionAlertBadge.textContent = '';
-          submissionAlertBadge.style.display = 'none';
-        }
-        submissionAlertMessage.textContent = 'Your official Aufbruch – Alumni Conclave 2026 Entry Pass is ready.';
+        var isAttending = isTicketEligibleRecord(res);
+        activeSuccessTicketRecord = isAttending ? res : null;
 
-        if (successTicketPassWrap && res) {
-          var tId = res.ticketId || formatAnwarTicketId(res.registrationId || '001');
-          var isChecked = Boolean(res.checkedIn);
-          if (ticketPassStatus) {
-            ticketPassStatus.textContent = isChecked ? '✓ CONFIRMED / CHECKED IN' : '✓ VALID ENTRY PASS';
-            ticketPassStatus.classList.toggle('is-confirmed', isChecked);
+        if (isAttending) {
+          if (submissionAlertBox) {
+            submissionAlertBox.classList.remove('is-error', 'is-non-attending');
+            submissionAlertBox.classList.add('has-ticket');
           }
-          if (ticketPassHeaderId) ticketPassHeaderId.textContent = tId;
-          if (ticketPassName) ticketPassName.textContent = String(res.name || '-').toUpperCase();
-          if (ticketPassId) ticketPassId.textContent = tId;
-          if (ticketPassBatch) ticketPassBatch.textContent = res.batchYear || '-';
-          if (ticketPassPlace) ticketPassPlace.textContent = res.place || '-';
-          if (ticketPassStubId) ticketPassStubId.textContent = tId;
-          if (ticketPassTokenLabel) ticketPassTokenLabel.textContent = res.ticketToken || '';
+          if (submissionAlertIcon) submissionAlertIcon.textContent = '✓';
+          submissionAlertTitle.textContent = 'Registration Successful!';
+          if (submissionAlertBadge) {
+            submissionAlertBadge.textContent = '';
+            submissionAlertBadge.style.display = 'none';
+          }
+          submissionAlertMessage.textContent = 'Your official Aufbruch – Alumni Conclave 2026 Entry Pass is ready.';
+
+          if (successTicketPassWrap && res) {
+            var tId = res.ticketId || formatAnwarTicketId(res.registrationId || '001');
+            var isChecked = Boolean(res.checkedIn);
+            if (ticketPassStatus) {
+              ticketPassStatus.textContent = isChecked ? '✓ CONFIRMED / CHECKED IN' : '✓ VALID ENTRY PASS';
+              ticketPassStatus.classList.toggle('is-confirmed', isChecked);
+            }
+            if (ticketPassHeaderId) ticketPassHeaderId.textContent = tId;
+            if (ticketPassName) ticketPassName.textContent = String(res.name || '-').toUpperCase();
+            if (ticketPassId) ticketPassId.textContent = tId;
+            if (ticketPassBatch) ticketPassBatch.textContent = res.batchYear || '-';
+            if (ticketPassPlace) ticketPassPlace.textContent = res.place || '-';
+            if (ticketPassStubId) ticketPassStubId.textContent = tId;
+            if (ticketPassTokenLabel) ticketPassTokenLabel.textContent = res.ticketToken || '';
+            if (ticketQrCanvas) {
+              drawQrMatrixToCanvas(ticketQrCanvas, res.qrMatrix, 184);
+              ticketQrCanvas.setAttribute('data-ticket-token', res.ticketToken || '');
+            }
+            successTicketPassWrap.classList.add('visible');
+          }
+        } else {
+          if (submissionAlertBox) {
+            submissionAlertBox.classList.remove('is-error', 'has-ticket');
+            submissionAlertBox.classList.add('is-non-attending');
+          }
+          if (submissionAlertIcon) submissionAlertIcon.textContent = '✓';
+          submissionAlertTitle.textContent = 'REGISTRATION SUCCESSFUL!';
+          if (submissionAlertBadge) {
+            submissionAlertBadge.textContent = '';
+            submissionAlertBadge.style.display = 'none';
+          }
+          submissionAlertMessage.innerHTML =
+            'Thank you for registering with Aufbruch Alumni Conclave 2026.<br><br>' +
+            'We appreciate your response. We hope to meet you at another event!';
+
+          if (successTicketPassWrap) {
+            successTicketPassWrap.classList.remove('visible');
+          }
+          if (ticketPassHeaderId) ticketPassHeaderId.textContent = '';
+          if (ticketPassName) ticketPassName.textContent = '';
+          if (ticketPassId) ticketPassId.textContent = '';
+          if (ticketPassBatch) ticketPassBatch.textContent = '';
+          if (ticketPassPlace) ticketPassPlace.textContent = '';
+          if (ticketPassStubId) ticketPassStubId.textContent = '';
+          if (ticketPassTokenLabel) ticketPassTokenLabel.textContent = '';
           if (ticketQrCanvas) {
-            drawQrMatrixToCanvas(ticketQrCanvas, res.qrMatrix, 184);
-            ticketQrCanvas.setAttribute('data-ticket-token', res.ticketToken || '');
+            drawQrMatrixToCanvas(ticketQrCanvas, null, 184);
+            ticketQrCanvas.removeAttribute('data-ticket-token');
           }
-          successTicketPassWrap.classList.add('visible');
         }
 
         fetchPublicStudentsList();
@@ -6336,7 +6555,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         activeSuccessTicketRecord = null;
         if (submissionAlertBox) {
           submissionAlertBox.classList.add('is-error');
-          submissionAlertBox.classList.remove('has-ticket');
+          submissionAlertBox.classList.remove('has-ticket', 'is-non-attending');
         }
         if (successTicketPassWrap) {
           successTicketPassWrap.classList.remove('visible');
@@ -6518,15 +6737,19 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         var fallbackId = String(index + 1);
         while (fallbackId.length < 3) fallbackId = '0' + fallbackId;
         var regId = safeDisplayText(r.registrationId, fallbackId);
+        var participationStr = safeDisplayText(r.participation, '-');
+        var hasTicket = (r.hasTicket !== undefined) ? Boolean(r.hasTicket) : (participationStr === 'പങ്കെടുക്കും');
         var backendSent = Boolean(r.whatsappSent);
         if (backendSent) {
           setLocalWaSent(regId, true);
         }
-        var checkedIn = Boolean(r.checkedIn);
+        var checkedIn = hasTicket ? Boolean(r.checkedIn) : false;
         return {
           registrationId: regId,
-          ticketId: safeDisplayText(r.ticketId, formatAnwarTicketId(regId)),
-          ticketToken: safeDisplayText(r.ticketToken, ''),
+          hasTicket: hasTicket,
+          ticketEligible: hasTicket,
+          ticketId: hasTicket ? safeDisplayText(r.ticketId, formatAnwarTicketId(regId)) : '',
+          ticketToken: hasTicket ? safeDisplayText(r.ticketToken, '') : '',
           timestamp: safeDisplayText(r.timestamp, '-'),
           name: safeDisplayText(r.name, '-'),
           originalExcelName: safeDisplayText(r.originalExcelName || r.name, '-'),
@@ -6537,7 +6760,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           whatsappNumber: safeDisplayText(r.whatsappNumber, ''),
           formattedPhone: safeDisplayText(r.formattedPhone || r.whatsappNumber, '-'),
           waNumber: safeDisplayText(r.waNumber, ''),
-          participation: safeDisplayText(r.participation, '-'),
+          participation: participationStr,
           shouldSendWhatsApp: Boolean(r.shouldSendWhatsApp),
           whatsAppMessage: safeDisplayText(r.whatsAppMessage, ''),
           whatsAppClickToChatUrl: safeDisplayText(r.whatsAppClickToChatUrl, ''),
@@ -6546,10 +6769,10 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           whatsappSentCount: Number(r.whatsappSentCount || 0),
           registrationStatus: safeDisplayText(r.registrationStatus, 'REGISTERED'),
           checkedIn: checkedIn,
-          checkInStatus: checkedIn ? 'CHECKED IN' : 'NOT CHECKED IN',
-          checkInTimestamp: safeDisplayText(r.checkInTimestamp, ''),
-          checkedInBy: safeDisplayText(r.checkedInBy, ''),
-          qrMatrix: Array.isArray(r.qrMatrix) ? r.qrMatrix : null
+          checkInStatus: hasTicket ? (checkedIn ? 'CHECKED IN' : 'NOT CHECKED IN') : 'NOT ELIGIBLE',
+          checkInTimestamp: hasTicket ? safeDisplayText(r.checkInTimestamp, '') : '',
+          checkedInBy: hasTicket ? safeDisplayText(r.checkedInBy, '') : '',
+          qrMatrix: (hasTicket && Array.isArray(r.qrMatrix)) ? r.qrMatrix : []
         };
       }
 
@@ -6973,15 +7196,18 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       }
 
       function renderCheckinManagementUI() {
-        var total = dashboardRegistrations.length;
+        var eligibleRegs = dashboardRegistrations.filter(function(r) {
+          return isTicketEligibleRecord(r);
+        });
+        var total = eligibleRegs.length;
         var confirmed = 0;
         var waSentCnt = 0;
         var waFailedCnt = 0;
         var batchCheckinLines = [];
         var batchCheckinMap = {};
 
-        for (var i = 0; i < dashboardRegistrations.length; i++) {
-          var r = dashboardRegistrations[i];
+        for (var i = 0; i < eligibleRegs.length; i++) {
+          var r = eligibleRegs[i];
           if (r.checkedIn) confirmed++;
           if (r.checkinWhatsappSent || r.checkinWhatsappStatus === 'SENT') waSentCnt++;
           if (r.checkinWhatsappStatus === 'FAILED') waFailedCnt++;
@@ -7051,7 +7277,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         var statusFilter = document.getElementById('filterCheckinStatusSelect') ? document.getElementById('filterCheckinStatusSelect').value : 'ALL';
         var waStatusFilter = document.getElementById('filterCheckinWaStatusSelect') ? document.getElementById('filterCheckinWaStatusSelect').value : 'ALL';
 
-        var filtered = dashboardRegistrations.filter(function(r) {
+        var filtered = eligibleRegs.filter(function(r) {
           if (batchFilter !== 'ALL' && String(r.batchYear) !== batchFilter) return false;
           if (statusFilter !== 'ALL' && r.checkInStatus !== statusFilter) return false;
           var rWaSt = String(r.checkinWhatsappStatus || 'PENDING').toUpperCase();
@@ -7231,8 +7457,13 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             nameCellHtml += '<div style="font-size: 11px; color: var(--gold-300); font-weight: 500;">Excel: ' + escapeHtml(r.originalExcelName) + '</div>';
           }
 
+          var canPass = isTicketEligibleRecord(r);
+          var idColHtml = canPass
+            ? '<span style="font-weight: 700; color: var(--gold-300); white-space: nowrap;">' + escapeHtml(r.ticketId) + '</span>'
+            : '<span style="font-weight: 600; color: #94A3B8; white-space: nowrap;">Reg #' + escapeHtml(r.registrationId) + '</span>';
+
           tr.innerHTML =
-            '<td style="font-weight: 700; color: var(--gold-300); white-space: nowrap;">' + escapeHtml(r.ticketId || r.registrationId) + '</td>' +
+            '<td style="white-space: nowrap;">' + idColHtml + '</td>' +
             '<td style="white-space: nowrap; color: #94A3B8;">' + escapeHtml(r.timestamp) + '</td>' +
             '<td style="font-weight: 700; color: #FFFFFF;">' + nameCellHtml + '</td>' +
             '<td>' + escapeHtml(r.place) + '</td>' +
@@ -7402,8 +7633,9 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         if (!rec || !viewRegistrationModal) return;
         activeViewRegId = rec.registrationId;
         var phoneInfo = formatPhoneForAdminWa(rec);
+        var canPass = isTicketEligibleRecord(rec);
 
-        viewModalRegIdBadge.textContent = rec.ticketId || ('ID: ' + rec.registrationId);
+        viewModalRegIdBadge.textContent = canPass ? rec.ticketId : ('Reg #' + rec.registrationId);
         viewNameVal.textContent = rec.name || '-';
         viewPlaceVal.textContent = rec.place || '-';
         viewBatchVal.textContent = rec.batchYear || '-';
@@ -7414,10 +7646,13 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         if (origNameEl) origNameEl.textContent = rec.originalExcelName || rec.name || '-';
         var checkinValEl = document.getElementById('viewCheckinVal');
         if (checkinValEl) {
-          checkinValEl.textContent = rec.checkedIn
-            ? ('CHECKED IN (' + (rec.checkInTimestamp || '') + ')')
-            : 'NOT CHECKED IN';
+          checkinValEl.textContent = canPass
+            ? (rec.checkedIn ? ('CHECKED IN (' + (rec.checkInTimestamp || '') + ')') : 'NOT CHECKED IN')
+            : 'NOT ATTENDING (NO PASS)';
         }
+        if (viewOpenTicketBtn) viewOpenTicketBtn.style.display = canPass ? '' : 'none';
+        if (viewDownloadTicketBtn) viewDownloadTicketBtn.style.display = canPass ? '' : 'none';
+        if (viewPrintTicketBtn) viewPrintTicketBtn.style.display = canPass ? '' : 'none';
         viewRegistrationModal.classList.add('open');
       }
 
