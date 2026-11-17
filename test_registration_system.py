@@ -309,9 +309,15 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertIn("REGISTRATION SUCCESSFUL!", index_html)
         self.assertIn("Thank you for registering with Aufbruch Alumni Conclave 2026.", index_html)
         self.assertIn("We appreciate your response. We hope to meet you at another event!", index_html)
-        # 11. Verify Master Student Database renders NO students when set to None and subtle executive ticket styles
+        # 11. Verify Master Student Database renders NO students when set to None and reference ticket styling
         self.assertIn("Select a Batch Year above to display student records.", index_html)
         self.assertNotIn("? allMasterStudents.slice()", index_html)
+        self.assertIn("OFFICIAL EVENT ENTRY TICKET", index_html)
+        self.assertIn("Present this QR Code at the registration desk for one-time check-in", index_html)
+        self.assertIn("#ECFDF5", index_html)
+        self.assertIn("Participant Name:", index_html)
+        self.assertIn("ID Number:", index_html)
+        self.assertIn("Batch Year:", index_html)
         self.assertIn('id="scannerTopNotificationBanner"', index_html)
         self.assertIn('<option value="NONE" selected>None</option>', index_html)
         self.assertIn('id="deleteStudentConfirmModal"', index_html)
