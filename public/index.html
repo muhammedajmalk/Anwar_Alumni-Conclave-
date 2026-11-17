@@ -2094,8 +2094,8 @@
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
-      transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-                  visibility 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: opacity 0.14s ease-out,
+                  visibility 0.14s ease-out;
     }
 
     .submission-alert-overlay.active {
@@ -2160,31 +2160,46 @@
     }
 
     .submission-alert-box.has-ticket .submission-alert-icon {
-      width: 28px;
-      height: 28px;
-      font-size: 14px;
+      width: 26px;
+      height: 26px;
+      font-size: 13px;
       margin: 0;
       border-width: 1.5px;
-      box-shadow: 0 0 12px rgba(255, 194, 26, 0.25);
+      background: rgba(212, 175, 55, 0.14);
+      border-color: #D4AF37;
+      color: #F5D97E;
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.18);
       flex-shrink: 0;
     }
 
     .submission-alert-box.has-ticket .submission-alert-title {
       font-size: 17px;
       margin-bottom: 0;
+      color: #FFFFFF;
     }
 
     .submission-alert-box.has-ticket .submission-alert-message {
       font-size: 12px;
       line-height: 1.35;
-      margin-bottom: 8px;
-      color: #CBD5E1;
+      margin-bottom: 10px;
+      color: #94A3B8;
     }
 
     .submission-alert-box.has-ticket .submission-alert-btn {
       padding: 10px 18px;
-      font-size: 13.5px;
-      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 9px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #F8FAFC;
+      border: 1px solid rgba(212, 175, 55, 0.32);
+      box-shadow: none;
+    }
+
+    .submission-alert-box.has-ticket .submission-alert-btn:hover {
+      background: rgba(212, 175, 55, 0.14);
+      border-color: #D4AF37;
+      box-shadow: none;
     }
 
     .submission-alert-overlay.active .submission-alert-box {
@@ -2573,12 +2588,16 @@
        PREMIUM OFFICIAL EVENT ENTRY PASS (AUFBRUCH ALUMNI CONCLAVE 2026)
        ========================================================================= */
     .submission-alert-box.has-ticket {
-      max-width: 452px;
+      max-width: 468px;
       max-height: 98vh;
       max-height: 98dvh;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 14px 14px 12px;
+      background: linear-gradient(180deg, #071324 0%, #050D1A 100%);
+      border: 1.5px solid rgba(212, 175, 55, 0.45);
+      border-top: 3px solid #D4AF37;
+      box-shadow: 0 28px 64px rgba(2, 6, 18, 0.85), 0 0 0 1px rgba(212, 175, 55, 0.12);
+      padding: 16px 16px 14px;
     }
 
     .submission-alert-box.has-ticket .submission-alert-close-icon {
@@ -2591,8 +2610,8 @@
 
     .ticket-pass-card {
       display: none;
-      margin: 4px auto 8px;
-      max-width: 408px;
+      margin: 4px auto 10px;
+      max-width: 422px;
       text-align: left;
     }
 
@@ -2602,21 +2621,21 @@
 
     .event-pass-shell {
       position: relative;
-      border-radius: 18px;
+      border-radius: 16px;
       overflow: hidden;
-      background: #FAF8F3;
-      border: 2px solid #D4AF37;
-      box-shadow: 0 20px 44px rgba(3, 7, 18, 0.56), 0 0 0 1px rgba(243, 208, 102, 0.25);
-      color: #0F172A;
+      background: #FFFFFF;
+      border: 1.5px solid #D4AF37;
+      box-shadow: 0 18px 40px rgba(2, 6, 18, 0.52), 0 0 0 1px rgba(212, 175, 55, 0.18);
+      color: #071426;
     }
 
-    /* Executive Sapphire & Gold Header Banner (Logo-Free Clean Layout) */
+    /* Executive Navy & Brushed Gold Header Banner (Clean Logo-Free Typography) */
     .event-pass-header {
       position: relative;
-      background: linear-gradient(135deg, #071426 0%, #0E2342 58%, #16325C 100%);
-      padding: 12px 15px 11px;
+      background: linear-gradient(145deg, #061224 0%, #0B1F3B 62%, #132F57 100%);
+      padding: 14px 17px 12px;
       color: #FFFFFF;
-      border-bottom: 2.5px solid #D4AF37;
+      border-bottom: 2px solid #D4AF37;
       overflow: hidden;
     }
 
@@ -2624,7 +2643,7 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 88% 18%, rgba(212, 175, 55, 0.22) 0%, transparent 55%);
+      background: radial-gradient(circle at 90% 15%, rgba(212, 175, 55, 0.16) 0%, transparent 52%);
       pointer-events: none;
     }
 
@@ -2635,7 +2654,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      margin-bottom: 8px;
+      margin-bottom: 9px;
       flex-wrap: nowrap;
     }
 
@@ -2645,20 +2664,20 @@
       gap: 5px;
       padding: 3px 9px;
       border-radius: 999px;
-      background: rgba(16, 185, 129, 0.2);
-      border: 1px solid rgba(52, 211, 153, 0.65);
-      color: #6EE7B7;
-      font-size: 9.5px;
-      font-weight: 800;
-      letter-spacing: 0.65px;
+      background: rgba(212, 175, 55, 0.12);
+      border: 1px solid rgba(212, 175, 55, 0.36);
+      color: #E8CA6E;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.7px;
       text-transform: uppercase;
       white-space: nowrap;
     }
 
     .event-pass-status-pill.is-confirmed {
-      background: rgba(212, 175, 55, 0.22);
+      background: rgba(212, 175, 55, 0.24);
       border-color: #F3D066;
-      color: #FDE68A;
+      color: #FEF3C7;
     }
 
     .event-pass-id-chip {
@@ -2666,14 +2685,14 @@
       align-items: center;
       gap: 6px;
       padding: 3px 10px;
-      border-radius: 7px;
-      background: linear-gradient(135deg, #D4AF37 0%, #F3D066 100%);
-      color: #071426;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #D4AF37 0%, #EFCF6B 100%);
+      color: #061224;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: 11.5px;
       font-weight: 900;
       letter-spacing: 0.75px;
-      box-shadow: 0 3px 10px rgba(212, 175, 55, 0.35);
+      box-shadow: 0 2px 8px rgba(212, 175, 55, 0.28);
       white-space: nowrap;
     }
 
@@ -2772,7 +2791,7 @@
     .event-pass-perforation {
       position: relative;
       height: 16px;
-      background: linear-gradient(180deg, #FFFFFF 50%, #F1F5F9 50%);
+      background: linear-gradient(180deg, #FFFFFF 50%, #F8FAFC 50%);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -2784,32 +2803,32 @@
       content: "";
       position: absolute;
       top: 50%;
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
-      background: #171A22;
-      border: 2px solid #D4AF37;
+      background: #071324;
+      border: 1.5px solid #D4AF37;
       transform: translateY(-50%);
       z-index: 2;
     }
 
     .event-pass-perforation::before {
-      left: -10px;
+      left: -9px;
     }
 
     .event-pass-perforation::after {
-      right: -10px;
+      right: -9px;
     }
 
     .event-pass-tear-line {
-      width: calc(100% - 28px);
-      border-top: 2px dashed #CBD5E1;
+      width: calc(100% - 26px);
+      border-top: 1.5px dashed #CBD5E1;
     }
 
     /* Dedicated QR Stub Section */
     .event-pass-qr-stub {
-      background: linear-gradient(180deg, #F1F5F9 0%, #E2E8F0 100%);
-      padding: 9px 14px 10px;
+      background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%);
+      padding: 11px 14px 11px;
       text-align: center;
     }
 
@@ -2819,17 +2838,17 @@
       align-items: center;
       justify-content: center;
       background: #FFFFFF;
-      padding: 7px;
-      border-radius: 13px;
-      border: 2px solid #0E2342;
-      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.14);
-      margin-bottom: 5px;
+      padding: 8px;
+      border-radius: 12px;
+      border: 1.5px solid #D4AF37;
+      box-shadow: 0 6px 16px rgba(7, 20, 38, 0.08);
+      margin-bottom: 6px;
     }
 
     .event-pass-qr-dock canvas {
       display: block;
-      width: 164px;
-      height: 164px;
+      width: 160px;
+      height: 160px;
       aspect-ratio: 1 / 1;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
@@ -2837,27 +2856,29 @@
 
     .event-pass-stub-id {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 16.5px;
+      font-size: 16px;
       font-weight: 900;
       color: #071426;
-      letter-spacing: 1.5px;
-      margin-bottom: 1px;
+      letter-spacing: 1.8px;
+      margin-bottom: 2px;
     }
 
     .event-pass-stub-note {
       font-size: 10px;
-      font-weight: 700;
-      color: #475569;
+      font-weight: 600;
+      color: #64748B;
       letter-spacing: 0.2px;
       line-height: 1.25;
     }
 
     /* 3 Ticket Action Buttons Row */
     .ticket-actions-bar {
+      position: relative;
+      z-index: 2;
       display: grid;
-      grid-template-columns: 1.25fr 1fr 1fr;
+      grid-template-columns: 1.48fr 1fr 1fr;
       gap: 7px;
-      margin-top: 8px;
+      margin-top: 9px;
     }
 
     .ticket-download-btn,
@@ -2866,7 +2887,7 @@
       align-items: center;
       justify-content: center;
       gap: 5px;
-      padding: 9px 8px;
+      padding: 9px 10px;
       border-radius: 9px;
       font-family: var(--font-primary);
       font-size: 11.5px;
@@ -2874,29 +2895,30 @@
       cursor: pointer;
       transition: all 0.15s ease;
       white-space: nowrap;
+      min-width: 0;
     }
 
     .ticket-download-btn {
-      border: 1.5px solid #10B981;
-      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-      color: #FFFFFF;
-      box-shadow: 0 5px 14px rgba(16, 185, 129, 0.3);
+      border: 1px solid #F3D066;
+      background: linear-gradient(135deg, #E5C158 0%, #C79A2B 100%);
+      color: #061224;
+      box-shadow: 0 4px 14px rgba(212, 175, 55, 0.26);
     }
 
     .ticket-download-btn:hover {
-      filter: brightness(1.06);
+      filter: brightness(1.05);
       transform: translateY(-1px);
     }
 
     .ticket-action-secondary-btn {
-      border: 1.5px solid rgba(212, 175, 55, 0.55);
-      background: rgba(15, 31, 58, 0.9);
-      color: #FDE68A;
+      border: 1px solid rgba(212, 175, 55, 0.42);
+      background: rgba(12, 30, 58, 0.94);
+      color: #F5D97E;
     }
 
     .ticket-action-secondary-btn:hover {
-      background: rgba(212, 175, 55, 0.2);
-      border-color: var(--gold-400);
+      background: rgba(212, 175, 55, 0.16);
+      border-color: #D4AF37;
     }
 
     @media (max-width: 580px), (max-height: 760px) {
@@ -2984,14 +3006,14 @@
         font-size: 9.5px;
       }
       .ticket-actions-bar {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 5px;
-        margin-top: 6px;
+        grid-template-columns: 1.48fr 1fr 1fr;
+        gap: 6px;
+        margin-top: 7px;
       }
       .ticket-download-btn,
       .ticket-action-secondary-btn {
-        padding: 7px 4px;
-        font-size: 10.5px;
+        padding: 8px 6px;
+        font-size: 11px;
         border-radius: 8px;
         min-width: 0;
       }
@@ -3004,6 +3026,15 @@
     @media (max-width: 440px) {
       .ticket-btn-suffix {
         display: none;
+      }
+      .ticket-actions-bar {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 5px;
+      }
+      .ticket-download-btn,
+      .ticket-action-secondary-btn {
+        padding: 7px 4px;
+        font-size: 10.5px;
       }
     }
 
@@ -6243,16 +6274,16 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         ctx.fillStyle = hdrGrad;
         ctx.fillRect(cardX, cardY, cardW, headerH);
 
-        // Status Pill (top left inside header)
+        // Status Pill (top left inside header — subtle executive gold styling)
         drawRoundedRectPath(ctx, cardX + 46, cardY + 40, 340, 52, 26);
-        ctx.fillStyle = rec.checkedIn ? 'rgba(212, 175, 55, 0.22)' : 'rgba(16, 185, 129, 0.2)';
+        ctx.fillStyle = rec.checkedIn ? 'rgba(212, 175, 55, 0.22)' : 'rgba(212, 175, 55, 0.12)';
         ctx.fill();
-        ctx.strokeStyle = rec.checkedIn ? '#F3D066' : '#34D399';
-        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = rec.checkedIn ? '#F3D066' : 'rgba(212, 175, 55, 0.45)';
+        ctx.lineWidth = 2;
         ctx.stroke();
 
-        ctx.fillStyle = rec.checkedIn ? '#FDE68A' : '#6EE7B7';
-        ctx.font = '800 22px Sora, sans-serif';
+        ctx.fillStyle = rec.checkedIn ? '#FEF3C7' : '#E8CA6E';
+        ctx.font = '700 21px Sora, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('✓ ' + statusBadgeText, cardX + 46 + 170, cardY + 74);
 
@@ -6712,6 +6743,10 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         if (deleteModalEl) deleteModalEl.classList.remove('open');
         if (viewModalEl) viewModalEl.classList.remove('open');
         if (sendMsgModalEl) sendMsgModalEl.classList.remove('open');
+        var batchFilterResetEl = document.getElementById('adminStudentBatchFilter');
+        if (batchFilterResetEl) batchFilterResetEl.value = 'NONE';
+        var masterListResetEl = document.getElementById('adminStudentMasterList');
+        if (masterListResetEl) masterListResetEl.innerHTML = '';
       }
 
       function showLoginScreen(errorMsg) {
@@ -7352,15 +7387,22 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         var batchSel = document.getElementById('adminStudentBatchFilter');
         var listEl = document.getElementById('adminStudentMasterList');
         if (!batchSel || !listEl) return;
-        var selectedBatch = batchSel.value || 'NONE';
-
-        var batchSt = (selectedBatch === 'NONE')
-          ? allMasterStudents.slice()
-          : allMasterStudents.filter(function(s) {
-              return String(s.batchYear) === selectedBatch;
-            });
+        var selectedBatch = String(batchSel.value || 'NONE').trim();
 
         listEl.innerHTML = '';
+
+        // Strictly display NO student records when Batch selection is set to None
+        if (!selectedBatch || selectedBatch === 'NONE') {
+          listEl.innerHTML =
+            '<div style="padding: 16px 14px; color: #94A3B8; font-size: 12.5px; font-weight: 600; text-align: center;">' +
+              'Select a Batch Year above to display student records.' +
+            '</div>';
+          return;
+        }
+
+        var batchSt = allMasterStudents.filter(function(s) {
+          return String(s.batchYear || '').trim() === selectedBatch;
+        });
 
         if (batchSt.length === 0) {
           listEl.innerHTML = '<div style="padding: 12px 14px; color: #94A3B8; font-size: 12.5px; font-weight: 600;">No student names listed for Batch ' + escapeHtml(selectedBatch) + '.</div>';
