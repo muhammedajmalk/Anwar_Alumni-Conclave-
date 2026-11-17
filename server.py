@@ -424,17 +424,17 @@ def build_checkin_whatsapp_message(name: str, batch_year: str, ticket_id: str) -
     clean_batch = str(batch_year or "-").strip() or "-"
     clean_ticket = str(ticket_id or "ANWAR 001").strip() or "ANWAR 001"
     return (
-        "🛎️ *TICKET CONFIRMED...!*\n"
-        "Assalamu Alaikum \n\n"
-        f"*{clean_name},*\n\n"
-        "Your entry for *AUFBRUCH ALUMNI CONCLAVE 2026* has been successfully confirmed. 🤝\n\n"
-        "*Ticket Details:*\n"
+        "🛎️ TICKET CONFIRMED...!\n\n"
+        "Assalamu Alaikum,\n"
+        f"{clean_name},\n\n"
+        "Your entry for AUFBRUCH ALUMNI CONCLAVE 2026 has been successfully confirmed. 🤝\n\n"
+        "Ticket Details:\n\n"
         f"- Name: {clean_name}\n"
         f"- Batch: {clean_batch}\n"
         f"- Ticket ID: {clean_ticket}\n"
-        "- Status: CONFIRMED\n\n"
+        "- Status: CONFIRMED ✅\n\n"
         "We look forward to welcoming you!\n\n"
-        "*Majmau Ssaqafathil Islamiyya*\n"
+        "Majmau Ssaqafathil Islamiyya\n"
         "Da'wa College Alumni"
     )
 
@@ -829,10 +829,11 @@ def enrich_registration(rec: dict) -> dict:
     checked_in_by = str(rec.get("checkedInBy") or "").strip() if checked_in else ""
     batch_year_str = str(rec.get("batchYear", "")).strip()
 
-    checkin_wa_msg = build_checkin_whatsapp_message(clean_name, batch_year_str, ticket_id) if has_ticket else ""
+    # Generate CONFIRMED message & WhatsApp link ONLY after participant has checked in
+    checkin_wa_msg = build_checkin_whatsapp_message(clean_name, batch_year_str, ticket_id) if (has_ticket and checked_in) else ""
     checkin_wa_url = (
         f"https://wa.me/{phone_data['waNumber']}?text={urllib.parse.quote(checkin_wa_msg, safe='')}"
-        if (has_ticket and phone_data["isValid"])
+        if (has_ticket and checked_in and phone_data["isValid"])
         else ""
     )
     if not has_ticket:
@@ -2464,8 +2465,8 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
             if not target_rec.get("checkedIn"):
                 self._send_json(400, {"success": False, "error": "Participant must be checked in before sending check-in WhatsApp confirmation."})
                 return
-            if target_rec.get("checkinWhatsappStatus") == "SENT" and not body.get("force"):
-                self._send_json(409, {"success": False, "error": "WhatsApp confirmation was already sent via Cloud API for this check-in."})
+            if (target_rec.get("checkinWhatsappStatus") in ("SENT", "MANUAL_FALLBACK") or target_rec.get("checkinWhatsappSent")) and not body.get("force"):
+                self._send_json(409, {"success": False, "alreadyNotified": True, "error": "WhatsApp confirmation notification was already sent for this check-in."})
                 return
 
             wa_msg = build_checkin_whatsapp_message(
@@ -2536,11 +2537,17 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                 self._send_json(404, {"success": False, "error": "Registration not found."})
                 return
             target_rec = dict(records[found_index])
+            if not target_rec.get("checkedIn"):
+                self._send_json(400, {"success": False, "error": "Participant must be checked in before sending a CONFIRMED WhatsApp notification."})
+                return
+            if target_rec.get("checkinWhatsappStatus") in ("SENT", "MANUAL_FALLBACK") and not body.get("force"):
+                self._send_json(409, {"success": False, "alreadyNotified": True, "error": "WhatsApp confirmation was already sent for this check-in."})
+                return
             now_str = now_ist().strftime("%Y-%m-%d %H:%M:%S")
             target_rec["checkinWhatsappStatus"] = "MANUAL_FALLBACK"
             target_rec["checkinWhatsappSentAt"] = now_str
             target_rec["checkinWhatsappError"] = ""
-            target_rec["checkinWhatsappApiResponse"] = f"Manual WhatsApp opened by {sess.get('username', 'admin')} at {now_str}"
+            target_rec["checkinWhatsappApiResponse"] = f"Manual WhatsApp share triggered by {sess.get('username', 'admin')} at {now_str}"
             updated_rec = enrich_registration(target_rec)
             records[found_index] = updated_rec
             save_db(records)

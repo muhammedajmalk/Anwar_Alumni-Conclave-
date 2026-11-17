@@ -300,16 +300,28 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertIn('id="studentComboboxContainer"', index_html)
         self.assertNotIn("Type to search your name in the selected batch", index_html)
         self.assertIn('id="ticketPassHeaderId"', index_html)
-        # 12. Verify Open Graph (WhatsApp/Facebook/Telegram) & Twitter Card metadata + public preview image
-        self.assertIn('<meta property="og:title" content="Anwar Alumni Conclave – Aufbruch – Alumni Conclave 2026" />', index_html)
-        self.assertIn('<meta property="og:description" content="Official Alumni Conclave 2026 of Majmau Ssaqafathil Islamiyya Da\'wa College Alumni." />', index_html)
+        # 12. Verify Open Graph (WhatsApp/Facebook/Telegram) & Twitter Card metadata + public 1200x630 preview image
+        self.assertIn('<meta property="og:title" content="AUFBRUCH ALUMNI CONCLAVE 2026" />', index_html)
+        self.assertIn('<meta property="og:description" content="Majmau Ssaqafathil Islamiyya, Nilambur" />', index_html)
         self.assertIn('<meta property="og:image" content="https://anwar-alumni-conclave.vercel.app/aufbruch-og-preview.jpg" />', index_html)
+        self.assertIn('<meta property="og:image:width" content="1200" />', index_html)
+        self.assertIn('<meta property="og:image:height" content="630" />', index_html)
         self.assertIn('<meta property="og:url" content="https://anwar-alumni-conclave.vercel.app/" />', index_html)
         self.assertIn('<meta property="og:type" content="website" />', index_html)
         self.assertIn('property="og:site_name"', index_html)
         self.assertIn('<meta name="twitter:card" content="summary_large_image" />', index_html)
+        self.assertIn('<meta name="twitter:title" content="AUFBRUCH ALUMNI CONCLAVE 2026" />', index_html)
+        self.assertIn('<meta name="twitter:description" content="Majmau Ssaqafathil Islamiyya, Nilambur" />', index_html)
         self.assertIn('<meta name="twitter:image" content="https://anwar-alumni-conclave.vercel.app/aufbruch-og-preview.jpg" />', index_html)
         self.assertTrue((WORKSPACE_DIR / "public" / "aufbruch-og-preview.jpg").exists())
+        # 13. Verify Separated Check-in Management sections & Ticket ID search
+        self.assertIn('id="checkedInStudentsSection"', index_html)
+        self.assertIn('id="notCheckedInStudentsSection"', index_html)
+        self.assertIn('id="checkedInStudentsTableBody"', index_html)
+        self.assertIn('id="notCheckedInStudentsTableBody"', index_html)
+        self.assertIn('id="searchCheckinTicketInput"', index_html)
+        self.assertIn("CHECKED-IN STUDENTS", index_html)
+        self.assertIn("NOT CHECKED-IN STUDENTS", index_html)
         # 10. Verify Sticky Navbar Admin Dashboard exclusivity, Red Register Now CTA, Logo-Free Ticket & Conditional Non-Attending Screen
         self.assertNotIn('id="heroDashboardBtn"', index_html)
         body_part = index_html.split("<body", 1)[1].split("<script", 1)[0]
@@ -537,6 +549,17 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertEqual(ver_body["participant"]["ticketId"], created_ticket_id)
         self.assertTrue(ver_body["participant"].get("formattedPhone"))
 
+        # Before check-in, CONFIRMED WhatsApp message must NOT be generated or allowed
+        self.assertEqual(ver_body["participant"].get("checkinWhatsappMessage"), "")
+        self.assertEqual(ver_body["participant"].get("checkinWhatsappClickToChatUrl"), "")
+        pre_wa_status, _, _ = http_json_request(
+            "/api/admin/checkin/whatsapp-manual",
+            "POST",
+            {"registrationId": created_id},
+            headers=auth_headers,
+        )
+        self.assertEqual(pre_wa_status, 400)
+
         # (c) First check-in confirmation must succeed with 200, TICKET CONFIRMED SUCCESSFULLY & accurate WhatsApp status
         conf1_status, conf1_body, _ = http_json_request(
             "/api/admin/checkin/confirm",
@@ -555,14 +578,33 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertTrue(first_checkin_ts)
 
         wa_info = conf1_body.get("checkinWhatsapp", {})
-        self.assertIn("🛎️ *TICKET CONFIRMED...!*", wa_info.get("messageText", ""))
-        self.assertIn("*Temp Alumni Corrected,*", wa_info.get("messageText", ""))
-        self.assertIn("has been successfully confirmed. 🤝", wa_info.get("messageText", ""))
-        self.assertIn("*Majmau Ssaqafathil Islamiyya*", wa_info.get("messageText", ""))
+        self.assertIn("🛎️ TICKET CONFIRMED...!", wa_info.get("messageText", ""))
+        self.assertIn("Assalamu Alaikum,\nTemp Alumni Corrected,", wa_info.get("messageText", ""))
+        self.assertIn("Your entry for AUFBRUCH ALUMNI CONCLAVE 2026 has been successfully confirmed. 🤝", wa_info.get("messageText", ""))
+        self.assertIn("- Status: CONFIRMED ✅", wa_info.get("messageText", ""))
+        self.assertIn("Majmau Ssaqafathil Islamiyya\nDa'wa College Alumni", wa_info.get("messageText", ""))
         # Without Cloud API env vars configured, sent MUST be False and status MUST NOT falsely claim SENT
         if not wa_info.get("configured"):
             self.assertFalse(wa_info.get("sent", True))
             self.assertEqual(wa_info.get("status"), "NOT_CONFIGURED")
+            self.assertTrue(wa_info.get("manualFallbackUrl", "").startswith("https://wa.me/91"))
+            # First manual WhatsApp share succeeds; duplicate share on same check-in is blocked with 409
+            m_wa1_status, m_wa1_body, _ = http_json_request(
+                "/api/admin/checkin/whatsapp-manual",
+                "POST",
+                {"registrationId": created_id},
+                headers=auth_headers,
+            )
+            self.assertEqual(m_wa1_status, 200)
+            self.assertEqual(m_wa1_body["updatedRecord"]["checkinWhatsappStatus"], "MANUAL_FALLBACK")
+            m_wa2_status, m_wa2_body, _ = http_json_request(
+                "/api/admin/checkin/whatsapp-manual",
+                "POST",
+                {"registrationId": created_id},
+                headers=auth_headers,
+            )
+            self.assertEqual(m_wa2_status, 409)
+            self.assertTrue(m_wa2_body.get("alreadyNotified"))
             self.assertTrue(wa_info.get("manualFallbackUrl", "").startswith("https://wa.me/91"))
 
         # (d) Second check-in confirmation on the same ticket must be permanently blocked (HTTP 409)
@@ -960,14 +1002,14 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
 
         # 3. Verify WhatsApp Business Cloud API payload formatting & failure isolation
         msg_text = server.build_checkin_whatsapp_message("Test Alumni", "2020", "ANWAR 007")
-        self.assertIn("🛎️ *TICKET CONFIRMED...!*", msg_text)
-        self.assertIn("*Test Alumni,*", msg_text)
-        self.assertIn("has been successfully confirmed. 🤝", msg_text)
+        self.assertIn("🛎️ TICKET CONFIRMED...!", msg_text)
+        self.assertIn("Assalamu Alaikum,\nTest Alumni,", msg_text)
+        self.assertIn("Your entry for AUFBRUCH ALUMNI CONCLAVE 2026 has been successfully confirmed. 🤝", msg_text)
         self.assertIn("- Name: Test Alumni", msg_text)
         self.assertIn("- Batch: 2020", msg_text)
         self.assertIn("- Ticket ID: ANWAR 007", msg_text)
-        self.assertIn("- Status: CONFIRMED", msg_text)
-        self.assertIn("*Majmau Ssaqafathil Islamiyya*", msg_text)
+        self.assertIn("- Status: CONFIRMED ✅", msg_text)
+        self.assertIn("Majmau Ssaqafathil Islamiyya\nDa'wa College Alumni", msg_text)
 
         orig_wa_tok = os.environ.get("WHATSAPP_CLOUD_API_TOKEN")
         orig_wa_pid = os.environ.get("WHATSAPP_PHONE_NUMBER_ID")
