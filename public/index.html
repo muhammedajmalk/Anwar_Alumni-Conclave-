@@ -1764,73 +1764,6 @@
       color: #FFFFFF;
     }
 
-    /* Alumni List Update Report Section */
-    .report-status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 13px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.35px;
-      white-space: nowrap;
-    }
-    .report-status-pill.is-success {
-      background: #16A34A;
-      color: #FFFFFF;
-      border: 1px solid #22C55E;
-      box-shadow: 0 2px 10px rgba(22, 163, 74, 0.35);
-    }
-    .report-status-pill.is-failed {
-      background: #DC2626;
-      color: #FFFFFF;
-      border: 1px solid #EF4444;
-      box-shadow: 0 2px 10px rgba(220, 38, 38, 0.35);
-    }
-    .report-kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
-      margin: 14px 0;
-    }
-    .report-kpi-box {
-      background: rgba(5, 11, 22, 0.72);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      padding: 10px 12px;
-    }
-    .report-kpi-lbl {
-      font-size: 10.5px;
-      font-weight: 700;
-      color: #94A3B8;
-      text-transform: uppercase;
-      letter-spacing: 0.35px;
-      margin-bottom: 4px;
-    }
-    .report-kpi-val {
-      font-size: 17px;
-      font-weight: 800;
-      color: #FFFFFF;
-      word-break: break-word;
-    }
-    .report-detail-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 12px;
-    }
-    .report-detail-box {
-      background: rgba(5, 11, 22, 0.65);
-      border: 1px solid rgba(212, 175, 55, 0.22);
-      border-radius: 10px;
-      padding: 12px;
-    }
-    @media (max-width: 1040px) {
-      .report-kpi-grid { grid-template-columns: repeat(2, 1fr); }
-      .report-detail-grid { grid-template-columns: 1fr; }
-    }
-
     .wa-delivery-confirm-box {
       display: none;
       margin-top: 16px;
@@ -4412,7 +4345,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
                 📊 Official Batch-wise Registration Report (2001 – 2026)
               </h3>
               <p style="font-size: 13px; color: #94A3B8;">
-                Overall Registration: <strong id="overallBatchRegSummary" style="color: #34D399; font-size: 14px;">00/330 (0%)</strong> • Official Student Total: <strong>330</strong>
+                Overall Registration: <strong id="overallBatchRegSummary" style="color: #34D399; font-size: 14px;">00/00 (0%)</strong> • Official Student Total: <strong id="officialStudentTotalValue">0</strong>
               </p>
             </div>
             <div class="dash-toolbar">
@@ -4424,6 +4357,9 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
               </button>
               <button type="button" id="shareBatchReportBtn" class="dash-btn">
                 <span>🔗 Share Report</span>
+              </button>
+              <button type="button" id="downloadBatchReportBtn" class="dash-btn">
+                <span>📥 Download Report</span>
               </button>
               <button type="button" id="previewBatchReportBtn" class="dash-btn">
                 <span>👁️ Preview Report</span>
@@ -4729,115 +4665,6 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           </div>
 
           <div id="adminStudentMasterList" class="master-student-compact-wrap"></div>
-        </div>
-
-        <!-- 4B-4. ALUMNI LIST UPDATE REPORT (Verification + History) -->
-        <div id="alumniUpdateReportSection" class="admin-section-card" style="padding: 18px 20px; margin-bottom: 20px;">
-          <div class="admin-section-header" style="margin-bottom: 12px; padding-bottom: 12px;">
-            <div>
-              <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                <h3 style="font-size: 16.5px; font-weight: 800; color: var(--gold-400); margin: 0;">
-                  📋 ALUMNI LIST UPDATE REPORT
-                </h3>
-                <span id="alumniReportStatusBadge" class="report-status-pill is-success">🟢 SUCCESS</span>
-              </div>
-              <p id="alumniReportMetaLine" style="font-size: 12.5px; color: #94A3B8; margin-top: 4px;">
-                Verifying Excel source vs. live website database records...
-              </p>
-            </div>
-            <div class="dash-toolbar" style="gap: 8px;">
-              <select id="alumniReportHistorySelect" class="filter-select" aria-label="View previous alumni update reports">
-                <option value="0">Latest Report</option>
-              </select>
-              <button type="button" id="recheckAlumniReportBtn" class="dash-btn primary" style="padding: 8px 13px; font-size: 12.5px;">
-                <span>🔄 Refresh / Recheck Verification</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="report-kpi-grid">
-            <div class="report-kpi-box">
-              <div class="report-kpi-lbl">Update Date &amp; Time</div>
-              <div class="report-kpi-val" id="rptDateTimeVal" style="font-size: 13.5px; color: #E2E8F0;">-</div>
-            </div>
-            <div class="report-kpi-box">
-              <div class="report-kpi-lbl">Update Status</div>
-              <div class="report-kpi-val" id="rptStatusTextVal" style="font-size: 14px;">-</div>
-            </div>
-            <div class="report-kpi-box">
-              <div class="report-kpi-lbl">Excel Total Records</div>
-              <div class="report-kpi-val" id="rptExcelTotalVal" style="color: var(--gold-300);">0</div>
-            </div>
-            <div class="report-kpi-box">
-              <div class="report-kpi-lbl">Website Total Records</div>
-              <div class="report-kpi-val" id="rptWebsiteTotalVal" style="color: #6EE7B7;">0</div>
-            </div>
-            <div class="report-kpi-box">
-              <div class="report-kpi-lbl">Successfully Imported</div>
-              <div class="report-kpi-val" id="rptImportedVal" style="color: #93C5FD;">0</div>
-            </div>
-            <div class="report-kpi-box">
-              <div class="report-kpi-lbl">Missing Records</div>
-              <div class="report-kpi-val" id="rptMissingCountVal">0</div>
-            </div>
-            <div class="report-kpi-box">
-              <div class="report-kpi-lbl">Duplicate Records</div>
-              <div class="report-kpi-val" id="rptDuplicateCountVal">0</div>
-            </div>
-            <div class="report-kpi-box">
-              <div class="report-kpi-lbl">Incorrect Records</div>
-              <div class="report-kpi-val" id="rptIncorrectCountVal">0</div>
-            </div>
-            <div class="report-kpi-box">
-              <div class="report-kpi-lbl">Search &amp; Filter Status</div>
-              <div class="report-kpi-val" id="rptSearchStatusVal" style="font-size: 13.5px;">-</div>
-            </div>
-            <div class="report-kpi-box">
-              <div class="report-kpi-lbl">Live Website Verification</div>
-              <div class="report-kpi-val" id="rptLiveStatusVal" style="font-size: 13.5px;">-</div>
-            </div>
-          </div>
-
-          <div id="alumniReportSummaryBanner" style="padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(52, 211, 153, 0.35); color: #A7F3D0;">
-            Verification result pending...
-          </div>
-
-          <div class="report-detail-grid">
-            <div class="report-detail-box">
-              <div style="font-size: 12px; font-weight: 800; color: #FDE68A; margin-bottom: 6px;">Missing Records (<span id="rptMissingBadge">0</span>)</div>
-              <div id="rptMissingList" style="font-size: 12px; color: #CBD5E1; max-height: 135px; overflow-y: auto; line-height: 1.5;">None</div>
-            </div>
-            <div class="report-detail-box">
-              <div style="font-size: 12px; font-weight: 800; color: #FCA5A5; margin-bottom: 6px;">Duplicate Records (<span id="rptDuplicateBadge">0</span>)</div>
-              <div id="rptDuplicateList" style="font-size: 12px; color: #CBD5E1; max-height: 135px; overflow-y: auto; line-height: 1.5;">None</div>
-            </div>
-            <div class="report-detail-box">
-              <div style="font-size: 12px; font-weight: 800; color: #93C5FD; margin-bottom: 6px;">Incorrect / Outdated Records (<span id="rptIncorrectBadge">0</span>)</div>
-              <div id="rptIncorrectList" style="font-size: 12px; color: #CBD5E1; max-height: 135px; overflow-y: auto; line-height: 1.5;">None</div>
-            </div>
-          </div>
-
-          <div style="margin-top: 14px;">
-            <div style="font-size: 12.5px; font-weight: 800; color: var(--gold-300); margin-bottom: 8px;">
-              Update Verification History (<span id="alumniReportHistoryCount">0</span> Saved Reports)
-            </div>
-            <div class="table-responsive">
-              <table class="resp-table" id="alumniReportHistoryTable">
-                <thead>
-                  <tr>
-                    <th>Date &amp; Time</th>
-                    <th>Source File</th>
-                    <th>Action</th>
-                    <th>Excel / Website</th>
-                    <th>Missing / Dup / Incorrect</th>
-                    <th>Status</th>
-                    <th>View</th>
-                  </tr>
-                </thead>
-                <tbody id="alumniReportHistoryBody"></tbody>
-              </table>
-            </div>
-          </div>
         </div>
 
         <!-- Responses Management Table -->
@@ -5884,14 +5711,34 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
       var allMasterStudents = [];
       var registeredStudentsMap = {};
-      var officialBatchTotalsMap = {
-        '2001': 4, '2002': 4, '2003': 3, '2004': 8, '2005': 10, '2006': 4,
-        '2007': 6, '2008': 6, '2009': 3, '2010': 8, '2011': 6, '2012': 6,
-        '2013': 8, '2014': 9, '2015': 14, '2016': 4, '2017': 13, '2018': 17,
-        '2019': 15, '2020': 23, '2021': 24, '2022': 24, '2023': 27, '2024': 16,
-        '2025': 29, '2026': 12
-      };
+      var officialBatchTotalsMap = {};
       var isNameEditOpen = false;
+
+      function computeDynamicBatchTotalsFromStudents(studentsList) {
+        var totals = {};
+        for (var y = 2001; y <= 2026; y++) {
+          totals[String(y)] = 0;
+        }
+        var list = Array.isArray(studentsList) ? studentsList : [];
+        if (list.length > 0) {
+          for (var i = 0; i < list.length; i++) {
+            var by = String((list[i] && list[i].batchYear) || '').trim();
+            if (totals.hasOwnProperty(by)) {
+              totals[by] += 1;
+            }
+          }
+        } else {
+          for (var yr = 2001; yr <= 2026; yr++) {
+            var k = String(yr);
+            totals[k] = Number(officialBatchTotalsMap[k] || 0);
+          }
+        }
+        var overall = 0;
+        for (var b = 2001; b <= 2026; b++) {
+          overall += totals[String(b)];
+        }
+        return { batchTotals: totals, overallTotal: overall };
+      }
 
       function updateTwoStepFormVisibility() {
         var hasBatch = Boolean(batchInput && String(batchInput.value || '').trim());
@@ -7113,8 +6960,6 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       var dashboardWhatsappReportText = '';
       var dashboardMasterStudents = [];
       var dashboardWhatsappCloudApi = null;
-      var dashboardAlumniUpdateReports = [];
-      var selectedAlumniReportIndex = 0;
 
       function normalizeRegistrationItem(item, index) {
         var r = (item && typeof item === 'object') ? item : {};
@@ -7184,18 +7029,16 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         if (Array.isArray(payload.students)) {
           dashboardMasterStudents = payload.students;
           allMasterStudents = payload.students;
+          var dynTotals = computeDynamicBatchTotalsFromStudents(allMasterStudents);
+          officialBatchTotalsMap = dynTotals.batchTotals;
+          if (batchInput && batchInput.value) {
+            populateStudentDropdownForBatch(batchInput.value, '');
+          }
+        } else if (payload.officialBatchTotals && typeof payload.officialBatchTotals === 'object') {
+          officialBatchTotalsMap = payload.officialBatchTotals;
         }
         if (payload.whatsappCloudApi) {
           dashboardWhatsappCloudApi = payload.whatsappCloudApi;
-        }
-        if (Array.isArray(payload.alumniUpdateReports)) {
-          dashboardAlumniUpdateReports = payload.alumniUpdateReports;
-          if (selectedAlumniReportIndex >= dashboardAlumniUpdateReports.length) {
-            selectedAlumniReportIndex = 0;
-          }
-        } else if (payload.updateReport) {
-          dashboardAlumniUpdateReports = [payload.updateReport].concat(dashboardAlumniUpdateReports || []);
-          selectedAlumniReportIndex = 0;
         }
         renderDashboardUI();
       }
@@ -7454,7 +7297,6 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         renderBatchReportUI();
         renderCheckinManagementUI();
         renderMasterStudentsUI();
-        renderAlumniUpdateReportUI();
       }
 
       function formatPctClient(regCnt, totCnt) {
@@ -7464,6 +7306,25 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       }
 
       function computeClientBatchReportFallback() {
+        var dyn = computeDynamicBatchTotalsFromStudents(allMasterStudents);
+        var batchTotals = dyn.batchTotals;
+        var overallTotal = dyn.overallTotal;
+        var activeStudentIds = {};
+        var activeBatchNames = {};
+        for (var i = 0; i < allMasterStudents.length; i++) {
+          var st = allMasterStudents[i];
+          if (!st) continue;
+          var sid = String(st.studentId || '').trim();
+          var sby = String(st.batchYear || '').trim();
+          var snm = String(st.name || '').trim().replace(/\s+/g, ' ').toUpperCase();
+          if (sid) activeStudentIds[sid] = true;
+          if (sby && snm) {
+            if (!activeBatchNames[sby]) activeBatchNames[sby] = {};
+            activeBatchNames[sby][snm] = true;
+          }
+        }
+        var hasMasterList = allMasterStudents.length > 0;
+
         var batches = [];
         var lines = [
           '*Aufbruch*',
@@ -7477,10 +7338,16 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           var idx = y - 2000;
           var seenSet = {};
           var checkinCnt = 0;
-          for (var i = 0; i < dashboardRegistrations.length; i++) {
-            var r = dashboardRegistrations[i];
+          for (var j = 0; j < dashboardRegistrations.length; j++) {
+            var r = dashboardRegistrations[j];
             if (String(r.batchYear) === yrStr) {
-              var k = r.studentId ? ('STU:' + r.studentId) : ('NM:' + String(r.originalExcelName || r.name || '').toUpperCase());
+              var rSid = String(r.studentId || '').trim();
+              var rNm = String(r.originalExcelName || r.name || '').trim().replace(/\s+/g, ' ').toUpperCase();
+              if (!rSid && !rNm) continue;
+              if (hasMasterList && rSid && !activeStudentIds[rSid] && !(activeBatchNames[yrStr] && activeBatchNames[yrStr][rNm])) {
+                continue;
+              }
+              var k = rSid ? ('STU:' + rSid) : ('NAME:' + rNm);
               if (!seenSet[k]) {
                 seenSet[k] = true;
                 if (r.checkedIn) checkinCnt++;
@@ -7489,7 +7356,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           }
           var regCnt = Object.keys(seenSet).length;
           totalUnique += regCnt;
-          var offTot = officialBatchTotalsMap[yrStr] || 0;
+          var offTot = Number(batchTotals[yrStr] || 0);
           var regFmt = regCnt < 10 ? ('0' + regCnt) : String(regCnt);
           var offFmt = offTot < 10 ? ('0' + offTot) : String(offTot);
           var pctStr = formatPctClient(regCnt, offTot);
@@ -7511,33 +7378,51 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           });
         }
         var ovFmt = totalUnique < 10 ? ('0' + totalUnique) : String(totalUnique);
-        var ovPctStr = formatPctClient(totalUnique, 330);
-        var ovPctNum = Math.round((totalUnique / 330) * 1000) / 10;
+        var ovPctStr = formatPctClient(totalUnique, overallTotal);
+        var ovPctNum = overallTotal > 0 ? Math.round((totalUnique / overallTotal) * 1000) / 10 : 0;
         lines.push('');
         lines.push('________________________');
-        lines.push('*Total Registration: ' + ovFmt + '/330 (' + ovPctStr + ')*');
+        lines.push('*Total Registration: ' + ovFmt + '/' + overallTotal + ' (' + ovPctStr + ')*');
         return {
           batches: batches,
           totalRegistered: totalUnique,
           totalRegisteredFormatted: ovFmt,
-          officialOverallTotal: 330,
+          officialOverallTotal: overallTotal,
           overallPercentage: ovPctNum,
           overallPercentageFormatted: ovPctStr,
-          overallSummaryText: ovFmt + '/330 (' + ovPctStr + ')',
+          overallSummaryText: ovFmt + '/' + overallTotal + ' (' + ovPctStr + ')',
           whatsappReportText: lines.join('\n')
         };
       }
 
+      function getSyncedBatchReportData() {
+        var liveRep = computeClientBatchReportFallback();
+        if (!dashboardBatchReport) {
+          dashboardBatchReport = liveRep;
+          return liveRep;
+        }
+        if (allMasterStudents.length > 0 && Number(dashboardBatchReport.officialOverallTotal) !== allMasterStudents.length) {
+          dashboardBatchReport = liveRep;
+          return liveRep;
+        }
+        return liveRep;
+      }
+
       function renderBatchReportUI() {
-        var rep = dashboardBatchReport || computeClientBatchReportFallback();
+        var rep = getSyncedBatchReportData();
+        dashboardBatchReport = rep;
         dashboardWhatsappReportText = rep.whatsappReportText || '';
         var summaryEl = document.getElementById('overallBatchRegSummary');
+        var totalValEl = document.getElementById('officialStudentTotalValue');
         var barEl = document.getElementById('overallBatchProgressBar');
         var previewEl = document.getElementById('batchReportPreviewBox');
         var gridEl = document.getElementById('batchReportGridContainer');
 
         if (summaryEl) {
-          summaryEl.textContent = rep.overallSummaryText || (rep.totalRegisteredFormatted + '/330 (' + rep.overallPercentageFormatted + ')');
+          summaryEl.textContent = rep.overallSummaryText || (rep.totalRegisteredFormatted + '/' + rep.officialOverallTotal + ' (' + rep.overallPercentageFormatted + ')');
+        }
+        if (totalValEl) {
+          totalValEl.textContent = String(rep.officialOverallTotal || 0);
         }
         if (barEl) {
           barEl.style.width = Math.min(100, Number(rep.overallPercentage || 0)) + '%';
@@ -7774,7 +7659,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
       function renderMasterStudentsUI() {
         var totalBadge = document.getElementById('masterStudentTotalBadge');
-        if (totalBadge) totalBadge.textContent = String(allMasterStudents.length || 302);
+        if (totalBadge) totalBadge.textContent = String(allMasterStudents.length);
 
         var batchSel = document.getElementById('adminStudentBatchFilter');
         var listEl = document.getElementById('adminStudentMasterList');
@@ -7828,128 +7713,6 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
         tableHtml += '</tbody></table>';
         listEl.innerHTML = tableHtml;
-      }
-
-      function renderReportItemListHtml(items, emptyText) {
-        if (!Array.isArray(items) || items.length === 0) {
-          return '<span style="color: #6EE7B7; font-weight: 700;">✓ ' + escapeHtml(emptyText || 'None (0)') + '</span>';
-        }
-        return items.map(function(it) {
-          var slPart = it.serialNo ? ('#' + it.serialNo + ' ') : '';
-          var batchPart = it.batchYear ? ('[Batch ' + it.batchYear + '] ') : '';
-          var nmPart = it.name || it.raw || 'Unknown';
-          var reasonPart = it.reason ? (' — ' + it.reason) : '';
-          return '<div>• ' + escapeHtml(batchPart + slPart + nmPart + reasonPart) + '</div>';
-        }).join('');
-      }
-
-      function renderAlumniUpdateReportUI() {
-        var reports = Array.isArray(dashboardAlumniUpdateReports) ? dashboardAlumniUpdateReports : [];
-        var histSelect = document.getElementById('alumniReportHistorySelect');
-        var histBody = document.getElementById('alumniReportHistoryBody');
-        var histCnt = document.getElementById('alumniReportHistoryCount');
-        if (histCnt) histCnt.textContent = String(reports.length);
-
-        if (histSelect) {
-          histSelect.innerHTML = '';
-          if (reports.length === 0) {
-            histSelect.innerHTML = '<option value="0">No Reports Yet</option>';
-          } else {
-            reports.forEach(function(rpt, idx) {
-              var opt = document.createElement('option');
-              opt.value = String(idx);
-              opt.textContent = (idx === 0 ? 'Latest: ' : '') + (rpt.updateDateTime || '-') + ' (' + (rpt.updateStatus || 'FAILED') + ')';
-              if (idx === selectedAlumniReportIndex) opt.selected = true;
-              histSelect.appendChild(opt);
-            });
-          }
-        }
-
-        var rpt = reports[selectedAlumniReportIndex] || reports[0] || null;
-        var badgeEl = document.getElementById('alumniReportStatusBadge');
-        var metaEl = document.getElementById('alumniReportMetaLine');
-        var summaryEl = document.getElementById('alumniReportSummaryBanner');
-
-        if (!rpt) {
-          if (badgeEl) {
-            badgeEl.className = 'report-status-pill is-failed';
-            badgeEl.textContent = '🔴 FAILED';
-          }
-          if (metaEl) metaEl.textContent = 'No update report recorded yet. Click Refresh / Recheck Verification to verify database records.';
-          if (summaryEl) summaryEl.textContent = 'No verification report available.';
-          return;
-        }
-
-        var isOk = String(rpt.updateStatus || '').toUpperCase() === 'SUCCESS';
-        if (badgeEl) {
-          badgeEl.className = 'report-status-pill ' + (isOk ? 'is-success' : 'is-failed');
-          badgeEl.textContent = isOk ? '🟢 SUCCESS' : '🔴 FAILED';
-        }
-        if (metaEl) {
-          metaEl.textContent =
-            'Source: ' + (rpt.sourceFile || 'alumni_list_corrected.xlsx') +
-            ' • Triggered by: ' + (rpt.triggeredBy || 'admin') +
-            ' • Storage: ' + (rpt.storageMode || 'active');
-        }
-
-        var setTxt = function(id, val, color) {
-          var el = document.getElementById(id);
-          if (!el) return;
-          el.textContent = String(val);
-          if (color) el.style.color = color;
-        };
-        setTxt('rptDateTimeVal', rpt.updateDateTime || '-');
-        setTxt('rptStatusTextVal', isOk ? '🟢 SUCCESS' : '🔴 FAILED', isOk ? '#34D399' : '#FCA5A5');
-        setTxt('rptExcelTotalVal', rpt.excelTotalRecords || 0);
-        setTxt('rptWebsiteTotalVal', rpt.websiteTotalRecords || 0);
-        setTxt('rptImportedVal', rpt.importedRecords || 0);
-        setTxt('rptMissingCountVal', rpt.missingCount || 0, (rpt.missingCount || 0) === 0 ? '#6EE7B7' : '#FCA5A5');
-        setTxt('rptDuplicateCountVal', rpt.duplicateCount || 0, (rpt.duplicateCount || 0) === 0 ? '#6EE7B7' : '#FCA5A5');
-        setTxt('rptIncorrectCountVal', rpt.incorrectCount || 0, (rpt.incorrectCount || 0) === 0 ? '#6EE7B7' : '#FCA5A5');
-        setTxt('rptSearchStatusVal', rpt.searchFilterStatus || 'NOT WORKING', rpt.searchFilterStatus === 'WORKING' ? '#34D399' : '#FCA5A5');
-        setTxt('rptLiveStatusVal', rpt.liveWebsiteStatus || 'FAILED', rpt.liveWebsiteStatus === 'PASSED' ? '#34D399' : '#FCA5A5');
-
-        if (summaryEl) {
-          summaryEl.style.background = isOk ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.14)';
-          summaryEl.style.borderColor = isOk ? 'rgba(52, 211, 153, 0.35)' : 'rgba(248, 113, 113, 0.45)';
-          summaryEl.style.color = isOk ? '#A7F3D0' : '#FCA5A5';
-          summaryEl.textContent = (isOk ? '✓ VERIFIED: ' : '✕ NEEDS ATTENTION: ') + (rpt.issueSummary || '');
-        }
-
-        var missBadge = document.getElementById('rptMissingBadge');
-        var dupBadge = document.getElementById('rptDuplicateBadge');
-        var incBadge = document.getElementById('rptIncorrectBadge');
-        if (missBadge) missBadge.textContent = String(rpt.missingCount || 0);
-        if (dupBadge) dupBadge.textContent = String(rpt.duplicateCount || 0);
-        if (incBadge) incBadge.textContent = String(rpt.incorrectCount || 0);
-
-        var missList = document.getElementById('rptMissingList');
-        var dupList = document.getElementById('rptDuplicateList');
-        var incList = document.getElementById('rptIncorrectList');
-        if (missList) missList.innerHTML = renderReportItemListHtml(rpt.missingRecords, 'No missing records');
-        if (dupList) dupList.innerHTML = renderReportItemListHtml(rpt.duplicateRecords, 'No duplicate records');
-        if (incList) incList.innerHTML = renderReportItemListHtml(rpt.incorrectRecords, 'No incorrect or outdated records');
-
-        if (histBody) {
-          histBody.innerHTML = '';
-          if (reports.length === 0) {
-            histBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #94A3B8; padding: 14px;">No update reports recorded yet.</td></tr>';
-          } else {
-            reports.forEach(function(item, idx) {
-              var okRow = String(item.updateStatus || '').toUpperCase() === 'SUCCESS';
-              var tr = document.createElement('tr');
-              tr.innerHTML =
-                '<td style="white-space: nowrap; color: #CBD5E1;">' + escapeHtml(item.updateDateTime || '-') + '</td>' +
-                '<td style="font-weight: 700; color: #FFFFFF;">' + escapeHtml(item.sourceFile || '-') + '</td>' +
-                '<td style="color: #94A3B8;">' + escapeHtml(item.actionType || 'verification') + '</td>' +
-                '<td style="white-space: nowrap; font-weight: 700; color: var(--gold-300);">' + escapeHtml(String(item.excelTotalRecords || 0) + ' / ' + String(item.websiteTotalRecords || 0)) + '</td>' +
-                '<td style="white-space: nowrap;">' + escapeHtml(String(item.missingCount || 0) + ' / ' + String(item.duplicateCount || 0) + ' / ' + String(item.incorrectCount || 0)) + '</td>' +
-                '<td><span class="report-status-pill ' + (okRow ? 'is-success' : 'is-failed') + '" style="padding: 3px 9px; font-size: 10.5px;">' + (okRow ? '🟢 SUCCESS' : '🔴 FAILED') + '</span></td>' +
-                '<td><button type="button" class="action-btn action-view-btn select-alumni-report-btn" data-rpt-idx="' + idx + '">View</button></td>';
-              histBody.appendChild(tr);
-            });
-          }
-        }
       }
 
       function renderResponsesTable() {
@@ -8686,13 +8449,12 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       }
 
       // -----------------------------------------------------------------------
-      // Batch-wise Report Share, Copy & Preview Handlers
+      // Batch-wise Report Share, Copy, Download & Preview Handlers
       // -----------------------------------------------------------------------
       function getLatestBatchReportText() {
-        if (!dashboardWhatsappReportText) {
-          var rep = dashboardBatchReport || computeClientBatchReportFallback();
-          dashboardWhatsappReportText = rep.whatsappReportText || '';
-        }
+        var rep = getSyncedBatchReportData();
+        dashboardBatchReport = rep;
+        dashboardWhatsappReportText = rep.whatsappReportText || '';
         return dashboardWhatsappReportText;
       }
 
@@ -8708,16 +8470,36 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       var shareBatchReportWaBtn = document.getElementById('shareBatchReportWaBtn');
       var shareBatchReportBtn = document.getElementById('shareBatchReportBtn');
       var copyBatchReportBtn = document.getElementById('copyBatchReportBtn');
+      var downloadBatchReportBtn = document.getElementById('downloadBatchReportBtn');
       var previewBatchReportBtn = document.getElementById('previewBatchReportBtn');
       var batchReportPreviewBox = document.getElementById('batchReportPreviewBox');
 
       if (shareBatchReportWaBtn) shareBatchReportWaBtn.addEventListener('click', shareBatchReportToWhatsApp);
-      if (shareBatchReportBtn) shareBatchReportBtn.addEventListener('click', shareBatchReportToWhatsApp);
+      if (shareBatchReportBtn) {
+        shareBatchReportBtn.addEventListener('click', function() {
+          if (!isAdminAuthenticated) return;
+          var text = getLatestBatchReportText();
+          if (!text) return;
+          if (navigator.share) {
+            navigator.share({
+              title: 'Aufbruch Alumni Conclave 2026 - Batch Wise Registration Report',
+              text: text
+            }).catch(function() {
+              shareBatchReportToWhatsApp();
+            });
+          } else {
+            shareBatchReportToWhatsApp();
+          }
+        });
+      }
 
       if (copyBatchReportBtn) {
         copyBatchReportBtn.addEventListener('click', function() {
           if (!isAdminAuthenticated) return;
           var text = getLatestBatchReportText();
+          if (batchReportPreviewBox) {
+            batchReportPreviewBox.textContent = text;
+          }
           if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text).then(function() {
               showToast('📋 Batch-wise registration report copied to clipboard!');
@@ -8733,6 +8515,24 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             document.body.removeChild(ta);
             showToast('📋 Batch-wise registration report copied to clipboard!');
           }
+        });
+      }
+
+      if (downloadBatchReportBtn) {
+        downloadBatchReportBtn.addEventListener('click', function() {
+          if (!isAdminAuthenticated) return;
+          var text = getLatestBatchReportText();
+          if (!text) return;
+          var blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = 'Aufbruch_2026_Batch_Registration_Report.txt';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showToast('📥 Downloaded latest Batch-wise Registration Report.');
         });
       }
 
@@ -9750,10 +9550,8 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
               body: JSON.stringify({ fileBase64: ev.target.result, fileName: file.name, mode: 'replace' })
             }).then(function(res) {
               if (res.ok && res.data && res.data.success) {
-                selectedAlumniReportIndex = 0;
                 showAuthenticatedDashboard(res.data);
-                var st = (res.data.updateReport && res.data.updateReport.updateStatus) ? res.data.updateReport.updateStatus : 'UPDATED';
-                showToast('📤 Replaced alumni list with ' + (res.data.importedCount || 0) + ' records (' + st + ').');
+                showToast('📤 Replaced alumni list with ' + (res.data.importedCount || 0) + ' records.');
               } else {
                 showToast(extractReadableMessage(res.data && res.data.error, 'Failed to import Excel file.'));
               }
@@ -9761,72 +9559,6 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           };
           reader.readAsDataURL(file);
           importExcelFileInput.value = '';
-        });
-      }
-
-      var alumniReportHistorySelect = document.getElementById('alumniReportHistorySelect');
-      var recheckAlumniReportBtn = document.getElementById('recheckAlumniReportBtn');
-      var alumniReportHistoryBody = document.getElementById('alumniReportHistoryBody');
-      if (alumniReportHistorySelect) {
-        alumniReportHistorySelect.addEventListener('change', function() {
-          selectedAlumniReportIndex = parseInt(alumniReportHistorySelect.value || '0', 10) || 0;
-          renderAlumniUpdateReportUI();
-        });
-      }
-      if (alumniReportHistoryBody) {
-        alumniReportHistoryBody.addEventListener('click', function(e) {
-          var btn = e.target.closest('.select-alumni-report-btn');
-          if (!btn) return;
-          selectedAlumniReportIndex = parseInt(btn.getAttribute('data-rpt-idx') || '0', 10) || 0;
-          renderAlumniUpdateReportUI();
-        });
-      }
-      if (recheckAlumniReportBtn) {
-        recheckAlumniReportBtn.addEventListener('click', function() {
-          if (!isAdminAuthenticated) return;
-          recheckAlumniReportBtn.disabled = true;
-          recheckAlumniReportBtn.innerHTML = '<span>⏳ Verifying Live Data...</span>';
-          apiFetchJson('/api/students', { method: 'GET' })
-            .then(function(allRes) {
-              var liveList = (allRes.ok && allRes.data && Array.isArray(allRes.data.students)) ? allRes.data.students : [];
-              var probeSt = liveList.length ? liveList[liveList.length - 1] : null;
-              var probeBatch = probeSt ? String(probeSt.batchYear || '') : '2026';
-              var probeName = probeSt ? String(probeSt.name || '').trim().toUpperCase() : '';
-              return apiFetchJson('/api/students?batchYear=' + encodeURIComponent(probeBatch), { method: 'GET' })
-                .then(function(batchRes) {
-                  var bRows = (batchRes.ok && batchRes.data && Array.isArray(batchRes.data.students)) ? batchRes.data.students : [];
-                  var expectedBatchCount = liveList.filter(function(s) { return String(s.batchYear || '') === probeBatch; }).length;
-                  var nameMatch = probeName ? liveList.filter(function(s) {
-                    return String(s.name || '').toUpperCase().indexOf(probeName) !== -1;
-                  }) : [];
-                  var searchFilterOk = Boolean(probeSt && bRows.length === expectedBatchCount && bRows.length > 0 && nameMatch.length >= 1);
-                  var liveWebsiteOk = Boolean(allRes.ok && liveList.length > 0 && liveList.length === (allMasterStudents.length || liveList.length));
-                  return apiFetchJson('/api/admin/students/verify-report', {
-                    method: 'POST',
-                    headers: getAuthHeaders(true),
-                    body: JSON.stringify({
-                      searchFilterVerified: searchFilterOk,
-                      liveWebsiteVerified: liveWebsiteOk
-                    })
-                  });
-                });
-            })
-            .then(function(verRes) {
-              recheckAlumniReportBtn.disabled = false;
-              recheckAlumniReportBtn.innerHTML = '<span>🔄 Refresh / Recheck Verification</span>';
-              if (verRes.ok && verRes.data && verRes.data.success) {
-                selectedAlumniReportIndex = 0;
-                showAuthenticatedDashboard(verRes.data);
-                showToast(verRes.data.message || 'Verification report updated.');
-              } else {
-                showToast(extractReadableMessage(verRes.data && verRes.data.error, 'Verification recheck failed.'));
-              }
-            })
-            .catch(function() {
-              recheckAlumniReportBtn.disabled = false;
-              recheckAlumniReportBtn.innerHTML = '<span>🔄 Refresh / Recheck Verification</span>';
-              showToast('Unable to run verification recheck.');
-            });
         });
       }
 
