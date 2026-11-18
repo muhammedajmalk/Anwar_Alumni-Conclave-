@@ -4,7 +4,7 @@
   "outputDirectory": "public",
   "functions": {
     "api/index.py": {
-      "includeFiles": "{server.py,registrations_db.json,alumni_students_db.json,alumni list.xlsx,public/index.html}"
+      "includeFiles": "{server.py,registrations_db.json,alumni_students_db.json,alumni_list_corrected.xlsx,public/index.html}"
     }
   },
   "rewrites": [

@@ -362,6 +362,12 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertIn('<option value="NONE" selected>None</option>', index_html)
         self.assertIn('id="deleteStudentConfirmModal"', index_html)
         self.assertIn("Are you sure you want to remove this student?", index_html)
+        self.assertIn('id="alumniUpdateReportSection"', index_html)
+        self.assertIn("ALUMNI LIST UPDATE REPORT", index_html)
+        self.assertIn('id="recheckAlumniReportBtn"', index_html)
+        self.assertIn('id="alumniReportHistorySelect"', index_html)
+        self.assertTrue((WORKSPACE_DIR / "alumni_list_corrected.xlsx").exists())
+        self.assertFalse((WORKSPACE_DIR / "alumni list.xlsx").exists())
         self.assertTrue((WORKSPACE_DIR / "public" / "index.html").exists())
         self.assertTrue((WORKSPACE_DIR / "public" / "aufbruch_poster.png").exists())
         self.assertTrue((WORKSPACE_DIR / "public" / "vendor" / "jsQR.js").exists())
@@ -376,6 +382,8 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         inc = vercel_cfg.get("functions", {}).get("api/index.py", {}).get("includeFiles", "")
         self.assertIn("server.py", inc)
         self.assertIn("registrations_db.json", inc)
+        self.assertIn("alumni_list_corrected.xlsx", inc)
+        self.assertNotIn("alumni list.xlsx", inc)
         dests = [r.get("destination", "") for r in vercel_cfg.get("rewrites", [])]
         self.assertIn("/index.html", dests)
         self.assertIn("/api/index.py?__route=$1", dests)
@@ -407,6 +415,12 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
             {"registrationId": "001"},
         )
         self.assertEqual(status_del_unauth, 401)
+
+        status_rpt_unauth, _, _ = http_json_request("/api/admin/students/update-report", "GET")
+        self.assertEqual(status_rpt_unauth, 401)
+
+        status_ver_unauth, _, _ = http_json_request("/api/admin/students/verify-report", "POST", {})
+        self.assertEqual(status_ver_unauth, 401)
 
         status_wa_unauth, _, _ = http_json_request(
             "/api/admin/whatsapp-status",
@@ -468,7 +482,66 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertEqual(len(st_2007.get("students", [])), 5)
 
         _, st_2026, _ = http_json_request("/api/students?batchYear=2026", "GET")
-        self.assertEqual(len(st_2026.get("students", [])), 0)
+        self.assertEqual(len(st_2026.get("students", [])), 12)
+        self.assertIn("ANSHID MT", [s.get("name") for s in st_2026.get("students", [])])
+
+        _, st_all, _ = http_json_request("/api/students", "GET")
+        self.assertEqual(len(st_all.get("students", [])), 302)
+
+        # 4C. Verify ALUMNI LIST UPDATE REPORT & Recheck Verification + Non-overwriting History
+        rpt_get_status, rpt_get_body, _ = http_json_request(
+            "/api/admin/students/update-report",
+            "GET",
+            headers=auth_headers,
+        )
+        self.assertEqual(rpt_get_status, 200)
+        self.assertTrue(rpt_get_body.get("success"))
+        latest_rpt = rpt_get_body.get("latestReport") or {}
+        self.assertEqual(latest_rpt.get("updateStatus"), "SUCCESS")
+        self.assertEqual(latest_rpt.get("excelTotalRecords"), 302)
+        self.assertEqual(latest_rpt.get("websiteTotalRecords"), 302)
+        self.assertEqual(latest_rpt.get("importedRecords"), 302)
+        self.assertEqual(latest_rpt.get("missingCount"), 0)
+        self.assertEqual(latest_rpt.get("duplicateCount"), 0)
+        self.assertEqual(latest_rpt.get("incorrectCount"), 0)
+        self.assertEqual(latest_rpt.get("searchFilterStatus"), "WORKING")
+        self.assertEqual(latest_rpt.get("liveWebsiteStatus"), "PASSED")
+        initial_hist_len = len(rpt_get_body.get("reports", []))
+
+        ver_rpt_status, ver_rpt_body, _ = http_json_request(
+            "/api/admin/students/verify-report",
+            "POST",
+            {"searchFilterVerified": True, "liveWebsiteVerified": True},
+            headers=auth_headers,
+        )
+        self.assertEqual(ver_rpt_status, 200)
+        self.assertEqual(ver_rpt_body["latestReport"]["updateStatus"], "SUCCESS")
+        self.assertEqual(len(ver_rpt_body.get("reports", [])), min(100, initial_hist_len + 1))
+
+        # Test Excel import with mode=replace verifies complete replacement & logs FAILED if mismatch forced
+        import base64
+        import server as srv_mod
+        mismatch_rpt = srv_mod.verify_and_build_alumni_update_report(
+            excel_students=[{"studentId": "STU-2001-999", "serialNo": 999, "batchYear": "2001", "name": "NON EXISTENT"}],
+            source_file="mismatch_probe.xlsx",
+            triggered_by="test",
+            action_type="probe",
+        )
+        self.assertEqual(mismatch_rpt["updateStatus"], "FAILED")
+        self.assertGreaterEqual(mismatch_rpt["missingCount"], 1)
+
+        b64_excel = base64.b64encode((WORKSPACE_DIR / "alumni_list_corrected.xlsx").read_bytes()).decode("ascii")
+        imp_status, imp_body, _ = http_json_request(
+            "/api/admin/students/import",
+            "POST",
+            {"fileBase64": b64_excel, "fileName": "alumni_list_corrected.xlsx", "mode": "replace"},
+            headers=auth_headers,
+        )
+        self.assertEqual(imp_status, 200)
+        self.assertEqual(imp_body.get("importedCount"), 302)
+        self.assertEqual(imp_body["updateReport"]["updateStatus"], "SUCCESS")
+        self.assertEqual(imp_body["updateReport"]["excelTotalRecords"], 302)
+        self.assertEqual(imp_body["updateReport"]["websiteTotalRecords"], 302)
 
         # Clean up any leftover temporary test records from an interrupted run
         for existing_r in dash_body.get("registrations", []):

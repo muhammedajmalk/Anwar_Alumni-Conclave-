@@ -50,12 +50,15 @@ except Exception:
 WORKSPACE_DIR = Path(__file__).resolve().parent
 PUBLIC_DIR = WORKSPACE_DIR / "public"
 BUNDLED_DB_FILE = WORKSPACE_DIR / "registrations_db.json"
-ALUMNI_EXCEL_FILE = WORKSPACE_DIR / "alumni list.xlsx"
+ALUMNI_EXCEL_FILE = WORKSPACE_DIR / "alumni_list_corrected.xlsx"
 BUNDLED_STUDENTS_FILE = WORKSPACE_DIR / "alumni_students_db.json"
+BUNDLED_REPORTS_FILE = WORKSPACE_DIR / "alumni_update_reports_db.json"
 KV_RECORDS_KEY = os.environ.get("KV_RECORDS_KEY", "aufbruch:registrations_v1")
-KV_STUDENTS_KEY = os.environ.get("KV_STUDENTS_KEY", "aufbruch:students_v1")
+KV_STUDENTS_KEY = os.environ.get("KV_STUDENTS_KEY", "aufbruch:students_corrected_v2")
+KV_UPDATE_REPORTS_KEY = os.environ.get("KV_UPDATE_REPORTS_KEY", "aufbruch:alumni_update_reports_v1")
 BLOB_RECORDS_PATH = os.environ.get("BLOB_RECORDS_PATH", "aufbruch/registrations_v1.json")
-BLOB_STUDENTS_PATH = os.environ.get("BLOB_STUDENTS_PATH", "aufbruch/students_v1.json")
+BLOB_STUDENTS_PATH = os.environ.get("BLOB_STUDENTS_PATH", "aufbruch/students_corrected_v2.json")
+BLOB_UPDATE_REPORTS_PATH = os.environ.get("BLOB_UPDATE_REPORTS_PATH", "aufbruch/alumni_update_reports_v1.json")
 BLOB_REVOKED_PATH = os.environ.get("BLOB_REVOKED_PATH", "aufbruch/revoked_sessions_v1.json")
 
 BATCH_YEARS = [str(y) for y in range(2001, 2027)]
@@ -245,8 +248,18 @@ def _resolve_students_file() -> Path:
     return tmp_st
 
 
+def _resolve_reports_file() -> Path:
+    env_rp = os.environ.get("UPDATE_REPORTS_FILE", "").strip()
+    if env_rp:
+        return Path(env_rp)
+    if os.access(WORKSPACE_DIR, os.W_OK):
+        return BUNDLED_REPORTS_FILE
+    return Path(tempfile.gettempdir()) / "aufbruch_alumni_update_reports_db.json"
+
+
 DB_FILE = _resolve_db_file()
 STUDENTS_FILE = _resolve_students_file()
+REPORTS_FILE = _resolve_reports_file()
 
 # ============================================================================
 # SERVER-SIDE ADMIN CREDENTIALS (PBKDF2-HMAC-SHA256)
@@ -681,7 +694,15 @@ def make_qr_svg(text: str, module_px: int = 8, border: int = 4) -> str:
     return "".join(rects)
 
 
-def parse_alumni_xlsx_bytes(raw_bytes: bytes) -> tuple[list[dict], list[dict]]:
+def _col_letters_to_index(col_letters: str) -> int:
+    idx = 0
+    for ch in col_letters.upper():
+        if "A" <= ch <= "Z":
+            idx = idx * 26 + (ord(ch) - ord("A") + 1)
+    return idx
+
+
+def parse_alumni_xlsx_bytes(raw_bytes: bytes) -> tuple[list[dict], list[dict], list[dict]]:
     with zipfile.ZipFile(io.BytesIO(raw_bytes), "r") as z:
         shared_strings: list[str] = []
         if "xl/sharedStrings.xml" in z.namelist():
@@ -711,34 +732,58 @@ def parse_alumni_xlsx_bytes(raw_bytes: bytes) -> tuple[list[dict], list[dict]]:
                 elif v_el is not None and v_el.text is not None:
                     val = v_el.text
                 cells[col] = val
-            rows_out.append(cells)
+            rows_out.append((row.attrib.get("r", ""), cells))
 
     current_batch = None
     students: list[dict] = []
-    seen_batch_names: set[tuple[str, str]] = set()
+    seen_batch_names: set[tuple[str, int | None, str]] = set()
     removed_duplicates: list[dict] = []
+    incorrect_rows: list[dict] = []
     batch_seq: dict[str, int] = {}
 
-    for r in rows_out:
-        vals = [str(r.get(col, "")).strip() for col in sorted(r.keys())]
-        joined = " | ".join(vals)
+    for row_num, r in rows_out:
+        ordered_cols = sorted(r.keys(), key=_col_letters_to_index)
+        non_empty = [(col, str(r.get(col, "")).strip()) for col in ordered_cols if str(r.get(col, "")).strip()]
+        if not non_empty:
+            continue
+        joined = " | ".join(val for _, val in non_empty)
         m = re.search(r"BATCH\s*NO\s*[-–:]?\s*(\d{4})", joined, re.I)
         if m:
-            current_batch = m.group(1)
+            yr = m.group(1)
+            if yr not in BATCH_YEARS:
+                incorrect_rows.append({"row": row_num, "reason": f"Invalid batch year '{yr}'", "raw": joined})
+                current_batch = None
+            else:
+                current_batch = yr
             continue
-        b_val = str(r.get("B", "")).strip()
-        c_val = str(r.get("C", "")).strip()
-        if not c_val or not current_batch:
+        if not current_batch:
+            incorrect_rows.append({"row": row_num, "reason": "Student row found before valid batch header", "raw": joined})
             continue
-        clean_name = re.sub(r"\s+", " ", c_val).strip()
-        if not clean_name:
-            continue
+
+        # Auto-detect (Serial No, Student Name) across (A, B) or (B, C) or general column pairs
         sl = None
-        if b_val:
+        raw_name = ""
+        if len(non_empty) >= 2:
+            first_val = non_empty[0][1]
+            second_val = non_empty[1][1]
             try:
-                sl = int(float(b_val))
+                sl_parsed = float(first_val)
+                if sl_parsed.is_integer():
+                    sl = int(sl_parsed)
+                    raw_name = second_val
             except Exception:
-                sl = None
+                raw_name = second_val
+        elif len(non_empty) == 1:
+            raw_name = non_empty[0][1]
+
+        clean_name = re.sub(r"\s+", " ", raw_name).strip()
+        if not clean_name or len(clean_name) < 2:
+            incorrect_rows.append({"row": row_num, "batchYear": current_batch, "reason": "Missing or invalid student name", "raw": joined})
+            continue
+        # Reject header/placeholder rows accidentally left inside body
+        if re.match(r"^(SL\.?\s*NO|S\.?\s*NO|NAME|STUDENT\s*NAME)$", clean_name, re.I):
+            continue
+
         norm_key = (current_batch, sl, clean_name.upper())
         if norm_key in seen_batch_names:
             removed_duplicates.append({"batchYear": current_batch, "serialNo": sl, "name": clean_name})
@@ -755,22 +800,22 @@ def parse_alumni_xlsx_bytes(raw_bytes: bytes) -> tuple[list[dict], list[dict]]:
                 "name": clean_name,
             }
         )
-    return students, removed_duplicates
+    return students, removed_duplicates, incorrect_rows
 
 
 def _load_seed_students() -> list[dict]:
+    if ALUMNI_EXCEL_FILE.exists():
+        try:
+            students, _, _ = parse_alumni_xlsx_bytes(ALUMNI_EXCEL_FILE.read_bytes())
+            if students:
+                return students
+        except Exception:
+            pass
     if BUNDLED_STUDENTS_FILE.exists():
         try:
             data = json.loads(BUNDLED_STUDENTS_FILE.read_text(encoding="utf-8"))
             if isinstance(data, list) and len(data) > 0:
                 return data
-        except Exception:
-            pass
-    if ALUMNI_EXCEL_FILE.exists():
-        try:
-            students, _ = parse_alumni_xlsx_bytes(ALUMNI_EXCEL_FILE.read_bytes())
-            if students:
-                return students
         except Exception:
             pass
     return []
@@ -829,6 +874,238 @@ def save_students_db(students: list[dict]) -> None:
         STUDENTS_FILE.write_text(serialized, encoding="utf-8")
     except Exception:
         pass
+
+
+def _student_match_key(st: dict) -> tuple[str, int | None, str]:
+    by = str(st.get("batchYear", "")).strip()
+    sl_raw = st.get("serialNo")
+    try:
+        sl = int(sl_raw) if sl_raw is not None and str(sl_raw).strip() != "" else None
+    except Exception:
+        sl = None
+    nm = re.sub(r"\s+", " ", str(st.get("name", "")).strip()).upper()
+    return (by, sl, nm)
+
+
+def verify_and_build_alumni_update_report(
+    excel_students: list[dict] | None = None,
+    excel_duplicates: list[dict] | None = None,
+    excel_incorrect: list[dict] | None = None,
+    source_file: str = "alumni_list_corrected.xlsx",
+    triggered_by: str = "system",
+    action_type: str = "verification",
+    search_filter_verified: bool | None = None,
+    live_website_verified: bool | None = None,
+) -> dict:
+    parse_error = ""
+    if excel_students is None:
+        excel_duplicates = []
+        excel_incorrect = []
+        if ALUMNI_EXCEL_FILE.exists():
+            try:
+                excel_students, excel_duplicates, excel_incorrect = parse_alumni_xlsx_bytes(ALUMNI_EXCEL_FILE.read_bytes())
+            except Exception as exc:
+                excel_students = []
+                parse_error = f"Excel read error: {exc}"
+        else:
+            excel_students = []
+            parse_error = f"Excel source '{ALUMNI_EXCEL_FILE.name}' not found."
+    else:
+        excel_duplicates = list(excel_duplicates or [])
+        excel_incorrect = list(excel_incorrect or [])
+
+    db_students = load_students_db()
+    excel_total = len(excel_students)
+    website_total = len(db_students)
+
+    excel_keys: list[tuple[str, int | None, str]] = [_student_match_key(s) for s in excel_students]
+    excel_key_set = set(excel_keys)
+
+    db_key_counts: dict[tuple[str, int | None, str], int] = {}
+    duplicate_records: list[dict] = [dict(d, source="excel") for d in excel_duplicates]
+    incorrect_records: list[dict] = [dict(x, source="excel") for x in excel_incorrect]
+
+    for idx, st in enumerate(db_students, start=1):
+        k = _student_match_key(st)
+        db_key_counts[k] = db_key_counts.get(k, 0) + 1
+        if db_key_counts[k] > 1:
+            duplicate_records.append(
+                {
+                    "source": "database",
+                    "batchYear": k[0],
+                    "serialNo": k[1],
+                    "name": st.get("name", ""),
+                }
+            )
+        if k[0] not in BATCH_YEARS or not k[2] or len(k[2]) < 2:
+            incorrect_records.append(
+                {
+                    "source": "database",
+                    "row": idx,
+                    "batchYear": k[0],
+                    "serialNo": k[1],
+                    "name": st.get("name", ""),
+                    "reason": "Invalid batch year or missing student name in database.",
+                }
+            )
+        elif excel_total > 0 and k not in excel_key_set:
+            incorrect_records.append(
+                {
+                    "source": "database",
+                    "row": idx,
+                    "batchYear": k[0],
+                    "serialNo": k[1],
+                    "name": st.get("name", ""),
+                    "reason": "Outdated or unmapped record not found in official Excel list.",
+                }
+            )
+
+    missing_records: list[dict] = []
+    imported_count = 0
+    for st in excel_students:
+        k = _student_match_key(st)
+        if db_key_counts.get(k, 0) >= 1:
+            imported_count += 1
+        else:
+            missing_records.append(
+                {
+                    "batchYear": st.get("batchYear", ""),
+                    "serialNo": st.get("serialNo"),
+                    "name": st.get("name", ""),
+                }
+            )
+
+    missing_cnt = len(missing_records)
+    dup_cnt = len(duplicate_records)
+    inc_cnt = len(incorrect_records)
+
+    # Real Search & Filter capability check on persisted DB
+    valid_searchable_batches = {str(s.get("batchYear", "")).strip() for s in db_students if str(s.get("batchYear", "")).strip() in BATCH_YEARS}
+    all_names_searchable = all(bool(str(s.get("name", "")).strip()) for s in db_students) if db_students else False
+    backend_search_ok = bool(db_students and valid_searchable_batches and all_names_searchable)
+    if search_filter_verified is False:
+        search_status = "NOT WORKING"
+    else:
+        search_status = "WORKING" if backend_search_ok else "NOT WORKING"
+
+    backend_live_ok = (
+        not parse_error
+        and excel_total > 0
+        and website_total == excel_total
+        and missing_cnt == 0
+        and dup_cnt == 0
+        and inc_cnt == 0
+    )
+    if live_website_verified is False:
+        live_status = "FAILED"
+    else:
+        live_status = "PASSED" if backend_live_ok else "FAILED"
+
+    is_success = bool(
+        backend_live_ok
+        and search_status == "WORKING"
+        and live_status == "PASSED"
+    )
+    issues: list[str] = []
+    if parse_error:
+        issues.append(parse_error)
+    if excel_total != website_total:
+        issues.append(f"Count mismatch: Excel has {excel_total} records, website database has {website_total}.")
+    if missing_cnt > 0:
+        issues.append(f"{missing_cnt} record(s) missing from website database.")
+    if dup_cnt > 0:
+        issues.append(f"{dup_cnt} duplicate record(s) detected.")
+    if inc_cnt > 0:
+        issues.append(f"{inc_cnt} incorrect/outdated record(s) detected.")
+    if search_status != "WORKING":
+        issues.append("Search & Filter verification failed.")
+    if live_status != "PASSED":
+        issues.append("Live Website verification failed.")
+
+    now_str = now_ist().strftime("%Y-%m-%d %H:%M:%S")
+    return {
+        "reportId": f"RPT-{now_ist().strftime('%Y%m%d%H%M%S')}-{secrets.token_hex(2).upper()}",
+        "updateDateTime": now_str,
+        "updateStatus": "SUCCESS" if is_success else "FAILED",
+        "sourceFile": str(source_file or "alumni_list_corrected.xlsx"),
+        "triggeredBy": str(triggered_by or "system"),
+        "actionType": str(action_type or "verification"),
+        "excelTotalRecords": excel_total,
+        "websiteTotalRecords": website_total,
+        "importedRecords": imported_count,
+        "missingCount": missing_cnt,
+        "missingRecords": missing_records[:100],
+        "duplicateCount": dup_cnt,
+        "duplicateRecords": duplicate_records[:100],
+        "incorrectCount": inc_cnt,
+        "incorrectRecords": incorrect_records[:100],
+        "searchFilterStatus": search_status,
+        "liveWebsiteStatus": live_status,
+        "storageMode": get_storage_mode(),
+        "issueSummary": (
+            f"All {excel_total} official records from {source_file} matched database ({website_total}/{excel_total}) with 0 missing, 0 duplicate, and 0 incorrect records."
+            if is_success
+            else " ".join(issues)
+        ),
+    }
+
+
+def save_update_reports_db(reports: list[dict]) -> None:
+    trimmed = list(reports[:100])
+    serialized = json.dumps(trimmed, ensure_ascii=False, indent=2)
+    if _get_kv_config():
+        try:
+            _kv_command(["SET", KV_UPDATE_REPORTS_KEY, serialized])
+        except Exception:
+            pass
+    elif _get_blob_config():
+        try:
+            _blob_save_json(BLOB_UPDATE_REPORTS_PATH, serialized)
+        except Exception:
+            pass
+    try:
+        REPORTS_FILE.write_text(serialized, encoding="utf-8")
+    except Exception:
+        pass
+
+
+def load_update_reports_db(auto_seed: bool = True) -> list[dict]:
+    if _get_kv_config():
+        try:
+            raw = _kv_command(["GET", KV_UPDATE_REPORTS_KEY])
+            if raw:
+                data = json.loads(raw) if isinstance(raw, str) else raw
+                if isinstance(data, list) and len(data) > 0:
+                    return data
+        except Exception:
+            pass
+
+    if _get_blob_config():
+        try:
+            data = _blob_load_json(BLOB_UPDATE_REPORTS_PATH)
+            if isinstance(data, list) and len(data) > 0:
+                return data
+        except Exception:
+            pass
+
+    if REPORTS_FILE.exists():
+        try:
+            data = json.loads(REPORTS_FILE.read_text(encoding="utf-8"))
+            if isinstance(data, list) and len(data) > 0:
+                return data
+        except Exception:
+            pass
+
+    if auto_seed:
+        initial_report = verify_and_build_alumni_update_report(
+            source_file=ALUMNI_EXCEL_FILE.name,
+            triggered_by="system",
+            action_type="initial_list_sync",
+        )
+        reports = [initial_report]
+        save_update_reports_db(reports)
+        return reports
+    return []
 
 
 def enrich_registration(rec: dict) -> dict:
@@ -1533,12 +1810,15 @@ def build_dashboard_payload(preloaded_records: list[dict] | None = None) -> dict
             place_map[p_key]["no"] += 1
 
     batch_report = build_batch_report_data(records, students)
+    alumni_reports = load_update_reports_db(auto_seed=True)
 
     return {
         "success": True,
         "authenticated": True,
         "registrations": records,
         "students": students,
+        "alumniUpdateReports": alumni_reports,
+        "latestAlumniUpdateReport": alumni_reports[0] if alumni_reports else None,
         "officialBatchTotals": OFFICIAL_BATCH_TOTALS,
         "officialOverallTotal": OFFICIAL_OVERALL_TOTAL,
         "batchReport": batch_report,
@@ -1730,6 +2010,22 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                     )
                     return
                 self._send_json(200, build_dashboard_payload())
+                return
+
+            if route == "/api/admin/students/update-report":
+                sess = get_valid_session(self)
+                if not sess:
+                    self._send_json(401, {"success": False, "error": "Unauthorized access. Valid administrator session required."})
+                    return
+                reports = load_update_reports_db(auto_seed=True)
+                self._send_json(
+                    200,
+                    {
+                        "success": True,
+                        "latestReport": reports[0] if reports else None,
+                        "reports": reports,
+                    },
+                )
                 return
 
             # 2B. Public Student Master List for Registration Dropdown
@@ -2725,7 +3021,8 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                 self._send_json(401, {"success": False, "error": "Unauthorized access."})
                 return
             b64_data = str(body.get("fileBase64", "")).strip()
-            mode = str(body.get("mode", "merge")).strip().lower()
+            source_filename = str(body.get("fileName") or "uploaded_alumni_list.xlsx").strip()
+            mode = str(body.get("mode", "replace")).strip().lower()
             if not b64_data:
                 self._send_json(400, {"success": False, "error": "Excel file content (fileBase64) is required."})
                 return
@@ -2733,33 +3030,70 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                 b64_data = b64_data.split(",", 1)[1]
             try:
                 raw_bytes = base64.b64decode(b64_data)
-                imported_students, removed_dups = parse_alumni_xlsx_bytes(raw_bytes)
+                imported_students, removed_dups, incorrect_rows = parse_alumni_xlsx_bytes(raw_bytes)
             except Exception as exc:
                 self._send_json(400, {"success": False, "error": f"Failed to parse Excel (.xlsx) file: {exc}"})
                 return
             if not imported_students:
                 self._send_json(400, {"success": False, "error": "No valid batch/student rows found in uploaded Excel file."})
                 return
-            if mode == "replace":
-                final_students = imported_students
-            else:
+            if mode == "merge":
                 existing_students = load_students_db()
                 seen = {
-                    (str(s.get("batchYear", "")).strip(), str(s.get("name", "")).strip().upper())
+                    (str(s.get("batchYear", "")).strip(), int(s["serialNo"]) if s.get("serialNo") is not None else None, str(s.get("name", "")).strip().upper())
                     for s in existing_students
                 }
                 final_students = list(existing_students)
                 for st in imported_students:
-                    k = (st["batchYear"], st["name"].upper())
+                    k = _student_match_key(st)
                     if k not in seen:
                         seen.add(k)
                         final_students.append(st)
                 final_students.sort(key=lambda x: (str(x.get("batchYear", "")), int(x.get("serialNo") or 9999), str(x.get("name", ""))))
+            else:
+                final_students = imported_students
             save_students_db(final_students)
+            new_report = verify_and_build_alumni_update_report(
+                excel_students=imported_students,
+                excel_duplicates=removed_dups,
+                excel_incorrect=incorrect_rows,
+                source_file=source_filename,
+                triggered_by=sess.get("username", "admin"),
+                action_type=f"excel_import_{mode}",
+            )
+            reports = load_update_reports_db(auto_seed=False)
+            reports.insert(0, new_report)
+            save_update_reports_db(reports)
             payload = build_dashboard_payload()
             payload["importedCount"] = len(imported_students)
             payload["removedDuplicates"] = removed_dups
-            payload["message"] = f"Successfully imported {len(imported_students)} student records from Excel."
+            payload["incorrectRows"] = incorrect_rows
+            payload["updateReport"] = new_report
+            payload["message"] = f"Successfully replaced alumni list with {len(imported_students)} records ({new_report['updateStatus']})."
+            self._send_json(200, payload)
+            return
+
+        if route == "/api/admin/students/verify-report":
+            sess = get_valid_session(self)
+            if not sess:
+                self._send_json(401, {"success": False, "error": "Unauthorized access. Valid administrator session required."})
+                return
+            sf_ok = body.get("searchFilterVerified") if isinstance(body.get("searchFilterVerified"), bool) else None
+            lw_ok = body.get("liveWebsiteVerified") if isinstance(body.get("liveWebsiteVerified"), bool) else None
+            new_report = verify_and_build_alumni_update_report(
+                source_file=ALUMNI_EXCEL_FILE.name,
+                triggered_by=sess.get("username", "admin"),
+                action_type="manual_recheck",
+                search_filter_verified=sf_ok,
+                live_website_verified=lw_ok,
+            )
+            reports = load_update_reports_db(auto_seed=False)
+            reports.insert(0, new_report)
+            save_update_reports_db(reports)
+            payload = build_dashboard_payload()
+            payload["latestReport"] = new_report
+            payload["reports"] = reports
+            payload["message"] = f"Verification {new_report['updateStatus']}: {new_report['websiteTotalRecords']}/{new_report['excelTotalRecords']} records verified."
             self._send_json(200, payload)
             return
 

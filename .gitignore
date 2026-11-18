@@ -10,3 +10,4 @@ Thumbs.db
 backups/
 .aufbruch_revoked_sessions.json
 .aufbruch_session_secret
+alumni_update_reports_db.json
