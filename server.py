@@ -417,8 +417,16 @@ def normalize_indian_phone(raw_input: str) -> dict:
     }
 
 
-def build_whatsapp_message(name: str) -> str:
+def build_whatsapp_message(name: str, participation: str = "പങ്കെടുക്കും") -> str:
     clean_name = str(name or "Alumni Member").strip() or "Alumni Member"
+    if str(participation or "").strip() == "സാധിക്കില്ല":
+        return (
+            "അസ്സലാമു അലൈകും\n\n"
+            "Hi...\n"
+            f"*{clean_name},*\n\n"
+            "നിങ്ങള്ക്ക് അന്വാര് അലുംനി സംഗമത്തിന് എത്താന് സാധിക്കാത്തതിന് പ്രയാസം എന്തെങ്കിലുമുണ്ടോ..?\n\n"
+            "*കാരണം അറിയിക്കുകയാണെങ്കില് വളരെ സന്തോഷം.*"
+        )
     return (
         "അസ്സലാമു അലൈകും\n\n"
         f"Hi... *{clean_name}*\n\n"
@@ -861,9 +869,10 @@ def enrich_registration(rec: dict) -> dict:
     phone_data = normalize_indian_phone(rec.get("whatsappNumber", ""))
     participation = str(rec.get("participation", "")).strip()
     is_participating = participation == "പങ്കെടുക്കും"
-    should_send = bool(is_participating and phone_data["isValid"])
+    is_valid_choice = participation in ("പങ്കെടുക്കും", "സാധിക്കില്ല")
+    should_send = bool(is_valid_choice and phone_data["isValid"])
     clean_name = re.sub(r"\s+", " ", str(rec.get("name", "")).strip())
-    msg = build_whatsapp_message(clean_name) if should_send else ""
+    msg = build_whatsapp_message(clean_name, participation) if should_send else ""
     wa_url = (
         f"https://wa.me/{phone_data['waNumber']}?text={urllib.parse.quote(msg, safe='')}"
         if should_send
@@ -1232,7 +1241,11 @@ def canonical_alumni_name(raw_name: str, strip_spaces: bool = False) -> str:
         "HADI",
     )
     split_tokens: list[str] = []
+    glued_set = set(glued_suffixes)
     for tok in s.split():
+        if tok in glued_set:
+            split_tokens.append(tok)
+            continue
         matched_glue = False
         for suf in glued_suffixes:
             if len(tok) > len(suf) + 2 and tok.endswith(suf):

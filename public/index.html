@@ -5671,8 +5671,17 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         };
       }
 
-      function buildMalayalamWhatsAppMessage(name) {
+      function buildMalayalamWhatsAppMessage(name, participation) {
         var cleanName = String(name || 'Alumni Member').trim() || 'Alumni Member';
+        if (String(participation || '').trim() === 'സാധിക്കില്ല') {
+          return (
+            'അസ്സലാമു അലൈകും\n\n' +
+            'Hi...\n' +
+            '*' + cleanName + ',*\n\n' +
+            'നിങ്ങള്ക്ക് അന്വാര് അലുംനി സംഗമത്തിന് എത്താന് സാധിക്കാത്തതിന് പ്രയാസം എന്തെങ്കിലുമുണ്ടോ..?\n\n' +
+            '*കാരണം അറിയിക്കുകയാണെങ്കില് വളരെ സന്തോഷം.*'
+          );
+        }
         return (
           'അസ്സലാമു അലൈകും\n\n' +
           'Hi... *' + cleanName + '*\n\n' +
@@ -6927,9 +6936,29 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             submissionAlertBadge.textContent = '';
             submissionAlertBadge.style.display = 'none';
           }
+          var nonAttendingName = (res && res.name) ? String(res.name).trim() : 'Alumni Member';
+          var nonAttendingMsg = (res && res.whatsAppMessage)
+            ? String(res.whatsAppMessage)
+            : buildMalayalamWhatsAppMessage(nonAttendingName, 'സാധിക്കില്ല');
+          var nonAttendingPhoneInfo = formatPhoneForAdminWa(res || {});
+          var nonAttendingWaUrl = (res && res.whatsAppClickToChatUrl)
+            ? String(res.whatsAppClickToChatUrl)
+            : (nonAttendingPhoneInfo.isValid
+              ? ('https://wa.me/' + nonAttendingPhoneInfo.waNumber + '?text=' + encodeURIComponent(nonAttendingMsg))
+              : ('https://wa.me/?text=' + encodeURIComponent(nonAttendingMsg)));
           submissionAlertMessage.innerHTML =
-            'Thank you for registering with Aufbruch Alumni Conclave 2026.<br><br>' +
-            'We appreciate your response. We hope to meet you at another event!';
+            'Thank you for registering with Aufbruch Alumni Conclave 2026.<br>' +
+            'We appreciate your response. We hope to meet you at another event!' +
+            '<div style="margin-top: 12px; text-align: left; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(37, 211, 102, 0.38); border-radius: 10px; padding: 10px 12px;">' +
+              '<div style="font-size: 11.5px; font-weight: 800; color: #34D399; margin-bottom: 6px;">📲 WhatsApp Message Ready (' + escapeHtml(nonAttendingPhoneInfo.display || '') + ')</div>' +
+              '<pre id="nonAttendingWaPreview" style="margin: 0 0 10px 0; font-family: inherit; font-size: 12px; color: #E2E8F0; white-space: pre-wrap; line-height: 1.5;">' + escapeHtml(nonAttendingMsg) + '</pre>' +
+              '<a id="nonAttendingWaLink" href="' + escapeAttr(nonAttendingWaUrl) + '" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 9px 14px; border-radius: 8px; background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: #FFFFFF; font-size: 13px; font-weight: 800; text-decoration: none;">📲 Open WhatsApp Message</a>' +
+            '</div>';
+          if (nonAttendingWaUrl) {
+            try {
+              window.open(nonAttendingWaUrl, '_blank', 'noopener,noreferrer');
+            } catch (waOpenErr) {}
+          }
 
           if (successTicketPassWrap) {
             successTicketPassWrap.classList.remove('visible');
@@ -7536,6 +7565,10 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         var splitTokens = [];
         for (var g = 0; g < rawTokens.length; g++) {
           var tok = rawTokens[g];
+          if (gluedSuffixes.indexOf(tok) !== -1) {
+            splitTokens.push(tok);
+            continue;
+          }
           var matchedGlue = false;
           for (var gs = 0; gs < gluedSuffixes.length; gs++) {
             var suf = gluedSuffixes[gs];
@@ -8650,10 +8683,10 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         };
       }
 
-      function buildDefaultGreetingMessage(name) {
+      function buildDefaultGreetingMessage(name, participation) {
         var cleanName = (name || 'Alumni').trim();
         if (typeof buildMalayalamWhatsAppMessage === 'function') {
-          return buildMalayalamWhatsAppMessage(cleanName);
+          return buildMalayalamWhatsAppMessage(cleanName, participation);
         }
         return 'Hello ' + cleanName + ',\n\nGreetings from Aufbruch – Alumni Conclave 2026!';
       }
@@ -8718,7 +8751,9 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           sendMsgModalError.textContent = '';
           sendMsgModalError.style.display = 'none';
         }
-        adminCustomMessageInput.value = buildDefaultGreetingMessage(rec.name);
+        adminCustomMessageInput.value = (rec.whatsAppMessage && String(rec.whatsAppMessage).trim())
+          ? String(rec.whatsAppMessage)
+          : buildDefaultGreetingMessage(rec.name, rec.participation);
         sendMessageModal.classList.add('open');
         setTimeout(function() {
           if (adminCustomMessageInput) {
@@ -8857,7 +8892,8 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       if (useConclaveTemplateBtn) {
         useConclaveTemplateBtn.addEventListener('click', function() {
           var name = activeSendMsgRec ? activeSendMsgRec.name : 'Alumni';
-          adminCustomMessageInput.value = buildDefaultGreetingMessage(name);
+          var part = activeSendMsgRec ? activeSendMsgRec.participation : 'പങ്കെടുക്കും';
+          adminCustomMessageInput.value = buildDefaultGreetingMessage(name, part);
           if (sendMsgModalError) sendMsgModalError.style.display = 'none';
           adminCustomMessageInput.focus();
         });

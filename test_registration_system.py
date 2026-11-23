@@ -53,8 +53,16 @@ def normalize_indian_phone(raw_input: str) -> dict:
     }
 
 
-def build_whatsapp_message(name: str) -> str:
+def build_whatsapp_message(name: str, participation: str = "പങ്കെടുക്കും") -> str:
     clean_name = str(name or "Alumni Member").strip()
+    if str(participation or "").strip() == "സാധിക്കില്ല":
+        return (
+            "അസ്സലാമു അലൈകും\n\n"
+            "Hi...\n"
+            f"*{clean_name},*\n\n"
+            "നിങ്ങള്ക്ക് അന്വാര് അലുംനി സംഗമത്തിന് എത്താന് സാധിക്കാത്തതിന് പ്രയാസം എന്തെങ്കിലുമുണ്ടോ..?\n\n"
+            "*കാരണം അറിയിക്കുകയാണെങ്കില് വളരെ സന്തോഷം.*"
+        )
     return (
         "അസ്സലാമു അലൈകും\n\n"
         f"Hi... *{clean_name}*\n\n"
@@ -65,7 +73,7 @@ def build_whatsapp_message(name: str) -> str:
 
 def generate_whatsapp_confirmation_data(name: str, raw_phone: str, participation: str) -> dict:
     choice = str(participation or "").strip()
-    if choice == "സാധിക്കില്ല" or choice != "പങ്കെടുക്കും":
+    if choice not in ("പങ്കെടുക്കും", "സാധിക്കില്ല"):
         return {
             "shouldSend": False,
             "phoneData": normalize_indian_phone(raw_phone),
@@ -82,7 +90,7 @@ def generate_whatsapp_confirmation_data(name: str, raw_phone: str, participation
             "clickToChatUrl": "",
         }
 
-    msg = build_whatsapp_message(name)
+    msg = build_whatsapp_message(name, choice)
     encoded = urllib.parse.quote(msg, safe="")
     return {
         "shouldSend": True,
@@ -168,9 +176,16 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         res = generate_whatsapp_confirmation_data(
             "Abdul Rasheed", "+91 98765 43210", "സാധിക്കില്ല"
         )
-        self.assertFalse(res["shouldSend"])
-        self.assertEqual(res["clickToChatUrl"], "")
-        self.assertEqual(res["message"], "")
+        self.assertTrue(res["shouldSend"])
+        self.assertTrue(res["clickToChatUrl"].startswith("https://wa.me/919876543210?text="))
+        expected_no_msg = (
+            "അസ്സലാമു അലൈകും\n\n"
+            "Hi...\n"
+            "*Abdul Rasheed,*\n\n"
+            "നിങ്ങള്ക്ക് അന്വാര് അലുംനി സംഗമത്തിന് എത്താന് സാധിക്കാത്തതിന് പ്രയാസം എന്തെങ്കിലുമുണ്ടോ..?\n\n"
+            "*കാരണം അറിയിക്കുകയാണെങ്കില് വളരെ സന്തോഷം.*"
+        )
+        self.assertEqual(res["message"], expected_no_msg)
 
     def test_ui_sections_and_no_exposed_credentials(self):
         code_gs = (WORKSPACE_DIR / "Code.gs").read_text(encoding="utf-8")
@@ -613,7 +628,8 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
             {"registrationId": "902", "batchYear": "2017", "name": "MUHAMMED SAFVAN SAQUAFI", "originalExcelName": "MUHAMMED SAFVAN SAQUAFI"},
             {"registrationId": "903", "batchYear": "2017", "name": "NAMEER SAQUAFI", "originalExcelName": "NAMEER SAQUAFI"},
             {"registrationId": "904", "batchYear": "2018", "name": "HIDAYATHULLA", "originalExcelName": "HIDAYATHULLA"},
-            {"registrationId": "905", "batchYear": "2021", "name": "MUHAMMED ABOOBACKER SURAIJI", "originalExcelName": "MUHAMMED ABOOBACKER SURAIJI"},
+            {"registrationId": "905A", "batchYear": "2021", "name": "ABUBAKER SAQUAFI", "originalExcelName": "ABUBAKER SAQUAFI", "studentId": "STU-2021-191"},
+            {"registrationId": "905", "batchYear": "2021", "name": "MUHAMMED ABOOBACKER SURAIJI", "originalExcelName": "ABUBAKER SAQUAFI", "studentId": "STU-2021-191"},
             {"registrationId": "906", "batchYear": "2022", "name": "MUHAMMED ABU THWAHIR.M", "originalExcelName": "MUHAMMED ABU THWAHIR.M"},
             {"registrationId": "907", "batchYear": "2022", "name": "MUHAMMED SALIM KC", "originalExcelName": "MUHAMMED SALIM KC"},
             {"registrationId": "908", "batchYear": "2022", "name": "MOHAMMED SOLIH HADI", "originalExcelName": "MOHAMMED SOLIH HADI"},
@@ -636,6 +652,8 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertNotIn("BASHEER SAQUAFI", [s["name"] for s in non_reg_map["2011"]])
         self.assertNotIn("NAMER SAQUAFI", [s["name"] for s in non_reg_map["2017"]])
         self.assertNotIn("HIDAYATHULLA SAQUAFI", [s["name"] for s in non_reg_map["2018"]])
+        self.assertNotIn("ABUBAKER SAQUAFI", [s["name"] for s in non_reg_map["2021"]])
+        self.assertNotIn("ABUBAKER MUHTHADI", [s["name"] for s in non_reg_map["2021"]])
         self.assertNotIn("ABUTHWAHIR SA'ADI", [s["name"] for s in non_reg_map["2022"]])
         self.assertNotIn("SALIM MUEENI", [s["name"] for s in non_reg_map["2022"]])
         self.assertNotIn("SWALIH HADI VETTIKKATTIRI", [s["name"] for s in non_reg_map["2022"]])
@@ -895,7 +913,11 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertEqual(upd_body["updatedRecord"]["place"], "Calicut")
         self.assertEqual(upd_body["updatedRecord"]["batchYear"], "2021")
         self.assertEqual(upd_body["updatedRecord"]["participation"], "സാധിക്കില്ല")
-        self.assertFalse(upd_body["updatedRecord"]["shouldSendWhatsApp"])
+        self.assertTrue(upd_body["updatedRecord"]["shouldSendWhatsApp"])
+        self.assertIn(
+            "നിങ്ങള്ക്ക് അന്വാര് അലുംനി സംഗമത്തിന് എത്താന് സാധിക്കാത്തതിന് പ്രയാസം എന്തെങ്കിലുമുണ്ടോ..?",
+            upd_body["updatedRecord"]["whatsAppMessage"],
+        )
         self.assertFalse(upd_body["updatedRecord"]["hasTicket"])
         self.assertEqual(upd_body["updatedRecord"]["ticketId"], "")
         self.assertEqual(upd_body["updatedRecord"]["ticketToken"], "")
@@ -924,6 +946,12 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertEqual(no_res.get("ticketId"), "")
         self.assertEqual(no_res.get("ticketToken"), "")
         self.assertEqual(no_res.get("qrMatrix"), [])
+        self.assertTrue(no_res.get("shouldSendWhatsApp"))
+        self.assertEqual(
+            no_res.get("whatsAppMessage"),
+            "അസ്സലാമു അലൈകും\n\nHi...\n*Temp Alumni Unable,*\n\nനിങ്ങള്ക്ക് അന്വാര് അലുംനി സംഗമത്തിന് എത്താന് സാധിക്കാത്തതിന് പ്രയാസം എന്തെങ്കിലുമുണ്ടോ..?\n\n*കാരണം അറിയിക്കുകയാണെങ്കില് വളരെ സന്തോഷം.*",
+        )
+        self.assertTrue(no_res.get("whatsAppClickToChatUrl", "").startswith("https://wa.me/919847055667?text="))
         self.assertIn("REGISTRATION SUCCESSFUL!", no_res.get("confirmationMessage", ""))
         self.assertIn("We hope to meet you at another event!", no_res.get("confirmationMessage", ""))
         no_reg_id = no_res["registrationId"]

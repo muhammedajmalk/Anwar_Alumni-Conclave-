@@ -473,8 +473,17 @@ function normalizeIndianPhoneNumber(rawInput) {
  * Generates the exact personalized Malayalam WhatsApp message required for
  * Aufbruch – Alumni Conclave 2026.
  */
-function buildWhatsAppMessage(name) {
+function buildWhatsAppMessage(name, participationChoice) {
   var cleanName = String(name || 'Alumni Member').trim();
+  if (String(participationChoice || '').trim() === CONFIG.PARTICIPATION_OPTIONS.NO) {
+    return (
+      'അസ്സലാമു അലൈകും\n\n' +
+      'Hi...\n' +
+      '*' + cleanName + ',*\n\n' +
+      'നിങ്ങള്ക്ക് അന്വാര് അലുംനി സംഗമത്തിന് എത്താന് സാധിക്കാത്തതിന് പ്രയാസം എന്തെങ്കിലുമുണ്ടോ..?\n\n' +
+      '*കാരണം അറിയിക്കുകയാണെങ്കില് വളരെ സന്തോഷം.*'
+    );
+  }
   return (
     'അസ്സലാമു അലൈകും\n\n' +
     'Hi... *' + cleanName + '*\n\n' +
@@ -484,17 +493,16 @@ function buildWhatsAppMessage(name) {
 }
 
 /**
- * Generates the WhatsApp Click-to-Chat URL and message ONLY if the participant
- * selected "പങ്കെടുക്കും". Strictly suppresses generation if "സാധിക്കില്ല" is selected.
+ * Generates the WhatsApp Click-to-Chat URL and message based on whether the
+ * participant selected "പങ്കെടുക്കും" or "സാധിക്കില്ല".
  */
 function generateWhatsAppConfirmationData(name, rawPhone, participationChoice) {
   var choice = String(participationChoice || '').trim();
 
-  // Rule: Do NOT send messages or generate links for users who selected "സാധിക്കില്ല"
-  if (choice === CONFIG.PARTICIPATION_OPTIONS.NO || choice !== CONFIG.PARTICIPATION_OPTIONS.YES) {
+  if (choice !== CONFIG.PARTICIPATION_OPTIONS.YES && choice !== CONFIG.PARTICIPATION_OPTIONS.NO) {
     return {
       shouldSend: false,
-      reason: 'Participant selected "' + (choice || 'സാധിക്കില്ല') + '" (Not Participating). WhatsApp message suppressed.',
+      reason: 'Invalid participation option.',
       phoneData: normalizeIndianPhoneNumber(rawPhone),
       message: '',
       clickToChatUrl: '',
@@ -514,7 +522,7 @@ function generateWhatsAppConfirmationData(name, rawPhone, participationChoice) {
     };
   }
 
-  var message = buildWhatsAppMessage(name);
+  var message = buildWhatsAppMessage(name, choice);
   var encodedText = encodeURIComponent(message);
 
   // Official WhatsApp Click-to-Chat URLs formatted with country code 91
