@@ -7488,6 +7488,42 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         return val + '%';
       }
 
+      function canonicalAlumniNameClient(rawName, stripSpaces) {
+        var s = String(rawName || '').toUpperCase().replace(/[^A-Z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+        if (!s) return '';
+        var rules = [
+          [/\bSAQUAFI\b/g, 'SAQAFI'],
+          [/\bSAQAAFI\b/g, 'SAQAFI'],
+          [/\bSAKAFI\b/g, 'SAQAFI'],
+          [/\bMUEENY\b/g, 'MUEENI'],
+          [/\bMUINI\b/g, 'MUEENI'],
+          [/\bMOHAMMED\b/g, 'MUHAMMED'],
+          [/\bMUHAMMAD\b/g, 'MUHAMMED'],
+          [/\bMOHAMMAD\b/g, 'MUHAMMED'],
+          [/\bMUHAMED\b/g, 'MUHAMMED'],
+          [/\bABDUL\b/g, 'ABDU'],
+          [/\bSHAFEEQUE\b/g, 'SHAFEEQ'],
+          [/\bSHAFIQ\b/g, 'SHAFEEQ'],
+          [/\bSIDHEEQUE\b/g, 'SIDHEEQ'],
+          [/\bSIDDIQUE\b/g, 'SIDHEEQ'],
+          [/\bRAFEEQUE\b/g, 'RAFEEQ'],
+          [/\bRAFIQUE\b/g, 'RAFEEQ'],
+          [/\bTHOUFEEQUE\b/g, 'THOUFEEQ'],
+          [/\bTOUFEEQUE\b/g, 'THOUFEEQ'],
+          [/\bSADHIQUE\b/g, 'SADIQ'],
+          [/\bSADIQUE\b/g, 'SADIQ'],
+          [/\bASHIQUE\b/g, 'ASHIQ'],
+          [/\bRASAQ\b/g, 'RAZAK'],
+          [/\bRASAK\b/g, 'RAZAK'],
+          [/\bRAZAQ\b/g, 'RAZAK']
+        ];
+        for (var i = 0; i < rules.length; i++) {
+          s = s.replace(rules[i][0], rules[i][1]);
+        }
+        s = s.replace(/\s+/g, ' ').trim();
+        return stripSpaces ? s.replace(/\s+/g, '') : s;
+      }
+
       function computeClientBatchReportFallback() {
         var dyn = computeDynamicBatchTotalsFromStudents(allMasterStudents);
         var batchTotals = dyn.batchTotals;
@@ -7504,6 +7540,10 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           if (sby && snm) {
             if (!activeBatchNames[sby]) activeBatchNames[sby] = {};
             activeBatchNames[sby][snm] = true;
+            var sCan = canonicalAlumniNameClient(snm, false);
+            var sCmp = canonicalAlumniNameClient(snm, true);
+            if (sCan) activeBatchNames[sby][sCan] = true;
+            if (sCmp) activeBatchNames[sby][sCmp] = true;
           }
         }
         var hasMasterList = allMasterStudents.length > 0;
@@ -7526,18 +7566,20 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             if (String(r.batchYear) === yrStr) {
               var rSid = String(r.studentId || '').trim();
               var rNm = String(r.originalExcelName || r.name || '').trim().replace(/\s+/g, ' ').toUpperCase();
+              var rCmp = canonicalAlumniNameClient(rNm, true) || rNm;
               if (!rSid && !rNm) continue;
-              if (hasMasterList && rSid && !activeStudentIds[rSid] && !(activeBatchNames[yrStr] && activeBatchNames[yrStr][rNm])) {
+              if (hasMasterList && rSid && !activeStudentIds[rSid] && !(activeBatchNames[yrStr] && (activeBatchNames[yrStr][rNm] || activeBatchNames[yrStr][rCmp]))) {
                 continue;
               }
-              var k = rSid ? ('STU:' + rSid) : ('NAME:' + rNm);
+              var k = (rSid && activeStudentIds[rSid]) ? ('STU:' + rSid) : ('NAME:' + rCmp);
               if (!seenSet[k]) {
                 seenSet[k] = true;
                 if (r.checkedIn) checkinCnt++;
               }
             }
           }
-          var regCnt = Object.keys(seenSet).length;
+          var nonRegInfo = hasMasterList ? computeNonRegisteredForBatch(yrStr) : null;
+          var regCnt = nonRegInfo ? Math.max(nonRegInfo.registeredCount, Object.keys(seenSet).length) : Object.keys(seenSet).length;
           totalUnique += regCnt;
           var offTot = Number(batchTotals[yrStr] || 0);
           var regFmt = regCnt < 10 ? ('0' + regCnt) : String(regCnt);
@@ -7672,13 +7714,17 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         var matchedStudentIds = {};
         var unmatchedRegs = [];
 
-        // Pass 1: Match by normalized originalExcelName / name within the batch (preferring exact studentId match)
+        // Pass 1: Match by exact or canonical originalExcelName / name within the batch (preferring exact studentId match)
         for (var j = 0; j < dashboardRegistrations.length; j++) {
           var r = dashboardRegistrations[j];
           if (!r || String(r.batchYear || '').trim() !== cleanBatch) continue;
           var rSid = String(r.studentId || '').trim();
           var rOrig = String(r.originalExcelName || '').trim().replace(/\s+/g, ' ').toUpperCase();
           var rName = String(r.name || '').trim().replace(/\s+/g, ' ').toUpperCase();
+          var rOrigCanon = canonicalAlumniNameClient(rOrig, false);
+          var rNameCanon = canonicalAlumniNameClient(rName, false);
+          var rOrigComp = canonicalAlumniNameClient(rOrig, true);
+          var rNameComp = canonicalAlumniNameClient(rName, true);
 
           var matchedSid = '';
           if (rOrig || rName) {
@@ -7687,7 +7733,9 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
               var sId1 = String(st1.studentId || '').trim();
               if (!sId1 || matchedStudentIds[sId1]) continue;
               var sNm1 = String(st1.name || '').trim().replace(/\s+/g, ' ').toUpperCase();
-              if (sId1 === rSid && (sNm1 === rOrig || sNm1 === rName)) {
+              var sCan1 = canonicalAlumniNameClient(sNm1, false);
+              var sCmp1 = canonicalAlumniNameClient(sNm1, true);
+              if (sId1 === rSid && (sNm1 === rOrig || sNm1 === rName || sCan1 === rOrigCanon || sCan1 === rNameCanon || sCmp1 === rOrigComp || sCmp1 === rNameComp)) {
                 matchedSid = sId1;
                 break;
               }
@@ -7700,6 +7748,20 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
                 var sNm2 = String(st2.name || '').trim().replace(/\s+/g, ' ').toUpperCase();
                 if (sNm2 === rOrig || sNm2 === rName) {
                   matchedSid = sId2;
+                  break;
+                }
+              }
+            }
+            if (!matchedSid) {
+              for (var p3 = 0; p3 < batchStudents.length; p3++) {
+                var st3 = batchStudents[p3];
+                var sId3 = String(st3.studentId || '').trim();
+                if (!sId3 || matchedStudentIds[sId3]) continue;
+                var sNm3 = String(st3.name || '').trim();
+                var sCan3 = canonicalAlumniNameClient(sNm3, false);
+                var sCmp3 = canonicalAlumniNameClient(sNm3, true);
+                if ((sCan3 && (sCan3 === rOrigCanon || sCan3 === rNameCanon)) || (sCmp3 && (sCmp3 === rOrigComp || sCmp3 === rNameComp))) {
+                  matchedSid = sId3;
                   break;
                 }
               }

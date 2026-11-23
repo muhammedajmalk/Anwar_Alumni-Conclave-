@@ -1147,7 +1147,46 @@ def format_pct(reg_count: int, total_count: int) -> str:
     return f"{val}%"
 
 
-def compute_batch_non_registered_map(records: list[dict], students: list[dict]) -> dict[str, list[dict]]:
+def canonical_alumni_name(raw_name: str, strip_spaces: bool = False) -> str:
+    s = re.sub(r"[^A-Z0-9\s]", " ", str(raw_name or "").upper())
+    s = re.sub(r"\s+", " ", s).strip()
+    if not s:
+        return ""
+    replacements = [
+        (r"\bSAQUAFI\b", "SAQAFI"),
+        (r"\bSAQAAFI\b", "SAQAFI"),
+        (r"\bSAKAFI\b", "SAQAFI"),
+        (r"\bMUEENY\b", "MUEENI"),
+        (r"\bMUINI\b", "MUEENI"),
+        (r"\bMOHAMMED\b", "MUHAMMED"),
+        (r"\bMUHAMMAD\b", "MUHAMMED"),
+        (r"\bMOHAMMAD\b", "MUHAMMED"),
+        (r"\bMUHAMED\b", "MUHAMMED"),
+        (r"\bABDUL\b", "ABDU"),
+        (r"\bSHAFEEQUE\b", "SHAFEEQ"),
+        (r"\bSHAFIQ\b", "SHAFEEQ"),
+        (r"\bSIDHEEQUE\b", "SIDHEEQ"),
+        (r"\bSIDDIQUE\b", "SIDHEEQ"),
+        (r"\bRAFEEQUE\b", "RAFEEQ"),
+        (r"\bRAFIQUE\b", "RAFEEQ"),
+        (r"\bTHOUFEEQUE\b", "THOUFEEQ"),
+        (r"\bTOUFEEQUE\b", "THOUFEEQ"),
+        (r"\bSADHIQUE\b", "SADIQ"),
+        (r"\bSADIQUE\b", "SADIQ"),
+        (r"\bASHIQUE\b", "ASHIQ"),
+        (r"\bRASAQ\b", "RAZAK"),
+        (r"\bRASAK\b", "RAZAK"),
+        (r"\bRAZAQ\b", "RAZAK"),
+    ]
+    for pat, rep in replacements:
+        s = re.sub(pat, rep, s)
+    s = re.sub(r"\s+", " ", s).strip()
+    if strip_spaces:
+        return s.replace(" ", "")
+    return s
+
+
+def compute_batch_non_registered_map(records: list[dict], students: list[dict]) -> tuple[dict[str, list[dict]], dict[str, set[str]], dict[str, set[str]]]:
     students_by_batch: dict[str, list[dict]] = {y: [] for y in BATCH_YEARS}
     active_ids_by_batch: dict[str, set[str]] = {y: set() for y in BATCH_YEARS}
     for st in students:
@@ -1159,9 +1198,11 @@ def compute_batch_non_registered_map(records: list[dict], students: list[dict]) 
                 active_ids_by_batch[by].add(sid)
 
     matched_student_ids: set[str] = set()
+    unique_reg_by_batch: dict[str, set[str]] = {y: set() for y in BATCH_YEARS}
+    unique_checkin_by_batch: dict[str, set[str]] = {y: set() for y in BATCH_YEARS}
     unmatched_regs_by_batch: dict[str, list[dict]] = {y: [] for y in BATCH_YEARS}
 
-    # Pass 1: Match by normalized originalExcelName / name within the batch (preferring exact studentId match)
+    # Pass 1: Match by exact or canonical originalExcelName / name within the batch (preferring exact studentId match)
     for r in records:
         by = str(r.get("batchYear", "")).strip()
         if by not in students_by_batch:
@@ -1169,32 +1210,50 @@ def compute_batch_non_registered_map(records: list[dict], students: list[dict]) 
         r_sid = str(r.get("studentId") or "").strip()
         r_orig = re.sub(r"\s+", " ", str(r.get("originalExcelName") or "").strip()).upper()
         r_name = re.sub(r"\s+", " ", str(r.get("name") or "").strip()).upper()
-        candidates = [nm for nm in (r_orig, r_name) if nm]
+        exact_candidates = [nm for nm in (r_orig, r_name) if nm]
+        canon_candidates = [canonical_alumni_name(nm, False) for nm in exact_candidates if canonical_alumni_name(nm, False)]
+        compact_candidates = [canonical_alumni_name(nm, True) for nm in exact_candidates if canonical_alumni_name(nm, True)]
 
         matched_sid = ""
-        if candidates:
-            # First try exact studentId + name match
+        if exact_candidates:
+            # 1a. Exact studentId + exact/canonical name match
             for st in students_by_batch[by]:
                 sid = str(st.get("studentId", "")).strip()
                 if not sid or sid in matched_student_ids:
                     continue
                 snm = re.sub(r"\s+", " ", str(st.get("name", "")).strip()).upper()
-                if sid == r_sid and snm in candidates:
+                sc_nm = canonical_alumni_name(snm, False)
+                sc_comp = canonical_alumni_name(snm, True)
+                if sid == r_sid and (snm in exact_candidates or sc_nm in canon_candidates or sc_comp in compact_candidates):
                     matched_sid = sid
                     break
-            # Next try name match within the batch (handles serial shifts after Excel re-import)
+            # 1b. Exact name match within the batch
             if not matched_sid:
                 for st in students_by_batch[by]:
                     sid = str(st.get("studentId", "")).strip()
                     if not sid or sid in matched_student_ids:
                         continue
                     snm = re.sub(r"\s+", " ", str(st.get("name", "")).strip()).upper()
-                    if snm in candidates:
+                    if snm in exact_candidates:
+                        matched_sid = sid
+                        break
+            # 1c. Canonical / spaceless canonical name match within the batch (handles SAQAFI vs SAQUAFI, etc.)
+            if not matched_sid:
+                for st in students_by_batch[by]:
+                    sid = str(st.get("studentId", "")).strip()
+                    if not sid or sid in matched_student_ids:
+                        continue
+                    snm = str(st.get("name", "")).strip()
+                    if canonical_alumni_name(snm, False) in canon_candidates or canonical_alumni_name(snm, True) in compact_candidates:
                         matched_sid = sid
                         break
 
         if matched_sid:
             matched_student_ids.add(matched_sid)
+            tok = f"STU:{matched_sid}"
+            unique_reg_by_batch[by].add(tok)
+            if r.get("checkedIn"):
+                unique_checkin_by_batch[by].add(tok)
         else:
             unmatched_regs_by_batch[by].append(r)
 
@@ -1202,8 +1261,20 @@ def compute_batch_non_registered_map(records: list[dict], students: list[dict]) 
     for by in BATCH_YEARS:
         for r in unmatched_regs_by_batch[by]:
             r_sid = str(r.get("studentId") or "").strip()
+            r_orig = re.sub(r"\s+", " ", str(r.get("originalExcelName") or "").strip()).upper()
+            r_name = re.sub(r"\s+", " ", str(r.get("name") or "").strip()).upper()
+            key_name = r_orig or r_name
             if r_sid and r_sid in active_ids_by_batch[by] and r_sid not in matched_student_ids:
                 matched_student_ids.add(r_sid)
+                tok = f"STU:{r_sid}"
+                unique_reg_by_batch[by].add(tok)
+                if r.get("checkedIn"):
+                    unique_checkin_by_batch[by].add(tok)
+            elif not r_sid and key_name:
+                tok = f"NAME:{canonical_alumni_name(key_name, True) or key_name}"
+                unique_reg_by_batch[by].add(tok)
+                if r.get("checkedIn"):
+                    unique_checkin_by_batch[by].add(tok)
 
     non_reg_by_batch: dict[str, list[dict]] = {y: [] for y in BATCH_YEARS}
     for by in BATCH_YEARS:
@@ -1218,7 +1289,7 @@ def compute_batch_non_registered_map(records: list[dict], students: list[dict]) 
                         "name": str(st.get("name", "")).strip(),
                     }
                 )
-    return non_reg_by_batch
+    return non_reg_by_batch, unique_reg_by_batch, unique_checkin_by_batch
 
 
 def build_non_registered_whatsapp_text(batch_year: str, non_reg_students: list[dict]) -> str:
@@ -1247,32 +1318,7 @@ def build_non_registered_whatsapp_text(batch_year: str, non_reg_students: list[d
 def build_batch_report_data(records: list[dict], students: list[dict]) -> dict:
     # Single source of truth: compute per-batch and overall student counts directly from current Students List
     batch_totals, overall_total = compute_student_batch_totals(students)
-    non_reg_by_batch = compute_batch_non_registered_map(records, students)
-    active_student_ids = {str(st.get("studentId", "")).strip() for st in students if str(st.get("studentId", "")).strip()}
-    active_batch_names: dict[str, set[str]] = {y: set() for y in BATCH_YEARS}
-    for st in students:
-        by = str(st.get("batchYear", "")).strip()
-        nm = re.sub(r"\s+", " ", str(st.get("name", "")).strip()).upper()
-        if by in active_batch_names and nm:
-            active_batch_names[by].add(nm)
-
-    unique_reg_by_batch: dict[str, set[str]] = {y: set() for y in BATCH_YEARS}
-    unique_checkin_by_batch: dict[str, set[str]] = {y: set() for y in BATCH_YEARS}
-
-    for r in records:
-        by = str(r.get("batchYear", "")).strip()
-        stu_id = str(r.get("studentId") or "").strip()
-        key_name = re.sub(r"\s+", " ", str(r.get("originalExcelName") or r.get("name") or "").strip()).upper()
-        if not key_name and not stu_id:
-            continue
-        # Exclude registrations tied to a studentId that was deleted from the current Students List
-        if stu_id and active_student_ids and stu_id not in active_student_ids and key_name not in active_batch_names.get(by, set()):
-            continue
-        uniq_token = f"STU:{stu_id}" if stu_id else f"NAME:{key_name}"
-        if by in unique_reg_by_batch:
-            unique_reg_by_batch[by].add(uniq_token)
-            if r.get("checkedIn"):
-                unique_checkin_by_batch[by].add(uniq_token)
+    non_reg_by_batch, unique_reg_by_batch, unique_checkin_by_batch = compute_batch_non_registered_map(records, students)
 
     batch_rows: list[dict] = []
     report_lines: list[str] = [
