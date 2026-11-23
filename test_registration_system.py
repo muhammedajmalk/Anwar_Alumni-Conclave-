@@ -371,6 +371,8 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertIn('id="copyNonRegisteredBtn"', index_html)
         self.assertIn('id="shareNonRegisteredWaBtn"', index_html)
         self.assertIn('id="nonRegisteredListContainer"', index_html)
+        self.assertIn("All members have completed registration. No pending members.", index_html)
+        self.assertIn("> Alumni Conclave 2026", index_html)
         self.assertTrue((WORKSPACE_DIR / "alumni_list_corrected.xlsx").exists())
         self.assertFalse((WORKSPACE_DIR / "alumni list.xlsx").exists())
         self.assertTrue((WORKSPACE_DIR / "public" / "index.html").exists())
@@ -508,7 +510,11 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertIn("/05 (", add_st_body["batchReport"]["batches"][0]["reportLine"])
         self.assertIn("/303 (", add_st_body["whatsappReportText"])
         self.assertIn("TEMP BATCH SYNC TEST STUDENT", add_st_body["batchReport"]["batches"][0]["nonRegisteredNames"])
-        self.assertIn("*Batch 2001 – Non-Registered Members*", add_st_body["batchReport"]["batches"][0]["nonRegisteredWhatsappText"])
+        self.assertIn(
+            "*Aufbruch*\n> Alumni Conclave 2026\n\n*Batch 2001*\nNon-Registered Members\n*Total Pending:",
+            add_st_body["batchReport"]["batches"][0]["nonRegisteredWhatsappText"],
+        )
+        self.assertIn("\n\n________\n\n1. ", add_st_body["batchReport"]["batches"][0]["nonRegisteredWhatsappText"])
 
         del_st_status, del_st_body, _ = http_json_request(
             "/api/admin/students/delete",

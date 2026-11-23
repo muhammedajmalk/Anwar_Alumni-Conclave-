@@ -7670,38 +7670,55 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         }
 
         var matchedStudentIds = {};
-        var unmatchedRegNames = [];
+        var unmatchedRegs = [];
+
+        // Pass 1: Match by normalized originalExcelName / name within the batch (preferring exact studentId match)
         for (var j = 0; j < dashboardRegistrations.length; j++) {
           var r = dashboardRegistrations[j];
           if (!r || String(r.batchYear || '').trim() !== cleanBatch) continue;
           var rSid = String(r.studentId || '').trim();
           var rOrig = String(r.originalExcelName || '').trim().replace(/\s+/g, ' ').toUpperCase();
           var rName = String(r.name || '').trim().replace(/\s+/g, ' ').toUpperCase();
-          if (rSid && activeIdsInBatch[rSid]) {
-            matchedStudentIds[rSid] = true;
-          } else {
-            var cand = rOrig || rName;
-            if (cand) {
-              unmatchedRegNames.push(cand);
-              if (rName && rName !== cand) {
-                unmatchedRegNames.push(rName);
+
+          var matchedSid = '';
+          if (rOrig || rName) {
+            for (var p1 = 0; p1 < batchStudents.length; p1++) {
+              var st1 = batchStudents[p1];
+              var sId1 = String(st1.studentId || '').trim();
+              if (!sId1 || matchedStudentIds[sId1]) continue;
+              var sNm1 = String(st1.name || '').trim().replace(/\s+/g, ' ').toUpperCase();
+              if (sId1 === rSid && (sNm1 === rOrig || sNm1 === rName)) {
+                matchedSid = sId1;
+                break;
+              }
+            }
+            if (!matchedSid) {
+              for (var p2 = 0; p2 < batchStudents.length; p2++) {
+                var st2 = batchStudents[p2];
+                var sId2 = String(st2.studentId || '').trim();
+                if (!sId2 || matchedStudentIds[sId2]) continue;
+                var sNm2 = String(st2.name || '').trim().replace(/\s+/g, ' ').toUpperCase();
+                if (sNm2 === rOrig || sNm2 === rName) {
+                  matchedSid = sId2;
+                  break;
+                }
               }
             }
           }
+
+          if (matchedSid) {
+            matchedStudentIds[matchedSid] = true;
+          } else {
+            unmatchedRegs.push(r);
+          }
         }
 
-        if (unmatchedRegNames.length > 0) {
-          var remNames = unmatchedRegNames.slice();
-          for (var k = 0; k < batchStudents.length; k++) {
-            var s = batchStudents[k];
-            var sId = String(s.studentId || '').trim();
-            if (matchedStudentIds[sId]) continue;
-            var sNm = String(s.name || '').trim().replace(/\s+/g, ' ').toUpperCase();
-            var matchIdx = remNames.indexOf(sNm);
-            if (matchIdx !== -1) {
-              matchedStudentIds[sId] = true;
-              remNames.splice(matchIdx, 1);
-            }
+        // Pass 2: Match remaining registrations (e.g., edited names) by studentId within the batch
+        for (var u = 0; u < unmatchedRegs.length; u++) {
+          var ur = unmatchedRegs[u];
+          var urSid = String(ur.studentId || '').trim();
+          if (urSid && activeIdsInBatch[urSid] && !matchedStudentIds[urSid]) {
+            matchedStudentIds[urSid] = true;
           }
         }
 
@@ -7723,16 +7740,21 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         var pendingCnt = nonRegList.length;
         var regCnt = Math.max(0, totalCnt - pendingCnt);
         var pendingFmt = pendingCnt < 10 ? ('0' + pendingCnt) : String(pendingCnt);
+        var batchLabel = cleanBatch.toLowerCase().indexOf('batch') === 0 ? cleanBatch : ('Batch ' + cleanBatch);
 
         var msgLines = [
-          '*Aufbruch – Alumni Conclave 2026*',
-          '*Batch ' + cleanBatch + ' – Non-Registered Members*',
+          '*Aufbruch*',
+          '> Alumni Conclave 2026',
+          '',
+          '*' + batchLabel + '*',
+          'Non-Registered Members',
           '*Total Pending: ' + pendingFmt + '*',
-          '________________________',
+          '',
+          '________',
           ''
         ];
         if (pendingCnt === 0) {
-          msgLines.push('All members of Batch ' + cleanBatch + ' have registered!');
+          msgLines.push('All members have completed registration. No pending members.');
         } else {
           for (var n = 0; n < nonRegList.length; n++) {
             msgLines.push((n + 1) + '. ' + nonRegList[n].name);
@@ -7796,7 +7818,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           }
           listContainer.innerHTML =
             '<div class="non-reg-all-done-banner">' +
-              '🎉 All members of Batch ' + escapeHtml(data.batchYear) + ' have completed their registration! (0 Pending)' +
+              'All members have completed registration. No pending members.' +
             '</div>';
           return;
         }

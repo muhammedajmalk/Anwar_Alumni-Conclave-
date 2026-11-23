@@ -1159,7 +1159,9 @@ def compute_batch_non_registered_map(records: list[dict], students: list[dict]) 
                 active_ids_by_batch[by].add(sid)
 
     matched_student_ids: set[str] = set()
-    unmatched_reg_names_by_batch: dict[str, list[str]] = {y: [] for y in BATCH_YEARS}
+    unmatched_regs_by_batch: dict[str, list[dict]] = {y: [] for y in BATCH_YEARS}
+
+    # Pass 1: Match by normalized originalExcelName / name within the batch (preferring exact studentId match)
     for r in records:
         by = str(r.get("batchYear", "")).strip()
         if by not in students_by_batch:
@@ -1167,27 +1169,41 @@ def compute_batch_non_registered_map(records: list[dict], students: list[dict]) 
         r_sid = str(r.get("studentId") or "").strip()
         r_orig = re.sub(r"\s+", " ", str(r.get("originalExcelName") or "").strip()).upper()
         r_name = re.sub(r"\s+", " ", str(r.get("name") or "").strip()).upper()
-        if r_sid and r_sid in active_ids_by_batch[by]:
-            matched_student_ids.add(r_sid)
-        else:
-            cand = r_orig or r_name
-            if cand:
-                unmatched_reg_names_by_batch[by].append(cand)
-                if r_name and r_name != cand:
-                    unmatched_reg_names_by_batch[by].append(r_name)
+        candidates = [nm for nm in (r_orig, r_name) if nm]
 
+        matched_sid = ""
+        if candidates:
+            # First try exact studentId + name match
+            for st in students_by_batch[by]:
+                sid = str(st.get("studentId", "")).strip()
+                if not sid or sid in matched_student_ids:
+                    continue
+                snm = re.sub(r"\s+", " ", str(st.get("name", "")).strip()).upper()
+                if sid == r_sid and snm in candidates:
+                    matched_sid = sid
+                    break
+            # Next try name match within the batch (handles serial shifts after Excel re-import)
+            if not matched_sid:
+                for st in students_by_batch[by]:
+                    sid = str(st.get("studentId", "")).strip()
+                    if not sid or sid in matched_student_ids:
+                        continue
+                    snm = re.sub(r"\s+", " ", str(st.get("name", "")).strip()).upper()
+                    if snm in candidates:
+                        matched_sid = sid
+                        break
+
+        if matched_sid:
+            matched_student_ids.add(matched_sid)
+        else:
+            unmatched_regs_by_batch[by].append(r)
+
+    # Pass 2: Match remaining registrations (e.g., edited names) by studentId within the batch
     for by in BATCH_YEARS:
-        remaining_names = list(unmatched_reg_names_by_batch[by])
-        if not remaining_names:
-            continue
-        for st in students_by_batch[by]:
-            sid = str(st.get("studentId", "")).strip()
-            if sid in matched_student_ids:
-                continue
-            snm = re.sub(r"\s+", " ", str(st.get("name", "")).strip()).upper()
-            if snm in remaining_names:
-                matched_student_ids.add(sid)
-                remaining_names.remove(snm)
+        for r in unmatched_regs_by_batch[by]:
+            r_sid = str(r.get("studentId") or "").strip()
+            if r_sid and r_sid in active_ids_by_batch[by] and r_sid not in matched_student_ids:
+                matched_student_ids.add(r_sid)
 
     non_reg_by_batch: dict[str, list[dict]] = {y: [] for y in BATCH_YEARS}
     for by in BATCH_YEARS:
@@ -1207,15 +1223,21 @@ def compute_batch_non_registered_map(records: list[dict], students: list[dict]) 
 
 def build_non_registered_whatsapp_text(batch_year: str, non_reg_students: list[dict]) -> str:
     pending_cnt = len(non_reg_students)
+    clean_by = str(batch_year or "").strip()
+    batch_label = clean_by if clean_by.lower().startswith("batch") else f"Batch {clean_by}"
     lines = [
-        "*Aufbruch – Alumni Conclave 2026*",
-        f"*Batch {batch_year} – Non-Registered Members*",
+        "*Aufbruch*",
+        "> Alumni Conclave 2026",
+        "",
+        f"*{batch_label}*",
+        "Non-Registered Members",
         f"*Total Pending: {pending_cnt:02d}*",
-        "________________________",
+        "",
+        "________",
         "",
     ]
     if pending_cnt == 0:
-        lines.append(f"All members of Batch {batch_year} have registered!")
+        lines.append("All members have completed registration. No pending members.")
     else:
         for i, st in enumerate(non_reg_students, start=1):
             lines.append(f"{i}. {st.get('name', '')}")
