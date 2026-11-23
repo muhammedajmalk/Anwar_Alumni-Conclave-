@@ -584,12 +584,12 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertEqual(reg_res["data"]["originalExcelName"], "Temp Alumni Original")
         self.assertTrue(reg_res["data"]["nameEdited"])
 
-        # Verify duplicate registration for the same student/originalExcelName in same batch returns HTTP 409
+        # Verify edited & resubmitted registration for the same student updates existing record in place and keeps status REGISTERED
         dup_status, dup_res, dup_headers = http_json_request(
             "/api/register",
             "POST",
             {
-                "name": "Different Spelling",
+                "name": "Temp Alumni Corrected",
                 "originalExcelName": "Temp Alumni Original",
                 "place": "Nilambur",
                 "batchYear": "2019",
@@ -597,10 +597,56 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
                 "participation": "പങ്കെടുക്കും",
             },
         )
-        self.assertEqual(dup_status, 409)
+        self.assertEqual(dup_status, 200)
         self.assertIn("application/json", dup_headers.get("Content-Type", ""))
-        self.assertFalse(dup_res.get("success", True))
-        self.assertTrue(dup_res.get("duplicate"))
+        self.assertTrue(dup_res.get("success"))
+        self.assertTrue(dup_res.get("updatedExisting"))
+        self.assertEqual(dup_res.get("registrationId"), created_id)
+        self.assertEqual(dup_res.get("ticketId"), created_ticket_id)
+        self.assertEqual(dup_res.get("registrationStatus"), "REGISTERED")
+
+        # Verify edited-name reconciliation matches all edited student names to their official Master Student records
+        import server as srv_mod
+        master_students = srv_mod.load_students_db()
+        edited_probe_records = [
+            {"registrationId": "901", "batchYear": "2011", "name": "Muhammed Basheersaqafi", "originalExcelName": "Muhammed Basheersaqafi"},
+            {"registrationId": "902", "batchYear": "2017", "name": "MUHAMMED SAFVAN SAQUAFI", "originalExcelName": "MUHAMMED SAFVAN SAQUAFI"},
+            {"registrationId": "903", "batchYear": "2017", "name": "NAMEER SAQUAFI", "originalExcelName": "NAMEER SAQUAFI"},
+            {"registrationId": "904", "batchYear": "2018", "name": "HIDAYATHULLA", "originalExcelName": "HIDAYATHULLA"},
+            {"registrationId": "905", "batchYear": "2021", "name": "MUHAMMED ABOOBACKER SURAIJI", "originalExcelName": "MUHAMMED ABOOBACKER SURAIJI"},
+            {"registrationId": "906", "batchYear": "2022", "name": "MUHAMMED ABU THWAHIR.M", "originalExcelName": "MUHAMMED ABU THWAHIR.M"},
+            {"registrationId": "907", "batchYear": "2022", "name": "MUHAMMED SALIM KC", "originalExcelName": "MUHAMMED SALIM KC"},
+            {"registrationId": "908", "batchYear": "2022", "name": "MOHAMMED SOLIH HADI", "originalExcelName": "MOHAMMED SOLIH HADI"},
+            {"registrationId": "909", "batchYear": "2023", "name": "ABDUL RAHOOF NIZAMI", "originalExcelName": "ABDUL RAHOOF NIZAMI"},
+            {"registrationId": "910", "batchYear": "2023", "name": "Muhammed hashir", "originalExcelName": "Muhammed hashir"},
+            {"registrationId": "911", "batchYear": "2023", "name": "ABDUL BASITH ADANY", "originalExcelName": "ABDUL BASITH ADANY"},
+            {"registrationId": "912", "batchYear": "2023", "name": "Muhammed Shafeeq K", "originalExcelName": "Muhammed Shafeeq K"},
+            {"registrationId": "913", "batchYear": "2023", "name": "MUHAMMED SHEHEER SA'ADI", "originalExcelName": "MUHAMMED SHEHEER SA'ADI"},
+            {"registrationId": "914", "batchYear": "2023", "name": "ABOOTHAHIR MUEENI KP", "originalExcelName": "ABOOTHAHIR MUEENI KP"},
+            {"registrationId": "915", "batchYear": "2024", "name": "MUHAMMED SHAFI HADI", "originalExcelName": "MUHAMMED SHAFI HADI"},
+            {"registrationId": "916", "batchYear": "2024", "name": "BISHR HADI", "originalExcelName": "BISHR HADI"},
+            {"registrationId": "917", "batchYear": "2026", "name": "MUHAMMAD SABIQ K", "originalExcelName": "MUHAMMAD SABIQ K"},
+        ]
+        healed_probes, was_healed = srv_mod.reconcile_registrations_with_students(edited_probe_records, master_students)
+        self.assertTrue(was_healed)
+        for hp in healed_probes:
+            self.assertTrue(hp.get("studentId"), f"Expected studentId to be resolved for {hp.get('name')}")
+            self.assertEqual(hp.get("registrationStatus"), "REGISTERED")
+        non_reg_map, _, _, _ = srv_mod.compute_batch_non_registered_map(healed_probes, master_students)
+        self.assertNotIn("BASHEER SAQUAFI", [s["name"] for s in non_reg_map["2011"]])
+        self.assertNotIn("NAMER SAQUAFI", [s["name"] for s in non_reg_map["2017"]])
+        self.assertNotIn("HIDAYATHULLA SAQUAFI", [s["name"] for s in non_reg_map["2018"]])
+        self.assertNotIn("ABUTHWAHIR SA'ADI", [s["name"] for s in non_reg_map["2022"]])
+        self.assertNotIn("SALIM MUEENI", [s["name"] for s in non_reg_map["2022"]])
+        self.assertNotIn("SWALIH HADI VETTIKKATTIRI", [s["name"] for s in non_reg_map["2022"]])
+        self.assertNotIn("ABDUL RAHOOF HADI", [s["name"] for s in non_reg_map["2023"]])
+        self.assertNotIn("HASHIR MUEENI", [s["name"] for s in non_reg_map["2023"]])
+        self.assertNotIn("ABDUL BASITH HADI", [s["name"] for s in non_reg_map["2023"]])
+        self.assertNotIn("SHAFEEQ ADANY", [s["name"] for s in non_reg_map["2023"]])
+        self.assertNotIn("SHAHEER SA'ADI", [s["name"] for s in non_reg_map["2023"]])
+        self.assertNotIn("ABU THWAHIR MUEENI", [s["name"] for s in non_reg_map["2023"]])
+        self.assertNotIn("SHAFI HADI", [s["name"] for s in non_reg_map["2024"]])
+        self.assertNotIn("MUHAMMED SABIQUE KA", [s["name"] for s in non_reg_map["2026"]])
 
         # 5-QR. Verify QR Scanner verification, Public Ticket Privacy & One-Time Check-in Confirmation
         # (a0) Public /api/ticket?token=... must NOT expose private phone numbers or WhatsApp links

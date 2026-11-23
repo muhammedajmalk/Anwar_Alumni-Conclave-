@@ -1147,28 +1147,155 @@ def format_pct(reg_count: int, total_count: int) -> str:
     return f"{val}%"
 
 
+ALUMNI_DEGREE_TOKENS = {
+    "SAQAFI",
+    "MUEENI",
+    "HADI",
+    "ULOOMI",
+    "ADANY",
+    "NIZAMI",
+    "LATHEEFI",
+    "AHSANI",
+    "SAADI",
+    "MUHTHADI",
+    "SURAIJI",
+    "MUSLIYAR",
+    "THANGAL",
+    "NAEEMI",
+    "AFLALI",
+}
+
+ALUMNI_PLACE_AND_NOISE_TOKENS = {
+    "VETTIKKATTIRI",
+    "KODALI",
+    "KAVANOOR",
+    "CHULLIYOD",
+    "CHERUVADI",
+    "MAMPUZH",
+    "MAMPUZHA",
+    "POOTHUKALLU",
+    "POTHUKALLU",
+    "KOORAD",
+    "MNAJERI",
+    "MANJERI",
+    "CHUNGATHARA",
+    "KOCHI",
+    "CHERUKODE",
+    "UMMALATHUR",
+    "NADUVATH",
+    "KODASHERI",
+    "KODASSERI",
+    "MALAPURAM",
+    "MALAPPURAM",
+    "KOTTAKKUTH",
+    "ITI",
+    "AL",
+}
+
+ALUMNI_HONORIFIC_PREFIXES = {
+    "MUHAMMED",
+    "SAYYID",
+    "SYED",
+    "HAFIL",
+    "HAFIZ",
+}
+
+
 def canonical_alumni_name(raw_name: str, strip_spaces: bool = False) -> str:
-    s = re.sub(r"[^A-Z0-9\s]", " ", str(raw_name or "").upper())
+    s = str(raw_name or "").upper()
+    s = re.sub(r"\bSA['’\s]*ADI\b", "SAADI", s)
+    s = re.sub(r"[^A-Z0-9\s]", " ", s)
     s = re.sub(r"\s+", " ", s).strip()
     if not s:
         return ""
+    # Split glued degree suffixes (e.g., BASHEERSAQAFI -> BASHEER SAQAFI)
+    glued_suffixes = (
+        "SAQUAFI",
+        "SAQAAFI",
+        "SAAQUAFI",
+        "SAQAFI",
+        "SAKAFI",
+        "MUEENI",
+        "MUEENY",
+        "MUINI",
+        "ULOOMI",
+        "LATHEEFI",
+        "MUHTHADI",
+        "MUTHADI",
+        "MUHTHDI",
+        "SURAIJI",
+        "NIZAMI",
+        "NISAMI",
+        "NAEEMI",
+        "ADANY",
+        "SAADI",
+        "HADI",
+    )
+    split_tokens: list[str] = []
+    for tok in s.split():
+        matched_glue = False
+        for suf in glued_suffixes:
+            if len(tok) > len(suf) + 2 and tok.endswith(suf):
+                split_tokens.append(tok[: -len(suf)])
+                split_tokens.append(suf)
+                matched_glue = True
+                break
+        if not matched_glue:
+            split_tokens.append(tok)
+    s = " ".join(split_tokens)
+
+    # Multi-word compound given-name normalization
+    s = re.sub(r"\bABU\s+THWAHIR\b", "ABUTHWAHIR", s)
+    s = re.sub(r"\bABU\s+THAHIR\b", "ABUTHWAHIR", s)
+    s = re.sub(r"\bABOO\s+THWAHIR\b", "ABUTHWAHIR", s)
+    s = re.sub(r"\bABOO\s+THAHIR\b", "ABUTHWAHIR", s)
+    s = re.sub(r"\bABU\s+BAKER\b", "ABUBAKER", s)
+    s = re.sub(r"\bABU\s+BACKER\b", "ABUBAKER", s)
+    s = re.sub(r"\bABOO\s+BACKER\b", "ABUBAKER", s)
+
     replacements = [
         (r"\bSAQUAFI\b", "SAQAFI"),
         (r"\bSAQAAFI\b", "SAQAFI"),
+        (r"\bSAAQUAFI\b", "SAQAFI"),
         (r"\bSAKAFI\b", "SAQAFI"),
         (r"\bMUEENY\b", "MUEENI"),
         (r"\bMUINI\b", "MUEENI"),
+        (r"\bMUTHADI\b", "MUHTHADI"),
+        (r"\bMUHTHDI\b", "MUHTHADI"),
+        (r"\bNISAMI\b", "NIZAMI"),
+        (r"\bTHAGAL\b", "THANGAL"),
         (r"\bMOHAMMED\b", "MUHAMMED"),
         (r"\bMUHAMMAD\b", "MUHAMMED"),
         (r"\bMOHAMMAD\b", "MUHAMMED"),
         (r"\bMUHAMED\b", "MUHAMMED"),
         (r"\bABDUL\b", "ABDU"),
+        (r"\bABOOTHAHIR\b", "ABUTHWAHIR"),
+        (r"\bABOOTHWAHIR\b", "ABUTHWAHIR"),
+        (r"\bABUTHAHIR\b", "ABUTHWAHIR"),
+        (r"\bABOOBACKER\b", "ABUBAKER"),
+        (r"\bABUBACKER\b", "ABUBAKER"),
+        (r"\bABOOBKAR\b", "ABUBAKER"),
+        (r"\bSAFUVAN\b", "SAFVAN"),
+        (r"\bSAFUWAN\b", "SAFVAN"),
+        (r"\bNAMER\b", "NAMEER"),
+        (r"\bSOLIH\b", "SWALIH"),
+        (r"\bSALIH\b", "SWALIH"),
+        (r"\bSHEHEER\b", "SHAHEER"),
+        (r"\bBISHR\b", "BISHIR"),
+        (r"\bSABIQUE\b", "SABIQ"),
+        (r"\bRAOOF\b", "RAHOOF"),
+        (r"\bRAUF\b", "RAHOOF"),
+        (r"\bSUFIAN\b", "SUFIYAN"),
         (r"\bSHAFEEQUE\b", "SHAFEEQ"),
         (r"\bSHAFIQ\b", "SHAFEEQ"),
         (r"\bSIDHEEQUE\b", "SIDHEEQ"),
+        (r"\bSIDHEEK\b", "SIDHEEQ"),
         (r"\bSIDDIQUE\b", "SIDHEEQ"),
+        (r"\bSIDDIQ\b", "SIDHEEQ"),
         (r"\bRAFEEQUE\b", "RAFEEQ"),
         (r"\bRAFIQUE\b", "RAFEEQ"),
+        (r"\bRAFEE\b", "RAFEEQ"),
+        (r"\bRAFIH\b", "RAFEEQ"),
         (r"\bTHOUFEEQUE\b", "THOUFEEQ"),
         (r"\bTOUFEEQUE\b", "THOUFEEQ"),
         (r"\bSADHIQUE\b", "SADIQ"),
@@ -1177,6 +1304,14 @@ def canonical_alumni_name(raw_name: str, strip_spaces: bool = False) -> str:
         (r"\bRASAQ\b", "RAZAK"),
         (r"\bRASAK\b", "RAZAK"),
         (r"\bRAZAQ\b", "RAZAK"),
+        (r"\bHIDAYATHULLAH\b", "HIDAYATHULLA"),
+        (r"\bDHANISH\b", "DANISH"),
+        (r"\bMUHASIN\b", "MUHSIN"),
+        (r"\bNISAMUDHEEN\b", "NIZAMUDHEEN"),
+        (r"\bNAZIF\b", "NASIF"),
+        (r"\bNSDEEM\b", "NADEEM"),
+        (r"\bMAHFOOLU\b", "MAHFOOL"),
+        (r"\bRADHEED\b", "RASHEED"),
     ]
     for pat, rep in replacements:
         s = re.sub(pat, rep, s)
@@ -1186,9 +1321,34 @@ def canonical_alumni_name(raw_name: str, strip_spaces: bool = False) -> str:
     return s
 
 
-def compute_batch_non_registered_map(records: list[dict], students: list[dict]) -> tuple[dict[str, list[dict]], dict[str, set[str]], dict[str, set[str]]]:
+def extract_core_alumni_name_and_degrees(raw_name: str) -> tuple[str, set[str]]:
+    canon = canonical_alumni_name(raw_name, False)
+    if not canon:
+        return "", set()
+    tokens = canon.split()
+    degrees = {t for t in tokens if t in ALUMNI_DEGREE_TOKENS}
+    given_tokens = [
+        t
+        for t in tokens
+        if t not in ALUMNI_DEGREE_TOKENS
+        and t not in ALUMNI_PLACE_AND_NOISE_TOKENS
+        and len(t) > 2
+    ]
+    while len(given_tokens) > 1 and (
+        given_tokens[0] in ALUMNI_HONORIFIC_PREFIXES
+        or (given_tokens[0] == "ABU" and given_tokens[1] == "SUFIYAN")
+    ):
+        given_tokens.pop(0)
+    return " ".join(given_tokens), degrees
+
+
+def compute_batch_non_registered_map(
+    records: list[dict],
+    students: list[dict],
+) -> tuple[dict[str, list[dict]], dict[str, set[str]], dict[str, set[str]], dict[str, dict]]:
     students_by_batch: dict[str, list[dict]] = {y: [] for y in BATCH_YEARS}
     active_ids_by_batch: dict[str, set[str]] = {y: set() for y in BATCH_YEARS}
+    student_by_id: dict[str, dict] = {}
     for st in students:
         by = str(st.get("batchYear", "")).strip()
         if by in students_by_batch:
@@ -1196,17 +1356,20 @@ def compute_batch_non_registered_map(records: list[dict], students: list[dict]) 
             sid = str(st.get("studentId", "")).strip()
             if sid:
                 active_ids_by_batch[by].add(sid)
+                student_by_id[sid] = st
 
     matched_student_ids: set[str] = set()
     unique_reg_by_batch: dict[str, set[str]] = {y: set() for y in BATCH_YEARS}
     unique_checkin_by_batch: dict[str, set[str]] = {y: set() for y in BATCH_YEARS}
-    unmatched_regs_by_batch: dict[str, list[dict]] = {y: [] for y in BATCH_YEARS}
+    reg_id_to_student: dict[str, dict] = {}
+    pass1_unmatched: dict[str, list[dict]] = {y: [] for y in BATCH_YEARS}
 
-    # Pass 1: Match by exact or canonical originalExcelName / name within the batch (preferring exact studentId match)
+    # Pass 1: Match by exact or canonical full name within the batch (preferring exact studentId match)
     for r in records:
         by = str(r.get("batchYear", "")).strip()
         if by not in students_by_batch:
             continue
+        reg_id = str(r.get("registrationId") or "").strip()
         r_sid = str(r.get("studentId") or "").strip()
         r_orig = re.sub(r"\s+", " ", str(r.get("originalExcelName") or "").strip()).upper()
         r_name = re.sub(r"\s+", " ", str(r.get("name") or "").strip()).upper()
@@ -1237,7 +1400,7 @@ def compute_batch_non_registered_map(records: list[dict], students: list[dict]) 
                     if snm in exact_candidates:
                         matched_sid = sid
                         break
-            # 1c. Canonical / spaceless canonical name match within the batch (handles SAQAFI vs SAQUAFI, etc.)
+            # 1c. Canonical / spaceless canonical name match within the batch
             if not matched_sid:
                 for st in students_by_batch[by]:
                     sid = str(st.get("studentId", "")).strip()
@@ -1250,27 +1413,118 @@ def compute_batch_non_registered_map(records: list[dict], students: list[dict]) 
 
         if matched_sid:
             matched_student_ids.add(matched_sid)
+            if reg_id and matched_sid in student_by_id:
+                reg_id_to_student[reg_id] = student_by_id[matched_sid]
             tok = f"STU:{matched_sid}"
             unique_reg_by_batch[by].add(tok)
             if r.get("checkedIn"):
                 unique_checkin_by_batch[by].add(tok)
         else:
-            unmatched_regs_by_batch[by].append(r)
+            pass1_unmatched[by].append(r)
 
-    # Pass 2: Match remaining registrations (e.g., edited names) by studentId within the batch
+    # Pass 2: Core given-name + degree match against unmatched students in the batch (handles edited names like "MUHAMMED SHAFI HADI" -> "SHAFI HADI")
+    pass2_unmatched: dict[str, list[dict]] = {y: [] for y in BATCH_YEARS}
     for by in BATCH_YEARS:
-        for r in unmatched_regs_by_batch[by]:
+        for r in pass1_unmatched[by]:
+            reg_id = str(r.get("registrationId") or "").strip()
+            r_orig = str(r.get("originalExcelName") or "").strip()
+            r_name = str(r.get("name") or "").strip()
+            core_candidates: list[tuple[str, set[str]]] = []
+            for nm in (r_orig, r_name):
+                c_nm, c_deg = extract_core_alumni_name_and_degrees(nm)
+                if c_nm:
+                    core_candidates.append((c_nm, c_deg))
+
+            matched_sid = ""
+            if core_candidates:
+                # 2a. Prefer unmatched student with same core given name AND overlapping degree token
+                for c_nm, c_deg in core_candidates:
+                    if not c_deg:
+                        continue
+                    for st in students_by_batch[by]:
+                        sid = str(st.get("studentId", "")).strip()
+                        if not sid or sid in matched_student_ids:
+                            continue
+                        st_core, st_deg = extract_core_alumni_name_and_degrees(st.get("name", ""))
+                        if st_core and (st_core == c_nm or st_core.replace(" ", "") == c_nm.replace(" ", "")) and (st_deg & c_deg):
+                            matched_sid = sid
+                            break
+                    if matched_sid:
+                        break
+                # 2b. Match unmatched student with same core given name in the batch
+                if not matched_sid:
+                    for c_nm, _ in core_candidates:
+                        for st in students_by_batch[by]:
+                            sid = str(st.get("studentId", "")).strip()
+                            if not sid or sid in matched_student_ids:
+                                continue
+                            st_core, _ = extract_core_alumni_name_and_degrees(st.get("name", ""))
+                            if st_core and (st_core == c_nm or st_core.replace(" ", "") == c_nm.replace(" ", "")):
+                                matched_sid = sid
+                                break
+                        if matched_sid:
+                            break
+
+            if matched_sid:
+                matched_student_ids.add(matched_sid)
+                if reg_id and matched_sid in student_by_id:
+                    reg_id_to_student[reg_id] = student_by_id[matched_sid]
+                tok = f"STU:{matched_sid}"
+                unique_reg_by_batch[by].add(tok)
+                if r.get("checkedIn"):
+                    unique_checkin_by_batch[by].add(tok)
+            else:
+                pass2_unmatched[by].append(r)
+
+    # Pass 3: Match remaining registrations by studentId, or link resubmitted forms to an already-matched student in the batch
+    for by in BATCH_YEARS:
+        for r in pass2_unmatched[by]:
+            reg_id = str(r.get("registrationId") or "").strip()
             r_sid = str(r.get("studentId") or "").strip()
             r_orig = re.sub(r"\s+", " ", str(r.get("originalExcelName") or "").strip()).upper()
             r_name = re.sub(r"\s+", " ", str(r.get("name") or "").strip()).upper()
             key_name = r_orig or r_name
             if r_sid and r_sid in active_ids_by_batch[by] and r_sid not in matched_student_ids:
                 matched_student_ids.add(r_sid)
+                if reg_id and r_sid in student_by_id:
+                    reg_id_to_student[reg_id] = student_by_id[r_sid]
                 tok = f"STU:{r_sid}"
                 unique_reg_by_batch[by].add(tok)
                 if r.get("checkedIn"):
                     unique_checkin_by_batch[by].add(tok)
-            elif not r_sid and key_name:
+                continue
+
+            # Check if this registration is a resubmitted / edited form for an already-matched student in the batch
+            already_sid = ""
+            if r_sid and r_sid in active_ids_by_batch[by]:
+                already_sid = r_sid
+            else:
+                for nm in (r_orig, r_name):
+                    if not nm:
+                        continue
+                    c_full = canonical_alumni_name(nm, True)
+                    c_core, _ = extract_core_alumni_name_and_degrees(nm)
+                    for st in students_by_batch[by]:
+                        sid = str(st.get("studentId", "")).strip()
+                        if not sid:
+                            continue
+                        st_full = canonical_alumni_name(st.get("name", ""), True)
+                        st_core, _ = extract_core_alumni_name_and_degrees(st.get("name", ""))
+                        if (c_full and c_full == st_full) or (c_core and st_core and (c_core == st_core or c_core.replace(" ", "") == st_core.replace(" ", ""))):
+                            already_sid = sid
+                            break
+                    if already_sid:
+                        break
+
+            if already_sid:
+                matched_student_ids.add(already_sid)
+                if reg_id and already_sid in student_by_id:
+                    reg_id_to_student[reg_id] = student_by_id[already_sid]
+                tok = f"STU:{already_sid}"
+                unique_reg_by_batch[by].add(tok)
+                if r.get("checkedIn"):
+                    unique_checkin_by_batch[by].add(tok)
+            elif key_name:
                 tok = f"NAME:{canonical_alumni_name(key_name, True) or key_name}"
                 unique_reg_by_batch[by].add(tok)
                 if r.get("checkedIn"):
@@ -1289,7 +1543,98 @@ def compute_batch_non_registered_map(records: list[dict], students: list[dict]) 
                         "name": str(st.get("name", "")).strip(),
                     }
                 )
-    return non_reg_by_batch, unique_reg_by_batch, unique_checkin_by_batch
+    return non_reg_by_batch, unique_reg_by_batch, unique_checkin_by_batch, reg_id_to_student
+
+
+def reconcile_registrations_with_students(records: list[dict], students: list[dict]) -> tuple[list[dict], bool]:
+    _, _, _, reg_id_to_student = compute_batch_non_registered_map(records, students)
+    healed = False
+    out_records: list[dict] = []
+    for r in records:
+        rec = dict(r)
+        reg_id = str(rec.get("registrationId") or "").strip()
+        if rec.get("registrationStatus") != "REGISTERED":
+            rec["registrationStatus"] = "REGISTERED"
+            healed = True
+        matched_st = reg_id_to_student.get(reg_id)
+        if matched_st:
+            off_sid = str(matched_st.get("studentId") or "").strip()
+            off_name = str(matched_st.get("name") or "").strip()
+            cur_name = re.sub(r"\s+", " ", str(rec.get("name") or "").strip())
+            if off_sid and str(rec.get("studentId") or "").strip() != off_sid:
+                rec["studentId"] = off_sid
+                healed = True
+            if off_name and str(rec.get("originalExcelName") or "").strip() != off_name:
+                rec["originalExcelName"] = off_name
+                healed = True
+            should_be_edited = bool(off_name and cur_name and cur_name.upper() != off_name.upper())
+            if bool(rec.get("nameEdited")) != should_be_edited:
+                rec["nameEdited"] = should_be_edited
+                healed = True
+        out_records.append(enrich_registration(rec))
+    return out_records, healed
+
+
+def resolve_single_student_for_registration(
+    batch_year: str,
+    name: str,
+    orig_excel_name: str,
+    student_id: str,
+    students: list[dict],
+) -> dict | None:
+    clean_by = str(batch_year or "").strip()
+    batch_students = [st for st in students if str(st.get("batchYear", "")).strip() == clean_by]
+    if not batch_students:
+        return None
+    clean_sid = str(student_id or "").strip()
+    r_orig = re.sub(r"\s+", " ", str(orig_excel_name or "").strip()).upper()
+    r_name = re.sub(r"\s+", " ", str(name or "").strip()).upper()
+    exact_candidates = [nm for nm in (r_orig, r_name) if nm]
+    canon_candidates = [canonical_alumni_name(nm, False) for nm in exact_candidates if canonical_alumni_name(nm, False)]
+    compact_candidates = [canonical_alumni_name(nm, True) for nm in exact_candidates if canonical_alumni_name(nm, True)]
+
+    if clean_sid:
+        for st in batch_students:
+            sid = str(st.get("studentId", "")).strip()
+            snm = re.sub(r"\s+", " ", str(st.get("name", "")).strip()).upper()
+            if sid == clean_sid and (
+                not exact_candidates
+                or snm in exact_candidates
+                or canonical_alumni_name(snm, False) in canon_candidates
+                or canonical_alumni_name(snm, True) in compact_candidates
+            ):
+                return st
+    for st in batch_students:
+        snm = re.sub(r"\s+", " ", str(st.get("name", "")).strip()).upper()
+        if snm in exact_candidates:
+            return st
+    for st in batch_students:
+        snm = str(st.get("name", "")).strip()
+        if canonical_alumni_name(snm, False) in canon_candidates or canonical_alumni_name(snm, True) in compact_candidates:
+            return st
+
+    core_candidates = []
+    for nm in (r_orig, r_name):
+        c_nm, c_deg = extract_core_alumni_name_and_degrees(nm)
+        if c_nm:
+            core_candidates.append((c_nm, c_deg))
+    for c_nm, c_deg in core_candidates:
+        if not c_deg:
+            continue
+        for st in batch_students:
+            st_core, st_deg = extract_core_alumni_name_and_degrees(st.get("name", ""))
+            if st_core and (st_core == c_nm or st_core.replace(" ", "") == c_nm.replace(" ", "")) and (st_deg & c_deg):
+                return st
+    for c_nm, _ in core_candidates:
+        for st in batch_students:
+            st_core, _ = extract_core_alumni_name_and_degrees(st.get("name", ""))
+            if st_core and (st_core == c_nm or st_core.replace(" ", "") == c_nm.replace(" ", "")):
+                return st
+    if clean_sid:
+        for st in batch_students:
+            if str(st.get("studentId", "")).strip() == clean_sid:
+                return st
+    return None
 
 
 def build_non_registered_whatsapp_text(batch_year: str, non_reg_students: list[dict]) -> str:
@@ -1318,7 +1663,7 @@ def build_non_registered_whatsapp_text(batch_year: str, non_reg_students: list[d
 def build_batch_report_data(records: list[dict], students: list[dict]) -> dict:
     # Single source of truth: compute per-batch and overall student counts directly from current Students List
     batch_totals, overall_total = compute_student_batch_totals(students)
-    non_reg_by_batch, unique_reg_by_batch, unique_checkin_by_batch = compute_batch_non_registered_map(records, students)
+    non_reg_by_batch, unique_reg_by_batch, unique_checkin_by_batch, _ = compute_batch_non_registered_map(records, students)
 
     batch_rows: list[dict] = []
     report_lines: list[str] = [
@@ -1657,8 +2002,14 @@ def build_dashboard_payload(
     preloaded_records: list[dict] | None = None,
     preloaded_students: list[dict] | None = None,
 ) -> dict:
-    records = [enrich_registration(r) for r in preloaded_records] if preloaded_records is not None else load_db()
+    raw_records = [enrich_registration(r) for r in preloaded_records] if preloaded_records is not None else load_db()
     students = list(preloaded_students) if preloaded_students is not None else load_students_db()
+    records, healed = reconcile_registrations_with_students(raw_records, students)
+    if healed:
+        try:
+            save_db(records)
+        except Exception:
+            pass
     batch_totals, overall_total = compute_student_batch_totals(students)
     total = len(records)
     participating = sum(1 for r in records if r["participation"] == "പങ്കെടുക്കും")
@@ -1914,7 +2265,13 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                 batch_filter = (qs.get("batchYear", [""])[0] or "").strip()
                 students = load_students_db()
                 batch_totals, overall_total = compute_student_batch_totals(students)
-                records = load_db()
+                raw_records = load_db()
+                records, healed = reconcile_registrations_with_students(raw_records, students)
+                if healed:
+                    try:
+                        save_db(records)
+                    except Exception:
+                        pass
                 registered_map: dict[str, dict] = {}
                 for r in records:
                     by = str(r.get("batchYear", "")).strip()
@@ -1923,6 +2280,12 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                         "registrationId": r.get("registrationId"),
                         "ticketId": r.get("ticketId"),
                         "name": r.get("name"),
+                        "originalExcelName": r.get("originalExcelName") or r.get("name"),
+                        "place": r.get("place"),
+                        "whatsappNumber": r.get("whatsappNumber"),
+                        "participation": r.get("participation"),
+                        "registrationStatus": "REGISTERED",
+                        "checkedIn": bool(r.get("checkedIn", False)),
                         "studentId": stu_id,
                     }
                     if stu_id:
@@ -2220,6 +2583,13 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
 
             existing_rec = records[found_index]
             existing_ts = existing_rec.get("timestamp") or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            students = load_students_db()
+            cand_orig = str(body.get("originalExcelName") or existing_rec.get("originalExcelName") or name).strip()
+            cand_sid = str(body.get("studentId") or existing_rec.get("studentId") or "").strip()
+            resolved_st = resolve_single_student_for_registration(batch_year, name, cand_orig, cand_sid, students)
+            if resolved_st:
+                cand_sid = str(resolved_st.get("studentId") or cand_sid).strip()
+                cand_orig = str(resolved_st.get("name") or cand_orig).strip()
             updated_rec = enrich_registration(
                 {
                     "registrationId": reg_id,
@@ -2227,13 +2597,14 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                     "ticketToken": existing_rec.get("ticketToken"),
                     "timestamp": existing_ts,
                     "name": name,
-                    "originalExcelName": body.get("originalExcelName") or existing_rec.get("originalExcelName") or name,
-                    "nameEdited": existing_rec.get("nameEdited", False),
-                    "studentId": existing_rec.get("studentId", ""),
+                    "originalExcelName": cand_orig,
+                    "nameEdited": bool(cand_orig and cand_orig.upper() != name.upper()),
+                    "studentId": cand_sid,
                     "place": place,
                     "batchYear": batch_year,
                     "whatsappNumber": whatsapp_number,
                     "participation": participation,
+                    "registrationStatus": "REGISTERED",
                     "whatsappSent": existing_rec.get("whatsappSent", False),
                     "whatsappSentAt": existing_rec.get("whatsappSentAt", ""),
                     "whatsappSentCount": existing_rec.get("whatsappSentCount", 0),
@@ -2241,12 +2612,16 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                     "checkedIn": existing_rec.get("checkedIn", False),
                     "checkInTimestamp": existing_rec.get("checkInTimestamp", ""),
                     "checkedInBy": existing_rec.get("checkedInBy", ""),
+                    "checkinWhatsappStatus": existing_rec.get("checkinWhatsappStatus", "PENDING"),
+                    "checkinWhatsappSent": existing_rec.get("checkinWhatsappSent", False),
+                    "checkinWhatsappSentAt": existing_rec.get("checkinWhatsappSentAt", ""),
+                    "checkinWhatsappMessageId": existing_rec.get("checkinWhatsappMessageId", ""),
                 }
             )
             records[found_index] = updated_rec
             save_db(records)
 
-            payload = build_dashboard_payload()
+            payload = build_dashboard_payload(preloaded_records=records, preloaded_students=students)
             payload["updatedRecord"] = updated_rec
             payload["message"] = f"Registration #{reg_id} updated successfully."
             self._send_json(200, payload)
@@ -3004,36 +3379,131 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                 self._send_json(400, {"success": False, "error": "Please select a valid participation option."})
                 return
 
-            records = load_db()
+            raw_records = load_db()
+            students = load_students_db()
+            records, _ = reconcile_registrations_with_students(raw_records, students)
 
-            # Prevent duplicate student registration in the same Batch Year
+            # Resolve against the official batch student list so edited names remain linked to their official studentId & originalExcelName
+            resolved_st = resolve_single_student_for_registration(
+                batch_year,
+                name,
+                orig_excel_name,
+                student_id,
+                students,
+            )
+            if resolved_st:
+                student_id = str(resolved_st.get("studentId") or student_id).strip()
+                orig_excel_name = str(resolved_st.get("name") or orig_excel_name).strip()
+                name_edited = bool(orig_excel_name and orig_excel_name.upper() != name.upper())
+
+            # Check if this member already has an existing registration in the same Batch Year.
+            # If they edited and resubmitted their form, update their existing record in place and keep status as REGISTERED.
             now_dt = now_ist()
             norm_name_up = name.upper()
             norm_orig_up = orig_excel_name.upper()
-            for existing in records:
+            norm_name_can = canonical_alumni_name(norm_name_up, True)
+            norm_orig_can = canonical_alumni_name(norm_orig_up, True)
+            norm_core, _ = extract_core_alumni_name_and_degrees(orig_excel_name or name)
+            explicit_reg_id = normalize_reg_id(str(body.get("registrationId") or body.get("existingRegistrationId") or "").strip()) if (body.get("registrationId") or body.get("existingRegistrationId")) else ""
+
+            existing_index = -1
+            for idx, existing in enumerate(records):
+                ex_reg_id = str(existing.get("registrationId", "")).strip()
+                if explicit_reg_id and ex_reg_id == explicit_reg_id:
+                    existing_index = idx
+                    break
                 ex_batch = str(existing.get("batchYear", "")).strip()
                 if ex_batch != batch_year:
                     continue
                 ex_name_up = re.sub(r"\s+", " ", str(existing.get("name", "")).strip()).upper()
                 ex_orig_up = re.sub(r"\s+", " ", str(existing.get("originalExcelName") or ex_name_up).strip()).upper()
                 ex_stu_id = str(existing.get("studentId") or "").strip()
+                ex_name_can = canonical_alumni_name(ex_name_up, True)
+                ex_orig_can = canonical_alumni_name(ex_orig_up, True)
                 if (
                     (student_id and ex_stu_id and student_id == ex_stu_id)
                     or norm_name_up in (ex_name_up, ex_orig_up)
                     or norm_orig_up in (ex_name_up, ex_orig_up)
+                    or (norm_name_can and norm_name_can in (ex_name_can, ex_orig_can))
+                    or (norm_orig_can and norm_orig_can in (ex_name_can, ex_orig_can))
                 ):
-                    ex_ticket = existing.get("ticketId") or f"Reg #{existing.get('registrationId', '001')}"
-                    self._send_json(
-                        409,
-                        {
-                            "success": False,
-                            "duplicate": True,
-                            "existingTicketId": ex_ticket,
-                            "message": f"Duplicate registration: {name} (Batch {batch_year}) is already registered ({ex_ticket}).",
-                            "error": f"Duplicate registration: {name} (Batch {batch_year}) is already registered ({ex_ticket}).",
-                        },
-                    )
-                    return
+                    existing_index = idx
+                    break
+
+            if existing_index != -1:
+                existing_rec = records[existing_index]
+                reg_id = str(existing_rec.get("registrationId", "001")).strip()
+                preserved_orig = orig_excel_name or existing_rec.get("originalExcelName") or name
+                preserved_sid = student_id or str(existing_rec.get("studentId") or "").strip()
+                is_edited = bool(name_edited or existing_rec.get("nameEdited") or (preserved_orig and preserved_orig.upper() != name.upper()))
+                updated_existing_rec = enrich_registration(
+                    {
+                        "registrationId": reg_id,
+                        "ticketId": existing_rec.get("ticketId"),
+                        "ticketToken": existing_rec.get("ticketToken"),
+                        "timestamp": existing_rec.get("timestamp") or now_dt.strftime("%Y-%m-%d %H:%M:%S"),
+                        "updatedAt": now_dt.strftime("%Y-%m-%d %H:%M:%S"),
+                        "name": name,
+                        "originalExcelName": preserved_orig,
+                        "nameEdited": is_edited,
+                        "studentId": preserved_sid,
+                        "place": place,
+                        "batchYear": batch_year,
+                        "whatsappNumber": whatsapp_number,
+                        "participation": participation,
+                        "registrationStatus": "REGISTERED",
+                        "whatsappSent": existing_rec.get("whatsappSent", False),
+                        "whatsappSentAt": existing_rec.get("whatsappSentAt", ""),
+                        "whatsappSentCount": existing_rec.get("whatsappSentCount", 0),
+                        "whatsappCloudApiMessageId": existing_rec.get("whatsappCloudApiMessageId", ""),
+                        "checkedIn": existing_rec.get("checkedIn", False),
+                        "checkInTimestamp": existing_rec.get("checkInTimestamp", ""),
+                        "checkedInBy": existing_rec.get("checkedInBy", ""),
+                        "checkinWhatsappStatus": existing_rec.get("checkinWhatsappStatus", "PENDING"),
+                        "checkinWhatsappSent": existing_rec.get("checkinWhatsappSent", False),
+                        "checkinWhatsappSentAt": existing_rec.get("checkinWhatsappSentAt", ""),
+                        "checkinWhatsappMessageId": existing_rec.get("checkinWhatsappMessageId", ""),
+                    }
+                )
+                records[existing_index] = updated_existing_rec
+                save_db(records)
+                gas_synced = _sync_registration_to_gas(updated_existing_rec)
+                self._send_json(
+                    200,
+                    {
+                        "success": True,
+                        "updatedExisting": True,
+                        "registrationStatus": "REGISTERED",
+                        "message": "Registration completed successfully",
+                        "data": dict(updated_existing_rec),
+                        "gasSynced": gas_synced,
+                        "whatsappCloudApi": {"configured": False, "sent": False},
+                        "storageMode": get_storage_mode(),
+                        "registrationId": updated_existing_rec["registrationId"],
+                        "hasTicket": updated_existing_rec["hasTicket"],
+                        "ticketEligible": updated_existing_rec["ticketEligible"],
+                        "ticketId": updated_existing_rec["ticketId"],
+                        "ticketToken": updated_existing_rec["ticketToken"],
+                        "qrMatrix": updated_existing_rec["qrMatrix"],
+                        "confirmationMessage": (
+                            EXACT_CONFIRMATION_MESSAGE
+                            if updated_existing_rec["hasTicket"]
+                            else "REGISTRATION SUCCESSFUL!\nThank you for registering with Aufbruch Alumni Conclave 2026.\nWe appreciate your response. We hope to meet you at another event!"
+                        ),
+                        "name": updated_existing_rec["name"],
+                        "originalExcelName": updated_existing_rec["originalExcelName"],
+                        "nameEdited": updated_existing_rec["nameEdited"],
+                        "studentId": updated_existing_rec["studentId"],
+                        "place": updated_existing_rec["place"],
+                        "batchYear": updated_existing_rec["batchYear"],
+                        "formattedPhone": updated_existing_rec["formattedPhone"],
+                        "participation": updated_existing_rec["participation"],
+                        "shouldSendWhatsApp": updated_existing_rec["shouldSendWhatsApp"],
+                        "whatsAppMessage": updated_existing_rec["whatsAppMessage"],
+                        "whatsAppClickToChatUrl": updated_existing_rec["whatsAppClickToChatUrl"],
+                    },
+                )
+                return
 
             numeric_ids = [
                 int(str(r.get("registrationId", "")))
@@ -3055,6 +3525,7 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                     "batchYear": batch_year,
                     "whatsappNumber": whatsapp_number,
                     "participation": participation,
+                    "registrationStatus": "REGISTERED",
                 }
             )
 

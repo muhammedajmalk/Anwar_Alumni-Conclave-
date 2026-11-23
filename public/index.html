@@ -5951,11 +5951,20 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         if (cleanNm && registeredStudentsMap[batchYr + '::' + cleanNm]) {
           return registeredStudentsMap[batchYr + '::' + cleanNm];
         }
+        if (typeof resolveStudentInBatchClient === 'function') {
+          var resolved = resolveStudentInBatchClient(batchYr, studentName, studentName, stuId);
+          if (resolved && resolved.studentId && registeredStudentsMap['STU::' + resolved.studentId]) {
+            return registeredStudentsMap['STU::' + resolved.studentId];
+          }
+          if (resolved && resolved.name && registeredStudentsMap[batchYr + '::' + String(resolved.name).toUpperCase()]) {
+            return registeredStudentsMap[batchYr + '::' + String(resolved.name).toUpperCase()];
+          }
+        }
         return null;
       }
 
       function updateDuplicateWarningUI() {
-        if (!duplicateNameWarning) return false;
+        if (!duplicateNameWarning) return null;
         var batchYr = batchInput ? batchInput.value.trim() : '';
         var curName = nameInput ? nameInput.value.trim() : '';
         var origName = originalExcelNameInput ? originalExcelNameInput.value.trim() : '';
@@ -5963,13 +5972,13 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         var dupInfo = checkDuplicateForStudent(batchYr, origName || curName, stuId) || checkDuplicateForStudent(batchYr, curName, '');
         if (dupInfo) {
           var tId = dupInfo.ticketId || ('ANWAR ' + (dupInfo.registrationId || '001'));
-          duplicateNameWarning.textContent = '⚠️ Duplicate Registration Warning: ' + (origName || curName) + ' (Batch ' + batchYr + ') is already registered under ID ' + tId + '.';
+          duplicateNameWarning.textContent = 'ℹ️ Existing Registration Found (' + tId + ') — Submitting this form will update your registration and keep your status as REGISTERED.';
           duplicateNameWarning.classList.add('visible');
-          return true;
+          return dupInfo;
         }
         duplicateNameWarning.textContent = '';
         duplicateNameWarning.classList.remove('visible');
-        return false;
+        return null;
       }
 
       function selectStudentOptionRecord(studentName, stuId) {
@@ -6326,9 +6335,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           if (studentSelect) studentSelect.classList.remove('invalid');
         }
 
-        if (updateDuplicateWarningUI()) {
-          valid = false;
-        }
+        var existingDupInfo = updateDuplicateWarningUI();
 
         if (placeVal.length < 2) {
           setFieldError(placeInput, 'placeError', true);
@@ -6354,6 +6361,14 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
         if (!valid) return;
 
+        var resolvedStu = (typeof resolveStudentInBatchClient === 'function')
+          ? resolveStudentInBatchClient(batchVal, nameVal, origExcelVal, stuIdVal)
+          : null;
+        if (resolvedStu) {
+          if (!stuIdVal && resolvedStu.studentId) stuIdVal = String(resolvedStu.studentId);
+          if (resolvedStu.name) origExcelVal = String(resolvedStu.name);
+        }
+
         isSubmitting = true;
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<span>Saving Registration...</span>';
@@ -6365,6 +6380,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           originalExcelName: origExcelVal || nameVal,
           nameEdited: Boolean(origExcelVal && origExcelVal.toUpperCase() !== nameVal.toUpperCase()),
           studentId: stuIdVal,
+          existingRegistrationId: (existingDupInfo && existingDupInfo.registrationId) ? String(existingDupInfo.registrationId) : '',
           place: placeVal,
           whatsappNumber: phoneVal,
           participation: partVal
@@ -7488,26 +7504,101 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         return val + '%';
       }
 
+      var ALUMNI_DEGREE_TOKENS_CLIENT = {
+        'SAQAFI': true, 'MUEENI': true, 'HADI': true, 'ULOOMI': true, 'ADANY': true,
+        'NIZAMI': true, 'LATHEEFI': true, 'AHSANI': true, 'SAADI': true, 'MUHTHADI': true,
+        'SURAIJI': true, 'MUSLIYAR': true, 'THANGAL': true, 'NAEEMI': true, 'AFLALI': true
+      };
+      var ALUMNI_PLACE_AND_NOISE_TOKENS_CLIENT = {
+        'VETTIKKATTIRI': true, 'KODALI': true, 'KAVANOOR': true, 'CHULLIYOD': true,
+        'CHERUVADI': true, 'MAMPUZH': true, 'MAMPUZHA': true, 'POOTHUKALLU': true,
+        'POTHUKALLU': true, 'KOORAD': true, 'MNAJERI': true, 'MANJERI': true,
+        'CHUNGATHARA': true, 'KOCHI': true, 'CHERUKODE': true, 'UMMALATHUR': true,
+        'NADUVATH': true, 'KODASHERI': true, 'KODASSERI': true, 'MALAPURAM': true,
+        'MALAPPURAM': true, 'KOTTAKKUTH': true, 'ITI': true, 'AL': true
+      };
+      var ALUMNI_HONORIFIC_PREFIXES_CLIENT = {
+        'MUHAMMED': true, 'SAYYID': true, 'SYED': true, 'HAFIL': true, 'HAFIZ': true
+      };
+
       function canonicalAlumniNameClient(rawName, stripSpaces) {
-        var s = String(rawName || '').toUpperCase().replace(/[^A-Z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+        var s = String(rawName || '').toUpperCase();
+        s = s.replace(/\bSA['’\s]*ADI\b/g, 'SAADI');
+        s = s.replace(/[^A-Z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
         if (!s) return '';
+        var gluedSuffixes = [
+          'SAQUAFI', 'SAQAAFI', 'SAAQUAFI', 'SAQAFI', 'SAKAFI',
+          'MUEENI', 'MUEENY', 'MUINI', 'ULOOMI', 'LATHEEFI',
+          'MUHTHADI', 'MUTHADI', 'MUHTHDI', 'SURAIJI', 'NIZAMI',
+          'NISAMI', 'NAEEMI', 'ADANY', 'SAADI', 'HADI'
+        ];
+        var rawTokens = s.split(' ');
+        var splitTokens = [];
+        for (var g = 0; g < rawTokens.length; g++) {
+          var tok = rawTokens[g];
+          var matchedGlue = false;
+          for (var gs = 0; gs < gluedSuffixes.length; gs++) {
+            var suf = gluedSuffixes[gs];
+            if (tok.length > suf.length + 2 && tok.slice(-suf.length) === suf) {
+              splitTokens.push(tok.slice(0, -suf.length));
+              splitTokens.push(suf);
+              matchedGlue = true;
+              break;
+            }
+          }
+          if (!matchedGlue) splitTokens.push(tok);
+        }
+        s = splitTokens.join(' ');
+        s = s.replace(/\bABU\s+THWAHIR\b/g, 'ABUTHWAHIR')
+             .replace(/\bABU\s+THAHIR\b/g, 'ABUTHWAHIR')
+             .replace(/\bABOO\s+THWAHIR\b/g, 'ABUTHWAHIR')
+             .replace(/\bABOO\s+THAHIR\b/g, 'ABUTHWAHIR')
+             .replace(/\bABU\s+BAKER\b/g, 'ABUBAKER')
+             .replace(/\bABU\s+BACKER\b/g, 'ABUBAKER')
+             .replace(/\bABOO\s+BACKER\b/g, 'ABUBAKER');
         var rules = [
           [/\bSAQUAFI\b/g, 'SAQAFI'],
           [/\bSAQAAFI\b/g, 'SAQAFI'],
+          [/\bSAAQUAFI\b/g, 'SAQAFI'],
           [/\bSAKAFI\b/g, 'SAQAFI'],
           [/\bMUEENY\b/g, 'MUEENI'],
           [/\bMUINI\b/g, 'MUEENI'],
+          [/\bMUTHADI\b/g, 'MUHTHADI'],
+          [/\bMUHTHDI\b/g, 'MUHTHADI'],
+          [/\bNISAMI\b/g, 'NIZAMI'],
+          [/\bTHAGAL\b/g, 'THANGAL'],
           [/\bMOHAMMED\b/g, 'MUHAMMED'],
           [/\bMUHAMMAD\b/g, 'MUHAMMED'],
           [/\bMOHAMMAD\b/g, 'MUHAMMED'],
           [/\bMUHAMED\b/g, 'MUHAMMED'],
           [/\bABDUL\b/g, 'ABDU'],
+          [/\bABOOTHAHIR\b/g, 'ABUTHWAHIR'],
+          [/\bABOOTHWAHIR\b/g, 'ABUTHWAHIR'],
+          [/\bABUTHAHIR\b/g, 'ABUTHWAHIR'],
+          [/\bABOOBACKER\b/g, 'ABUBAKER'],
+          [/\bABUBACKER\b/g, 'ABUBAKER'],
+          [/\bABOOBKAR\b/g, 'ABUBAKER'],
+          [/\bSAFUVAN\b/g, 'SAFVAN'],
+          [/\bSAFUWAN\b/g, 'SAFVAN'],
+          [/\bNAMER\b/g, 'NAMEER'],
+          [/\bSOLIH\b/g, 'SWALIH'],
+          [/\bSALIH\b/g, 'SWALIH'],
+          [/\bSHEHEER\b/g, 'SHAHEER'],
+          [/\bBISHR\b/g, 'BISHIR'],
+          [/\bSABIQUE\b/g, 'SABIQ'],
+          [/\bRAOOF\b/g, 'RAHOOF'],
+          [/\bRAUF\b/g, 'RAHOOF'],
+          [/\bSUFIAN\b/g, 'SUFIYAN'],
           [/\bSHAFEEQUE\b/g, 'SHAFEEQ'],
           [/\bSHAFIQ\b/g, 'SHAFEEQ'],
           [/\bSIDHEEQUE\b/g, 'SIDHEEQ'],
+          [/\bSIDHEEK\b/g, 'SIDHEEQ'],
           [/\bSIDDIQUE\b/g, 'SIDHEEQ'],
+          [/\bSIDDIQ\b/g, 'SIDHEEQ'],
           [/\bRAFEEQUE\b/g, 'RAFEEQ'],
           [/\bRAFIQUE\b/g, 'RAFEEQ'],
+          [/\bRAFEE\b/g, 'RAFEEQ'],
+          [/\bRAFIH\b/g, 'RAFEEQ'],
           [/\bTHOUFEEQUE\b/g, 'THOUFEEQ'],
           [/\bTOUFEEQUE\b/g, 'THOUFEEQ'],
           [/\bSADHIQUE\b/g, 'SADIQ'],
@@ -7515,13 +7606,116 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           [/\bASHIQUE\b/g, 'ASHIQ'],
           [/\bRASAQ\b/g, 'RAZAK'],
           [/\bRASAK\b/g, 'RAZAK'],
-          [/\bRAZAQ\b/g, 'RAZAK']
+          [/\bRAZAQ\b/g, 'RAZAK'],
+          [/\bHIDAYATHULLAH\b/g, 'HIDAYATHULLA'],
+          [/\bDHANISH\b/g, 'DANISH'],
+          [/\bMUHASIN\b/g, 'MUHSIN'],
+          [/\bNISAMUDHEEN\b/g, 'NIZAMUDHEEN'],
+          [/\bNAZIF\b/g, 'NASIF'],
+          [/\bNSDEEM\b/g, 'NADEEM'],
+          [/\bMAHFOOLU\b/g, 'MAHFOOL'],
+          [/\bRADHEED\b/g, 'RASHEED']
         ];
         for (var i = 0; i < rules.length; i++) {
           s = s.replace(rules[i][0], rules[i][1]);
         }
         s = s.replace(/\s+/g, ' ').trim();
         return stripSpaces ? s.replace(/\s+/g, '') : s;
+      }
+
+      function extractCoreAlumniNameAndDegreesClient(rawName) {
+        var canon = canonicalAlumniNameClient(rawName, false);
+        if (!canon) return { coreName: '', degrees: {} };
+        var tokens = canon.split(' ');
+        var degrees = {};
+        var givenTokens = [];
+        for (var i = 0; i < tokens.length; i++) {
+          var t = tokens[i];
+          if (ALUMNI_DEGREE_TOKENS_CLIENT[t]) {
+            degrees[t] = true;
+          } else if (!ALUMNI_PLACE_AND_NOISE_TOKENS_CLIENT[t] && t.length > 2) {
+            givenTokens.push(t);
+          }
+        }
+        while (givenTokens.length > 1 && (
+          ALUMNI_HONORIFIC_PREFIXES_CLIENT[givenTokens[0]] ||
+          (givenTokens[0] === 'ABU' && givenTokens[1] === 'SUFIYAN')
+        )) {
+          givenTokens.shift();
+        }
+        return { coreName: givenTokens.join(' '), degrees: degrees };
+      }
+
+      function hasDegreeOverlapClient(degA, degB) {
+        if (!degA || !degB) return false;
+        var keys = Object.keys(degA);
+        for (var i = 0; i < keys.length; i++) {
+          if (degB[keys[i]]) return true;
+        }
+        return false;
+      }
+
+      function resolveStudentInBatchClient(batchYr, curName, origName, stuId) {
+        var cleanBy = String(batchYr || '').trim();
+        if (!cleanBy || !Array.isArray(allMasterStudents)) return null;
+        var batchStudents = [];
+        for (var i = 0; i < allMasterStudents.length; i++) {
+          if (allMasterStudents[i] && String(allMasterStudents[i].batchYear || '').trim() === cleanBy) {
+            batchStudents.push(allMasterStudents[i]);
+          }
+        }
+        if (batchStudents.length === 0) return null;
+        var cleanSid = String(stuId || '').trim();
+        var rOrig = String(origName || '').trim().replace(/\s+/g, ' ').toUpperCase();
+        var rName = String(curName || '').trim().replace(/\s+/g, ' ').toUpperCase();
+        var rOrigCan = canonicalAlumniNameClient(rOrig, false);
+        var rNameCan = canonicalAlumniNameClient(rName, false);
+        var rOrigCmp = canonicalAlumniNameClient(rOrig, true);
+        var rNameCmp = canonicalAlumniNameClient(rName, true);
+
+        if (cleanSid) {
+          for (var s0 = 0; s0 < batchStudents.length; s0++) {
+            var st0 = batchStudents[s0];
+            if (String(st0.studentId || '').trim() === cleanSid) return st0;
+          }
+        }
+        for (var s1 = 0; s1 < batchStudents.length; s1++) {
+          var st1 = batchStudents[s1];
+          var snm1 = String(st1.name || '').trim().replace(/\s+/g, ' ').toUpperCase();
+          if (snm1 === rOrig || snm1 === rName) return st1;
+        }
+        for (var s2 = 0; s2 < batchStudents.length; s2++) {
+          var st2 = batchStudents[s2];
+          var sCan2 = canonicalAlumniNameClient(st2.name, false);
+          var sCmp2 = canonicalAlumniNameClient(st2.name, true);
+          if ((sCan2 && (sCan2 === rOrigCan || sCan2 === rNameCan)) || (sCmp2 && (sCmp2 === rOrigCmp || sCmp2 === rNameCmp))) {
+            return st2;
+          }
+        }
+        var cOrig = extractCoreAlumniNameAndDegreesClient(rOrig);
+        var cName = extractCoreAlumniNameAndDegreesClient(rName);
+        var cands = [];
+        if (cOrig.coreName) cands.push(cOrig);
+        if (cName.coreName && cName.coreName !== cOrig.coreName) cands.push(cName);
+        for (var c = 0; c < cands.length; c++) {
+          for (var s3 = 0; s3 < batchStudents.length; s3++) {
+            var st3 = batchStudents[s3];
+            var stC3 = extractCoreAlumniNameAndDegreesClient(st3.name);
+            if (stC3.coreName && (stC3.coreName === cands[c].coreName || stC3.coreName.replace(/\s+/g, '') === cands[c].coreName.replace(/\s+/g, '')) && hasDegreeOverlapClient(stC3.degrees, cands[c].degrees)) {
+              return st3;
+            }
+          }
+        }
+        for (var c2 = 0; c2 < cands.length; c2++) {
+          for (var s4 = 0; s4 < batchStudents.length; s4++) {
+            var st4 = batchStudents[s4];
+            var stC4 = extractCoreAlumniNameAndDegreesClient(st4.name);
+            if (stC4.coreName && (stC4.coreName === cands[c2].coreName || stC4.coreName.replace(/\s+/g, '') === cands[c2].coreName.replace(/\s+/g, ''))) {
+              return st4;
+            }
+          }
+        }
+        return null;
       }
 
       function computeClientBatchReportFallback() {
@@ -7579,7 +7773,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             }
           }
           var nonRegInfo = hasMasterList ? computeNonRegisteredForBatch(yrStr) : null;
-          var regCnt = nonRegInfo ? Math.max(nonRegInfo.registeredCount, Object.keys(seenSet).length) : Object.keys(seenSet).length;
+          var regCnt = nonRegInfo ? (nonRegInfo.registeredCount + (nonRegInfo.extraUnlistedCount || 0)) : Object.keys(seenSet).length;
           totalUnique += regCnt;
           var offTot = Number(batchTotals[yrStr] || 0);
           var regFmt = regCnt < 10 ? ('0' + regCnt) : String(regCnt);
@@ -7775,12 +7969,76 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           }
         }
 
-        // Pass 2: Match remaining registrations (e.g., edited names) by studentId within the batch
-        for (var u = 0; u < unmatchedRegs.length; u++) {
-          var ur = unmatchedRegs[u];
+        // Pass 2: Core given-name + degree match against unmatched students in the batch (handles edited names like "MUHAMMED SHAFI HADI" -> "SHAFI HADI")
+        var pass2Unmatched = [];
+        for (var u1 = 0; u1 < unmatchedRegs.length; u1++) {
+          var ur1 = unmatchedRegs[u1];
+          var urOrig1 = String(ur1.originalExcelName || '').trim();
+          var urName1 = String(ur1.name || '').trim();
+          var cOrig1 = extractCoreAlumniNameAndDegreesClient(urOrig1);
+          var cName1 = extractCoreAlumniNameAndDegreesClient(urName1);
+          var coreCands = [];
+          if (cOrig1.coreName) coreCands.push(cOrig1);
+          if (cName1.coreName && cName1.coreName !== cOrig1.coreName) coreCands.push(cName1);
+
+          var matchedCoreSid = '';
+          for (var cc = 0; cc < coreCands.length; cc++) {
+            var candObj = coreCands[cc];
+            if (Object.keys(candObj.degrees).length > 0) {
+              for (var b1 = 0; b1 < batchStudents.length; b1++) {
+                var bst1 = batchStudents[b1];
+                var bSid1 = String(bst1.studentId || '').trim();
+                if (!bSid1 || matchedStudentIds[bSid1]) continue;
+                var bstC1 = extractCoreAlumniNameAndDegreesClient(bst1.name);
+                if (bstC1.coreName && (bstC1.coreName === candObj.coreName || bstC1.coreName.replace(/\s+/g, '') === candObj.coreName.replace(/\s+/g, '')) && hasDegreeOverlapClient(bstC1.degrees, candObj.degrees)) {
+                  matchedCoreSid = bSid1;
+                  break;
+                }
+              }
+            }
+            if (matchedCoreSid) break;
+          }
+          if (!matchedCoreSid) {
+            for (var cc2 = 0; cc2 < coreCands.length; cc2++) {
+              var candObj2 = coreCands[cc2];
+              for (var b2 = 0; b2 < batchStudents.length; b2++) {
+                var bst2 = batchStudents[b2];
+                var bSid2 = String(bst2.studentId || '').trim();
+                if (!bSid2 || matchedStudentIds[bSid2]) continue;
+                var bstC2 = extractCoreAlumniNameAndDegreesClient(bst2.name);
+                if (bstC2.coreName && (bstC2.coreName === candObj2.coreName || bstC2.coreName.replace(/\s+/g, '') === candObj2.coreName.replace(/\s+/g, ''))) {
+                  matchedCoreSid = bSid2;
+                  break;
+                }
+              }
+              if (matchedCoreSid) break;
+            }
+          }
+
+          if (matchedCoreSid) {
+            matchedStudentIds[matchedCoreSid] = true;
+          } else {
+            pass2Unmatched.push(ur1);
+          }
+        }
+
+        // Pass 3: Match remaining registrations by studentId, or check if they are resubmitted forms for an already-matched student
+        var extraUnlistedSet = {};
+        for (var u = 0; u < pass2Unmatched.length; u++) {
+          var ur = pass2Unmatched[u];
           var urSid = String(ur.studentId || '').trim();
+          var urOrig = String(ur.originalExcelName || '').trim();
+          var urName = String(ur.name || '').trim();
           if (urSid && activeIdsInBatch[urSid] && !matchedStudentIds[urSid]) {
             matchedStudentIds[urSid] = true;
+            continue;
+          }
+          var resolvedAlready = resolveStudentInBatchClient(cleanBatch, urName, urOrig, urSid);
+          if (resolvedAlready && resolvedAlready.studentId) {
+            matchedStudentIds[String(resolvedAlready.studentId).trim()] = true;
+          } else {
+            var fallbackKey = canonicalAlumniNameClient(urOrig || urName, true) || (urOrig || urName).toUpperCase();
+            if (fallbackKey) extraUnlistedSet[fallbackKey] = true;
           }
         }
 
@@ -7801,6 +8059,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         var totalCnt = batchStudents.length;
         var pendingCnt = nonRegList.length;
         var regCnt = Math.max(0, totalCnt - pendingCnt);
+        var extraUnlistedCount = Object.keys(extraUnlistedSet).length;
         var pendingFmt = pendingCnt < 10 ? ('0' + pendingCnt) : String(pendingCnt);
         var batchLabel = cleanBatch.toLowerCase().indexOf('batch') === 0 ? cleanBatch : ('Batch ' + cleanBatch);
 
@@ -7827,6 +8086,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           batchYear: cleanBatch,
           totalStudents: totalCnt,
           registeredCount: regCnt,
+          extraUnlistedCount: extraUnlistedCount,
           pendingCount: pendingCnt,
           pendingFormatted: pendingFmt,
           nonRegisteredStudents: nonRegList,
