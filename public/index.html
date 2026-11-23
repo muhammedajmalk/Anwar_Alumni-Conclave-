@@ -1764,6 +1764,107 @@
       color: #FFFFFF;
     }
 
+    /* Batch-Wise Non-Registered Students Sharing Panel */
+    .non-reg-share-panel {
+      margin-top: 20px;
+      padding: 18px 20px;
+      background: rgba(5, 11, 22, 0.72);
+      border: 1.5px solid rgba(212, 175, 55, 0.28);
+      border-radius: 14px;
+    }
+
+    .non-reg-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      flex-wrap: wrap;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 14px;
+    }
+
+    .non-reg-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .non-reg-summary-bar {
+      display: none;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      font-size: 13px;
+      color: #CBD5E1;
+    }
+
+    .non-reg-summary-bar.visible {
+      display: flex;
+    }
+
+    .non-reg-name-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .non-reg-name-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(248, 113, 113, 0.28);
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #F8FAFC;
+    }
+
+    .non-reg-name-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 6px;
+      border-radius: 999px;
+      background: rgba(239, 68, 68, 0.22);
+      color: #FCA5A5;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .non-reg-all-done-banner {
+      padding: 16px 18px;
+      background: rgba(22, 163, 74, 0.14);
+      border: 1.5px solid rgba(34, 197, 94, 0.45);
+      border-radius: 10px;
+      color: #86EFAC;
+      font-size: 13.5px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .non-reg-empty-prompt {
+      padding: 16px 18px;
+      background: rgba(15, 23, 42, 0.55);
+      border: 1px dashed rgba(148, 163, 184, 0.3);
+      border-radius: 10px;
+      color: #94A3B8;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+    }
+
     .wa-delivery-confirm-box {
       display: none;
       margin-top: 16px;
@@ -4374,6 +4475,75 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           <pre id="batchReportPreviewBox" class="batch-report-preview-box"></pre>
 
           <div id="batchReportGridContainer" class="batch-report-grid"></div>
+
+          <!-- Batch-Wise Non-Registered Students Sharing Option -->
+          <div id="nonRegisteredSharePanel" class="non-reg-share-panel">
+            <div class="non-reg-header">
+              <div>
+                <h4 style="font-size: 16px; font-weight: 800; color: var(--gold-300); margin: 0 0 4px 0;">
+                  ⏳ Batch-Wise Non-Registered Students (Pending Registration)
+                </h4>
+                <p style="font-size: 12.5px; color: #94A3B8; margin: 0;">
+                  Select a Batch Year to view, copy, or share on WhatsApp only the members who have not yet registered.
+                </p>
+              </div>
+              <div class="non-reg-controls">
+                <select id="nonRegisteredBatchSelect" class="filter-select" aria-label="Select Batch Year for Non-Registered Students">
+                  <option value="" selected>-- Select Batch Year (2001 – 2026) --</option>
+                  <option value="2001">Batch 2001</option>
+                  <option value="2002">Batch 2002</option>
+                  <option value="2003">Batch 2003</option>
+                  <option value="2004">Batch 2004</option>
+                  <option value="2005">Batch 2005</option>
+                  <option value="2006">Batch 2006</option>
+                  <option value="2007">Batch 2007</option>
+                  <option value="2008">Batch 2008</option>
+                  <option value="2009">Batch 2009</option>
+                  <option value="2010">Batch 2010</option>
+                  <option value="2011">Batch 2011</option>
+                  <option value="2012">Batch 2012</option>
+                  <option value="2013">Batch 2013</option>
+                  <option value="2014">Batch 2014</option>
+                  <option value="2015">Batch 2015</option>
+                  <option value="2016">Batch 2016</option>
+                  <option value="2017">Batch 2017</option>
+                  <option value="2018">Batch 2018</option>
+                  <option value="2019">Batch 2019</option>
+                  <option value="2020">Batch 2020</option>
+                  <option value="2021">Batch 2021</option>
+                  <option value="2022">Batch 2022</option>
+                  <option value="2023">Batch 2023</option>
+                  <option value="2024">Batch 2024</option>
+                  <option value="2025">Batch 2025</option>
+                  <option value="2026">Batch 2026</option>
+                </select>
+                <button type="button" id="copyNonRegisteredBtn" class="dash-btn" disabled>
+                  <span>📋 Copy Names</span>
+                </button>
+                <button type="button" id="shareNonRegisteredWaBtn" class="dash-btn" style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: #FFFFFF; border: none; font-weight: 800;" disabled>
+                  <span>📲 Share on WhatsApp</span>
+                </button>
+              </div>
+            </div>
+
+            <div id="nonRegisteredSummaryBar" class="non-reg-summary-bar">
+              <span>Selected Batch: <strong id="nonRegSelectedBatchLabel" style="color: var(--gold-300);">—</strong></span>
+              <span>•</span>
+              <span>Official Batch Strength: <strong id="nonRegTotalBatchCount" style="color: #FFFFFF;">0</strong></span>
+              <span>•</span>
+              <span>Registered: <strong id="nonRegRegisteredCount" style="color: #34D399;">0</strong></span>
+              <span>•</span>
+              <span>Pending (Non-Registered): <strong id="nonRegPendingCount" style="color: #FCA5A5;">0</strong></span>
+            </div>
+
+            <div id="nonRegisteredListContainer">
+              <div class="non-reg-empty-prompt">
+                Select a Batch Year from the dropdown above to display non-registered members for that batch.
+              </div>
+            </div>
+
+            <pre id="nonRegisteredSharePreviewBox" class="batch-report-preview-box" style="margin-top: 10px;"></pre>
+          </div>
         </div>
 
         <!-- 4B-2. EVENT CHECK-IN / QR SCANNER & Check-in Management Section -->
@@ -6243,6 +6413,10 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
               );
               throw new Error(apiErrMsg);
             }
+            fetchPublicStudentsList();
+            if (isAdminAuthenticated && typeof fetchDashboardData === 'function') {
+              fetchDashboardData(true);
+            }
             renderConfirmationView(result.data);
           })
           .catch(function(err) {
@@ -6941,6 +7115,15 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         if (batchFilterResetEl) batchFilterResetEl.value = 'NONE';
         var masterListResetEl = document.getElementById('adminStudentMasterList');
         if (masterListResetEl) masterListResetEl.innerHTML = '';
+        var nonRegSelResetEl = document.getElementById('nonRegisteredBatchSelect');
+        if (nonRegSelResetEl) nonRegSelResetEl.value = '';
+        var nonRegListResetEl = document.getElementById('nonRegisteredListContainer');
+        if (nonRegListResetEl) nonRegListResetEl.innerHTML = '';
+        var nonRegPrevResetEl = document.getElementById('nonRegisteredSharePreviewBox');
+        if (nonRegPrevResetEl) {
+          nonRegPrevResetEl.textContent = '';
+          nonRegPrevResetEl.classList.remove('open');
+        }
       }
 
       function showLoginScreen(errorMsg) {
@@ -7437,6 +7620,9 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         batches.forEach(function(b) {
           var card = document.createElement('div');
           card.className = 'batch-stat-card';
+          card.style.cursor = 'pointer';
+          card.setAttribute('data-batch-year', b.batchYear);
+          card.setAttribute('title', 'Click to view non-registered members for Batch ' + b.batchYear);
           var pctWidth = Math.min(100, Number(b.percentage || 0));
           card.innerHTML =
             '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 13px; font-weight: 700;">' +
@@ -7446,8 +7632,194 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             '<div class="bar-track" style="height: 8px;">' +
               '<div class="bar-fill" style="width: ' + pctWidth + '%;"></div>' +
             '</div>';
+          card.addEventListener('click', function() {
+            var sel = document.getElementById('nonRegisteredBatchSelect');
+            if (sel) {
+              sel.value = String(b.batchYear);
+              renderNonRegisteredBatchUI();
+            }
+          });
           gridEl.appendChild(card);
         });
+
+        renderNonRegisteredBatchUI();
+      }
+
+      function computeNonRegisteredForBatch(batchYear) {
+        var cleanBatch = String(batchYear || '').trim();
+        if (!cleanBatch) {
+          return {
+            batchYear: '',
+            totalStudents: 0,
+            registeredCount: 0,
+            pendingCount: 0,
+            nonRegisteredStudents: [],
+            shareMessageText: ''
+          };
+        }
+
+        var batchStudents = [];
+        var activeIdsInBatch = {};
+        for (var i = 0; i < allMasterStudents.length; i++) {
+          var st = allMasterStudents[i];
+          if (st && String(st.batchYear || '').trim() === cleanBatch) {
+            batchStudents.push(st);
+            var sid = String(st.studentId || '').trim();
+            if (sid) activeIdsInBatch[sid] = true;
+          }
+        }
+
+        var matchedStudentIds = {};
+        var unmatchedRegNames = [];
+        for (var j = 0; j < dashboardRegistrations.length; j++) {
+          var r = dashboardRegistrations[j];
+          if (!r || String(r.batchYear || '').trim() !== cleanBatch) continue;
+          var rSid = String(r.studentId || '').trim();
+          var rOrig = String(r.originalExcelName || '').trim().replace(/\s+/g, ' ').toUpperCase();
+          var rName = String(r.name || '').trim().replace(/\s+/g, ' ').toUpperCase();
+          if (rSid && activeIdsInBatch[rSid]) {
+            matchedStudentIds[rSid] = true;
+          } else {
+            var cand = rOrig || rName;
+            if (cand) {
+              unmatchedRegNames.push(cand);
+              if (rName && rName !== cand) {
+                unmatchedRegNames.push(rName);
+              }
+            }
+          }
+        }
+
+        if (unmatchedRegNames.length > 0) {
+          var remNames = unmatchedRegNames.slice();
+          for (var k = 0; k < batchStudents.length; k++) {
+            var s = batchStudents[k];
+            var sId = String(s.studentId || '').trim();
+            if (matchedStudentIds[sId]) continue;
+            var sNm = String(s.name || '').trim().replace(/\s+/g, ' ').toUpperCase();
+            var matchIdx = remNames.indexOf(sNm);
+            if (matchIdx !== -1) {
+              matchedStudentIds[sId] = true;
+              remNames.splice(matchIdx, 1);
+            }
+          }
+        }
+
+        var nonRegList = [];
+        for (var m = 0; m < batchStudents.length; m++) {
+          var stu = batchStudents[m];
+          var stuId = String(stu.studentId || '').trim();
+          if (!matchedStudentIds[stuId]) {
+            nonRegList.push({
+              studentId: stuId,
+              serialNo: stu.serialNo,
+              batchYear: cleanBatch,
+              name: String(stu.name || '').trim()
+            });
+          }
+        }
+
+        var totalCnt = batchStudents.length;
+        var pendingCnt = nonRegList.length;
+        var regCnt = Math.max(0, totalCnt - pendingCnt);
+        var pendingFmt = pendingCnt < 10 ? ('0' + pendingCnt) : String(pendingCnt);
+
+        var msgLines = [
+          '*Aufbruch – Alumni Conclave 2026*',
+          '*Batch ' + cleanBatch + ' – Non-Registered Members*',
+          '*Total Pending: ' + pendingFmt + '*',
+          '________________________',
+          ''
+        ];
+        if (pendingCnt === 0) {
+          msgLines.push('All members of Batch ' + cleanBatch + ' have registered!');
+        } else {
+          for (var n = 0; n < nonRegList.length; n++) {
+            msgLines.push((n + 1) + '. ' + nonRegList[n].name);
+          }
+        }
+
+        return {
+          batchYear: cleanBatch,
+          totalStudents: totalCnt,
+          registeredCount: regCnt,
+          pendingCount: pendingCnt,
+          pendingFormatted: pendingFmt,
+          nonRegisteredStudents: nonRegList,
+          shareMessageText: msgLines.join('\n')
+        };
+      }
+
+      function renderNonRegisteredBatchUI() {
+        var selectEl = document.getElementById('nonRegisteredBatchSelect');
+        var summaryBar = document.getElementById('nonRegisteredSummaryBar');
+        var batchLbl = document.getElementById('nonRegSelectedBatchLabel');
+        var totalEl = document.getElementById('nonRegTotalBatchCount');
+        var regEl = document.getElementById('nonRegRegisteredCount');
+        var pendEl = document.getElementById('nonRegPendingCount');
+        var listContainer = document.getElementById('nonRegisteredListContainer');
+        var previewBox = document.getElementById('nonRegisteredSharePreviewBox');
+        var copyBtn = document.getElementById('copyNonRegisteredBtn');
+        var waBtn = document.getElementById('shareNonRegisteredWaBtn');
+
+        if (!selectEl || !listContainer) return;
+
+        var selectedBatch = String(selectEl.value || '').trim();
+        if (!selectedBatch) {
+          if (summaryBar) summaryBar.classList.remove('visible');
+          if (copyBtn) copyBtn.disabled = true;
+          if (waBtn) waBtn.disabled = true;
+          if (previewBox) {
+            previewBox.textContent = '';
+            previewBox.classList.remove('open');
+          }
+          listContainer.innerHTML =
+            '<div class="non-reg-empty-prompt">' +
+              'Select a Batch Year from the dropdown above to display non-registered members for that batch.' +
+            '</div>';
+          return;
+        }
+
+        var data = computeNonRegisteredForBatch(selectedBatch);
+        if (summaryBar) summaryBar.classList.add('visible');
+        if (batchLbl) batchLbl.textContent = 'Batch ' + data.batchYear;
+        if (totalEl) totalEl.textContent = String(data.totalStudents);
+        if (regEl) regEl.textContent = String(data.registeredCount);
+        if (pendEl) pendEl.textContent = String(data.pendingCount);
+
+        if (data.pendingCount === 0) {
+          if (copyBtn) copyBtn.disabled = true;
+          if (waBtn) waBtn.disabled = true;
+          if (previewBox) {
+            previewBox.textContent = '';
+            previewBox.classList.remove('open');
+          }
+          listContainer.innerHTML =
+            '<div class="non-reg-all-done-banner">' +
+              '🎉 All members of Batch ' + escapeHtml(data.batchYear) + ' have completed their registration! (0 Pending)' +
+            '</div>';
+          return;
+        }
+
+        if (copyBtn) copyBtn.disabled = false;
+        if (waBtn) waBtn.disabled = false;
+
+        var gridHtml = '<div class="non-reg-name-grid">';
+        for (var i = 0; i < data.nonRegisteredStudents.length; i++) {
+          var st = data.nonRegisteredStudents[i];
+          gridHtml +=
+            '<div class="non-reg-name-item">' +
+              '<span class="non-reg-name-num">' + (i + 1) + '</span>' +
+              '<span>' + escapeHtml(st.name) + '</span>' +
+            '</div>';
+        }
+        gridHtml += '</div>';
+        listContainer.innerHTML = gridHtml;
+
+        if (previewBox) {
+          previewBox.textContent = data.shareMessageText;
+          previewBox.classList.add('open');
+        }
       }
 
       function splitCheckinTimestamp(ts) {
@@ -8541,6 +8913,77 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           if (!isAdminAuthenticated) return;
           batchReportPreviewBox.textContent = getLatestBatchReportText();
           batchReportPreviewBox.classList.toggle('open');
+        });
+      }
+
+      // -----------------------------------------------------------------------
+      // Batch-Wise Non-Registered Students Dropdown, Copy Names & WhatsApp Share
+      // -----------------------------------------------------------------------
+      var nonRegisteredBatchSelect = document.getElementById('nonRegisteredBatchSelect');
+      var copyNonRegisteredBtn = document.getElementById('copyNonRegisteredBtn');
+      var shareNonRegisteredWaBtn = document.getElementById('shareNonRegisteredWaBtn');
+      var nonRegisteredSharePreviewBox = document.getElementById('nonRegisteredSharePreviewBox');
+
+      if (nonRegisteredBatchSelect) {
+        nonRegisteredBatchSelect.addEventListener('change', function() {
+          if (!isAdminAuthenticated) return;
+          renderNonRegisteredBatchUI();
+        });
+      }
+
+      if (copyNonRegisteredBtn) {
+        copyNonRegisteredBtn.addEventListener('click', function() {
+          if (!isAdminAuthenticated || !nonRegisteredBatchSelect) return;
+          var selectedBatch = String(nonRegisteredBatchSelect.value || '').trim();
+          if (!selectedBatch) {
+            showToast('Please select a Batch Year first.');
+            return;
+          }
+          var data = computeNonRegisteredForBatch(selectedBatch);
+          if (data.pendingCount === 0) {
+            showToast('All members of Batch ' + selectedBatch + ' have registered!');
+            return;
+          }
+          var text = data.shareMessageText;
+          if (nonRegisteredSharePreviewBox) {
+            nonRegisteredSharePreviewBox.textContent = text;
+            nonRegisteredSharePreviewBox.classList.add('open');
+          }
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(function() {
+              showToast('📋 Copied ' + data.pendingCount + ' non-registered names for Batch ' + selectedBatch + '!');
+            }).catch(function() {
+              showToast('📋 Non-registered names ready in preview box.');
+            });
+          } else {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); } catch (e) {}
+            document.body.removeChild(ta);
+            showToast('📋 Copied ' + data.pendingCount + ' non-registered names for Batch ' + selectedBatch + '!');
+          }
+        });
+      }
+
+      if (shareNonRegisteredWaBtn) {
+        shareNonRegisteredWaBtn.addEventListener('click', function() {
+          if (!isAdminAuthenticated || !nonRegisteredBatchSelect) return;
+          var selectedBatch = String(nonRegisteredBatchSelect.value || '').trim();
+          if (!selectedBatch) {
+            showToast('Please select a Batch Year first.');
+            return;
+          }
+          var data = computeNonRegisteredForBatch(selectedBatch);
+          if (data.pendingCount === 0) {
+            showToast('All members of Batch ' + selectedBatch + ' have registered!');
+            return;
+          }
+          var text = data.shareMessageText;
+          var waUrl = 'https://wa.me/?text=' + encodeURIComponent(text);
+          window.open(waUrl, '_blank', 'noopener,noreferrer');
+          showToast('📲 Opened WhatsApp with Batch ' + selectedBatch + ' non-registered members (' + data.pendingCount + ' pending).');
         });
       }
 

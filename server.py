@@ -1147,9 +1147,85 @@ def format_pct(reg_count: int, total_count: int) -> str:
     return f"{val}%"
 
 
+def compute_batch_non_registered_map(records: list[dict], students: list[dict]) -> dict[str, list[dict]]:
+    students_by_batch: dict[str, list[dict]] = {y: [] for y in BATCH_YEARS}
+    active_ids_by_batch: dict[str, set[str]] = {y: set() for y in BATCH_YEARS}
+    for st in students:
+        by = str(st.get("batchYear", "")).strip()
+        if by in students_by_batch:
+            students_by_batch[by].append(st)
+            sid = str(st.get("studentId", "")).strip()
+            if sid:
+                active_ids_by_batch[by].add(sid)
+
+    matched_student_ids: set[str] = set()
+    unmatched_reg_names_by_batch: dict[str, list[str]] = {y: [] for y in BATCH_YEARS}
+    for r in records:
+        by = str(r.get("batchYear", "")).strip()
+        if by not in students_by_batch:
+            continue
+        r_sid = str(r.get("studentId") or "").strip()
+        r_orig = re.sub(r"\s+", " ", str(r.get("originalExcelName") or "").strip()).upper()
+        r_name = re.sub(r"\s+", " ", str(r.get("name") or "").strip()).upper()
+        if r_sid and r_sid in active_ids_by_batch[by]:
+            matched_student_ids.add(r_sid)
+        else:
+            cand = r_orig or r_name
+            if cand:
+                unmatched_reg_names_by_batch[by].append(cand)
+                if r_name and r_name != cand:
+                    unmatched_reg_names_by_batch[by].append(r_name)
+
+    for by in BATCH_YEARS:
+        remaining_names = list(unmatched_reg_names_by_batch[by])
+        if not remaining_names:
+            continue
+        for st in students_by_batch[by]:
+            sid = str(st.get("studentId", "")).strip()
+            if sid in matched_student_ids:
+                continue
+            snm = re.sub(r"\s+", " ", str(st.get("name", "")).strip()).upper()
+            if snm in remaining_names:
+                matched_student_ids.add(sid)
+                remaining_names.remove(snm)
+
+    non_reg_by_batch: dict[str, list[dict]] = {y: [] for y in BATCH_YEARS}
+    for by in BATCH_YEARS:
+        for st in students_by_batch[by]:
+            sid = str(st.get("studentId", "")).strip()
+            if sid not in matched_student_ids:
+                non_reg_by_batch[by].append(
+                    {
+                        "studentId": sid,
+                        "serialNo": st.get("serialNo"),
+                        "batchYear": by,
+                        "name": str(st.get("name", "")).strip(),
+                    }
+                )
+    return non_reg_by_batch
+
+
+def build_non_registered_whatsapp_text(batch_year: str, non_reg_students: list[dict]) -> str:
+    pending_cnt = len(non_reg_students)
+    lines = [
+        "*Aufbruch – Alumni Conclave 2026*",
+        f"*Batch {batch_year} – Non-Registered Members*",
+        f"*Total Pending: {pending_cnt:02d}*",
+        "________________________",
+        "",
+    ]
+    if pending_cnt == 0:
+        lines.append(f"All members of Batch {batch_year} have registered!")
+    else:
+        for i, st in enumerate(non_reg_students, start=1):
+            lines.append(f"{i}. {st.get('name', '')}")
+    return "\n".join(lines)
+
+
 def build_batch_report_data(records: list[dict], students: list[dict]) -> dict:
     # Single source of truth: compute per-batch and overall student counts directly from current Students List
     batch_totals, overall_total = compute_student_batch_totals(students)
+    non_reg_by_batch = compute_batch_non_registered_map(records, students)
     active_student_ids = {str(st.get("studentId", "")).strip() for st in students if str(st.get("studentId", "")).strip()}
     active_batch_names: dict[str, set[str]] = {y: set() for y in BATCH_YEARS}
     for st in students:
@@ -1195,6 +1271,8 @@ def build_batch_report_data(records: list[dict], students: list[dict]) -> dict:
         pct_str = format_pct(reg_cnt, off_tot)
         line = f"{idx}. Batch {year} : {reg_cnt:02d}/{off_tot:02d} ({pct_str})"
         report_lines.append(line)
+        non_reg_list = non_reg_by_batch.get(year, [])
+        non_reg_cnt = len(non_reg_list)
         batch_rows.append(
             {
                 "index": idx,
@@ -1209,6 +1287,11 @@ def build_batch_report_data(records: list[dict], students: list[dict]) -> dict:
                 "percentageFormatted": pct_str,
                 "checkedInCount": checkin_cnt,
                 "pendingCheckInCount": max(0, reg_cnt - checkin_cnt),
+                "nonRegisteredCount": non_reg_cnt,
+                "nonRegisteredFormatted": f"{non_reg_cnt:02d}",
+                "nonRegisteredStudents": non_reg_list,
+                "nonRegisteredNames": [s["name"] for s in non_reg_list],
+                "nonRegisteredWhatsappText": build_non_registered_whatsapp_text(year, non_reg_list),
                 "reportLine": line,
             }
         )
