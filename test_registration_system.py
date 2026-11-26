@@ -624,6 +624,10 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         import server as srv_mod
         master_students = srv_mod.load_students_db()
         edited_probe_records = [
+            {"registrationId": "898", "batchYear": "2002", "name": "Suneerali saquafi", "originalExcelName": "Suneerali saquafi"},
+            {"registrationId": "899", "batchYear": "2004", "name": "MUSTHAFA UBAIDULLA SAQAFI", "originalExcelName": "MUSTHAFA UBAIDULLA SAQAFI"},
+            {"registrationId": "900A", "batchYear": "2008", "name": "Jamaluddeen K A", "originalExcelName": "Jamaluddeen K A"},
+            {"registrationId": "900B", "batchYear": "2008", "name": "Jamal Sakhafi", "originalExcelName": "Jamal Sakhafi"},
             {"registrationId": "901", "batchYear": "2011", "name": "Muhammed Basheersaqafi", "originalExcelName": "Muhammed Basheersaqafi"},
             {"registrationId": "902", "batchYear": "2017", "name": "MUHAMMED SAFVAN SAQUAFI", "originalExcelName": "MUHAMMED SAFVAN SAQUAFI"},
             {"registrationId": "903", "batchYear": "2017", "name": "NAMEER SAQUAFI", "originalExcelName": "NAMEER SAQUAFI"},
@@ -649,6 +653,9 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
             self.assertTrue(hp.get("studentId"), f"Expected studentId to be resolved for {hp.get('name')}")
             self.assertEqual(hp.get("registrationStatus"), "REGISTERED")
         non_reg_map, _, _, _ = srv_mod.compute_batch_non_registered_map(healed_probes, master_students)
+        self.assertNotIn("SUNEER SAQUAFI", [s["name"] for s in non_reg_map["2002"]])
+        self.assertNotIn("UBAIDULLA SAQUAFI", [s["name"] for s in non_reg_map["2004"]])
+        self.assertNotIn("JAMAL SAQUAFI", [s["name"] for s in non_reg_map["2008"]])
         self.assertNotIn("BASHEER SAQUAFI", [s["name"] for s in non_reg_map["2011"]])
         self.assertNotIn("NAMER SAQUAFI", [s["name"] for s in non_reg_map["2017"]])
         self.assertNotIn("HIDAYATHULLA SAQUAFI", [s["name"] for s in non_reg_map["2018"]])

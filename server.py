@@ -1222,8 +1222,17 @@ def canonical_alumni_name(raw_name: str, strip_spaces: bool = False) -> str:
         "SAQUAFI",
         "SAQAAFI",
         "SAAQUAFI",
+        "SAKHAFI",
+        "SAQHAFI",
+        "SAKHAAFI",
+        "SHAKAFI",
+        "SHAQAFI",
+        "SHAQUAFI",
         "SAQAFI",
         "SAKAFI",
+        "SAQAFY",
+        "SAQUAFY",
+        "SAKHAFY",
         "MUEENI",
         "MUEENY",
         "MUINI",
@@ -1265,12 +1274,23 @@ def canonical_alumni_name(raw_name: str, strip_spaces: bool = False) -> str:
     s = re.sub(r"\bABU\s+BAKER\b", "ABUBAKER", s)
     s = re.sub(r"\bABU\s+BACKER\b", "ABUBAKER", s)
     s = re.sub(r"\bABOO\s+BACKER\b", "ABUBAKER", s)
+    s = re.sub(r"\bMUSTHAFA\s+UBAIDULLA\b", "UBAIDULLA", s)
+    s = re.sub(r"\bSUNEER\s+ALI\b", "SUNEER", s)
 
     replacements = [
         (r"\bSAQUAFI\b", "SAQAFI"),
         (r"\bSAQAAFI\b", "SAQAFI"),
         (r"\bSAAQUAFI\b", "SAQAFI"),
+        (r"\bSAKHAFI\b", "SAQAFI"),
+        (r"\bSAQHAFI\b", "SAQAFI"),
+        (r"\bSAKHAAFI\b", "SAQAFI"),
+        (r"\bSHAKAFI\b", "SAQAFI"),
+        (r"\bSHAQAFI\b", "SAQAFI"),
+        (r"\bSHAQUAFI\b", "SAQAFI"),
         (r"\bSAKAFI\b", "SAQAFI"),
+        (r"\bSAQAFY\b", "SAQAFI"),
+        (r"\bSAQUAFY\b", "SAQAFI"),
+        (r"\bSAKHAFY\b", "SAQAFI"),
         (r"\bMUEENY\b", "MUEENI"),
         (r"\bMUINI\b", "MUEENI"),
         (r"\bMUTHADI\b", "MUHTHADI"),
@@ -1288,6 +1308,10 @@ def canonical_alumni_name(raw_name: str, strip_spaces: bool = False) -> str:
         (r"\bABOOBACKER\b", "ABUBAKER"),
         (r"\bABUBACKER\b", "ABUBAKER"),
         (r"\bABOOBKAR\b", "ABUBAKER"),
+        (r"\bJAMALUDDEEN\b", "JAMAL"),
+        (r"\bJAMALUDHEEN\b", "JAMAL"),
+        (r"\bJAMALUDEEN\b", "JAMAL"),
+        (r"\bSUNEERALI\b", "SUNEER"),
         (r"\bSAFUVAN\b", "SAFVAN"),
         (r"\bSAFUWAN\b", "SAFVAN"),
         (r"\bNAMER\b", "NAMEER"),
@@ -1477,6 +1501,29 @@ def compute_batch_non_registered_map(
                                 break
                         if matched_sid:
                             break
+                # 2c. Unambiguous core-token overlap or prefix match within the batch (e.g. "JAMALUDDEEN" -> "JAMAL", "MUSTHAFA UBAIDULLA" -> "UBAIDULLA")
+                if not matched_sid:
+                    for c_nm, _ in core_candidates:
+                        c_tokens = {t for t in c_nm.split() if len(t) >= 4}
+                        c_comp = c_nm.replace(" ", "")
+                        cand_sids: list[str] = []
+                        for st in students_by_batch[by]:
+                            sid = str(st.get("studentId", "")).strip()
+                            if not sid or sid in matched_student_ids:
+                                continue
+                            st_core, _ = extract_core_alumni_name_and_degrees(st.get("name", ""))
+                            if not st_core:
+                                continue
+                            st_tokens = {t for t in st_core.split() if len(t) >= 4}
+                            st_comp = st_core.replace(" ", "")
+                            if (c_tokens and st_tokens and (c_tokens & st_tokens)) or (
+                                min(len(c_comp), len(st_comp)) >= 5
+                                and (c_comp.startswith(st_comp) or st_comp.startswith(c_comp))
+                            ):
+                                cand_sids.append(sid)
+                        if len(cand_sids) == 1:
+                            matched_sid = cand_sids[0]
+                            break
 
             if matched_sid:
                 matched_student_ids.add(matched_sid)
@@ -1512,22 +1559,9 @@ def compute_batch_non_registered_map(
             if r_sid and r_sid in active_ids_by_batch[by]:
                 already_sid = r_sid
             else:
-                for nm in (r_orig, r_name):
-                    if not nm:
-                        continue
-                    c_full = canonical_alumni_name(nm, True)
-                    c_core, _ = extract_core_alumni_name_and_degrees(nm)
-                    for st in students_by_batch[by]:
-                        sid = str(st.get("studentId", "")).strip()
-                        if not sid:
-                            continue
-                        st_full = canonical_alumni_name(st.get("name", ""), True)
-                        st_core, _ = extract_core_alumni_name_and_degrees(st.get("name", ""))
-                        if (c_full and c_full == st_full) or (c_core and st_core and (c_core == st_core or c_core.replace(" ", "") == st_core.replace(" ", ""))):
-                            already_sid = sid
-                            break
-                    if already_sid:
-                        break
+                resolved_st = resolve_single_student_for_registration(by, r_name, r_orig, r_sid, students_by_batch[by])
+                if resolved_st:
+                    already_sid = str(resolved_st.get("studentId") or "").strip()
 
             if already_sid:
                 matched_student_ids.add(already_sid)
@@ -1537,7 +1571,7 @@ def compute_batch_non_registered_map(
                 unique_reg_by_batch[by].add(tok)
                 if r.get("checkedIn"):
                     unique_checkin_by_batch[by].add(tok)
-            elif key_name:
+            elif key_name and not students_by_batch[by]:
                 tok = f"NAME:{canonical_alumni_name(key_name, True) or key_name}"
                 unique_reg_by_batch[by].add(tok)
                 if r.get("checkedIn"):
@@ -1643,6 +1677,23 @@ def resolve_single_student_for_registration(
             st_core, _ = extract_core_alumni_name_and_degrees(st.get("name", ""))
             if st_core and (st_core == c_nm or st_core.replace(" ", "") == c_nm.replace(" ", "")):
                 return st
+    for c_nm, _ in core_candidates:
+        c_tokens = {t for t in c_nm.split() if len(t) >= 4}
+        c_comp = c_nm.replace(" ", "")
+        cands = []
+        for st in batch_students:
+            st_core, _ = extract_core_alumni_name_and_degrees(st.get("name", ""))
+            if not st_core:
+                continue
+            st_tokens = {t for t in st_core.split() if len(t) >= 4}
+            st_comp = st_core.replace(" ", "")
+            if (c_tokens and st_tokens and (c_tokens & st_tokens)) or (
+                min(len(c_comp), len(st_comp)) >= 5
+                and (c_comp.startswith(st_comp) or st_comp.startswith(c_comp))
+            ):
+                cands.append(st)
+        if len(cands) == 1:
+            return cands[0]
     if clean_sid:
         for st in batch_students:
             if str(st.get("studentId", "")).strip() == clean_sid:
@@ -2285,15 +2336,25 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                         save_db(records)
                     except Exception:
                         pass
+                non_reg_by_batch, _, _, reg_id_to_student = compute_batch_non_registered_map(records, students)
+                non_reg_ids = {
+                    str(s.get("studentId") or "").strip()
+                    for blist in non_reg_by_batch.values()
+                    for s in blist
+                    if str(s.get("studentId") or "").strip()
+                }
                 registered_map: dict[str, dict] = {}
                 for r in records:
                     by = str(r.get("batchYear", "")).strip()
-                    stu_id = str(r.get("studentId") or "").strip()
+                    reg_id = str(r.get("registrationId") or "").strip()
+                    matched_st = reg_id_to_student.get(reg_id)
+                    stu_id = str((matched_st and matched_st.get("studentId")) or r.get("studentId") or "").strip()
+                    off_st_name = str((matched_st and matched_st.get("name")) or "").strip()
                     reg_info = {
                         "registrationId": r.get("registrationId"),
                         "ticketId": r.get("ticketId"),
                         "name": r.get("name"),
-                        "originalExcelName": r.get("originalExcelName") or r.get("name"),
+                        "originalExcelName": off_st_name or r.get("originalExcelName") or r.get("name"),
                         "place": r.get("place"),
                         "whatsappNumber": r.get("whatsappNumber"),
                         "participation": r.get("participation"),
@@ -2303,16 +2364,29 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                     }
                     if stu_id:
                         registered_map[f"STU::{stu_id}"] = reg_info
-                    for nm in (r.get("originalExcelName"), r.get("name")):
+                    for nm in (off_st_name, r.get("originalExcelName"), r.get("name")):
                         clean_nm = re.sub(r"\s+", " ", str(nm or "").strip()).upper()
                         if by and clean_nm:
                             registered_map[f"{by}::{clean_nm}"] = reg_info
+                enriched_students: list[dict] = []
+                for s in students:
+                    s_copy = dict(s)
+                    sid = str(s_copy.get("studentId") or "").strip()
+                    s_by = str(s_copy.get("batchYear") or "").strip()
+                    s_nm = re.sub(r"\s+", " ", str(s_copy.get("name") or "").strip()).upper()
+                    is_reg = bool(
+                        (sid and (sid not in non_reg_ids or f"STU::{sid}" in registered_map))
+                        or (s_by and s_nm and f"{s_by}::{s_nm}" in registered_map)
+                    )
+                    s_copy["isRegistered"] = is_reg
+                    enriched_students.append(s_copy)
                 if batch_filter:
                     filtered_students = [
-                        s for s in students if str(s.get("batchYear", "")).strip() == batch_filter
+                        s for s in enriched_students if str(s.get("batchYear", "")).strip() == batch_filter
                     ]
                 else:
-                    filtered_students = students
+                    filtered_students = enriched_students
+                unregistered_students = [s for s in filtered_students if not s.get("isRegistered")]
                 self._send_json(
                     200,
                     {
@@ -2321,6 +2395,7 @@ class AufbruchRequestHandler(BaseHTTPRequestHandler):
                         "officialBatchTotals": batch_totals,
                         "officialOverallTotal": overall_total,
                         "students": filtered_students,
+                        "unregisteredStudents": unregistered_students,
                         "registeredMap": registered_map,
                     },
                 )

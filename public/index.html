@@ -4128,9 +4128,9 @@
                     class="text-input student-combo-input"
                     placeholder="Select or search your name..."
                     autocomplete="off"
-                    aria-label="Select or search your name"
+                    aria-label="Select or edit your name"
                   />
-                  <span class="student-combo-chevron">▼</span>
+                  <span id="studentComboChevron" class="student-combo-chevron" style="pointer-events: auto; cursor: pointer;" title="Show unregistered students in this batch">▼</span>
                 </div>
                 <div id="studentComboDropdown" class="student-combo-dropdown" role="listbox"></div>
               </div>
@@ -4145,14 +4145,14 @@
               </select>
             </div>
 
-            <div class="edit-name-row">
+            <div class="edit-name-row" style="display: none !important;">
               <span id="batchStudentCountHint" style="font-size: 12px; color: var(--text-secondary); font-weight: 600;"></span>
               <button type="button" id="toggleEditNameBtn" class="edit-name-toggle-btn">
                 ✏️ Name not correct? Edit Name
               </button>
             </div>
 
-            <div id="editNameBox" class="edit-name-box">
+            <div id="editNameBox" class="edit-name-box" style="display: none !important;">
               <div id="originalExcelNameBadge" class="orig-excel-pill">Original Excel Record: Not selected</div>
               <label class="field-label" for="nameInput" style="font-size: 13px; margin-bottom: 5px;">
                 <span>Corrected / Full Name ( In English Only) <span class="req">*</span></span>
@@ -4163,7 +4163,6 @@
                 name="name"
                 class="text-input"
                 placeholder="Your answer ( In English Only)"
-                required
                 autocomplete="name"
               />
             </div>
@@ -5892,6 +5891,8 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       var registeredStudentsMap = {};
       var officialBatchTotalsMap = {};
       var isNameEditOpen = false;
+      var hasSelectedStudentFromBatch = false;
+      var studentComboChevron = document.getElementById('studentComboChevron');
 
       function computeDynamicBatchTotalsFromStudents(studentsList) {
         var totals = {};
@@ -5922,6 +5923,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
       function updateTwoStepFormVisibility() {
         var hasBatch = Boolean(batchInput && String(batchInput.value || '').trim());
         var hasName = Boolean(
+          (studentComboInput && String(studentComboInput.value || '').trim().length >= 2) ||
           (nameInput && String(nameInput.value || '').trim().length >= 2) ||
           (studentSelect && String(studentSelect.value || '').trim().length >= 2)
         );
@@ -5990,9 +5992,19 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         return null;
       }
 
+      function isStudentAlreadyRegisteredInBatch(batchYr, studentObj) {
+        if (!studentObj) return false;
+        if (studentObj.isRegistered === true) return true;
+        var cleanBatch = String(batchYr || studentObj.batchYear || '').trim();
+        var sName = String(studentObj.name || '').trim();
+        var sId = String(studentObj.studentId || '').trim();
+        return Boolean(checkDuplicateForStudent(cleanBatch, sName, sId));
+      }
+
       function selectStudentOptionRecord(studentName, stuId) {
         var cleanNm = String(studentName || '').trim();
         var cleanId = String(stuId || '').trim();
+        hasSelectedStudentFromBatch = Boolean(cleanNm);
         if (studentSelect) {
           for (var i = 0; i < studentSelect.options.length; i++) {
             var opt = studentSelect.options[i];
@@ -6014,11 +6026,6 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         }
         if (studentIdInput) {
           studentIdInput.value = cleanId;
-        }
-        if (originalExcelNameBadge) {
-          originalExcelNameBadge.textContent = cleanNm
-            ? ('Original Excel Record: ' + cleanNm)
-            : 'Original Excel Record: Not selected';
         }
         if (studentComboboxContainer) {
           studentComboboxContainer.classList.remove('open');
@@ -6054,8 +6061,13 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           return;
         }
 
-        var batchStudents = allMasterStudents.filter(function(s) {
+        var allBatchStudents = allMasterStudents.filter(function(s) {
           return String(s.batchYear || '').trim() === cleanBatch;
+        });
+
+        // Exclude all students who have already registered
+        var batchStudents = allBatchStudents.filter(function(s) {
+          return !isStudentAlreadyRegisteredInBatch(cleanBatch, s);
         });
 
         var filteredStudents = batchStudents.filter(function(s) {
@@ -6068,7 +6080,9 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         studentSelect.disabled = false;
         if (studentComboInput) {
           studentComboInput.disabled = false;
-          studentComboInput.placeholder = 'Select or search your name from Batch ' + cleanBatch + '...';
+          studentComboInput.placeholder = (allBatchStudents.length > 0 && batchStudents.length === 0)
+            ? ('All students in Batch ' + cleanBatch + ' have already completed registration')
+            : ('Select or search your name from Batch ' + cleanBatch + '...');
         }
 
         if (batchStudentCountHint) {
@@ -6078,8 +6092,10 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         var placeholderOpt = document.createElement('option');
         placeholderOpt.value = '';
         placeholderOpt.textContent = filteredStudents.length > 0
-          ? ('-- Select your name from Batch ' + cleanBatch + ' (' + filteredStudents.length + ' shown) --')
-          : ('-- No matching names in Excel for Batch ' + cleanBatch + ' (Use Edit Name below) --');
+          ? ('-- Select your name from Batch ' + cleanBatch + ' (' + filteredStudents.length + ' available) --')
+          : (allBatchStudents.length > 0 && batchStudents.length === 0
+              ? ('-- All students in Batch ' + cleanBatch + ' have already completed registration --')
+              : ('-- No matching unregistered names in Batch ' + cleanBatch + ' --'));
         studentSelect.appendChild(placeholderOpt);
 
         // Count occurrences of same name in this batch to disambiguate if needed
@@ -6092,9 +6108,9 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         if (studentComboDropdown && filteredStudents.length === 0) {
           var emptyDiv = document.createElement('div');
           emptyDiv.className = 'student-combo-empty';
-          emptyDiv.textContent = batchStudents.length === 0
-            ? ('No names listed for Batch ' + cleanBatch + '. Click "Edit Name" below to enter your name.')
-            : 'No matching student names found. Click "Edit Name" below if your name is not listed.';
+          emptyDiv.textContent = (allBatchStudents.length > 0 && batchStudents.length === 0)
+            ? ('All students in Batch ' + cleanBatch + ' have already completed registration.')
+            : 'No matching unregistered student names found in this batch.';
           studentComboDropdown.appendChild(emptyDiv);
         }
 
@@ -6103,14 +6119,9 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           opt.value = s.name;
           opt.setAttribute('data-student-id', s.studentId || '');
           opt.setAttribute('data-original-name', s.name || '');
-          var dup = checkDuplicateForStudent(cleanBatch, s.name, s.studentId);
           var label = s.name;
           if (nameCounts[String(s.name || '').toUpperCase()] > 1 && s.serialNo) {
             label += ' (Sl. ' + s.serialNo + ')';
-          }
-          if (dup) {
-            label += ' ✓ [Already Registered - ' + (dup.ticketId || dup.registrationId) + ']';
-            opt.setAttribute('data-registered', 'true');
           }
           opt.textContent = label;
           if (prevSelectedStuId && s.studentId === prevSelectedStuId) {
@@ -6120,19 +6131,13 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
           if (studentComboDropdown) {
             var item = document.createElement('div');
-            item.className = 'student-combo-option' + (dup ? ' is-registered' : '') + ((prevSelectedStuId && s.studentId === prevSelectedStuId) ? ' active' : '');
+            item.className = 'student-combo-option' + ((prevSelectedStuId && s.studentId === prevSelectedStuId) ? ' active' : '');
             item.setAttribute('role', 'option');
             item.setAttribute('data-student-name', s.name || '');
             item.setAttribute('data-student-id', s.studentId || '');
             var nameSpan = document.createElement('span');
             nameSpan.textContent = s.name + (nameCounts[String(s.name || '').toUpperCase()] > 1 && s.serialNo ? (' (Sl. ' + s.serialNo + ')') : '');
             item.appendChild(nameSpan);
-            if (dup) {
-              var regTag = document.createElement('span');
-              regTag.style.cssText = 'font-size: 11px; font-weight: 700; color: #DC2626; background: #FEF2F2; padding: 2px 7px; border-radius: 999px;';
-              regTag.textContent = 'Registered (' + (dup.ticketId || dup.registrationId) + ')';
-              item.appendChild(regTag);
-            }
             item.addEventListener('mousedown', function(ev) {
               ev.preventDefault();
               selectStudentOptionRecord(s.name, s.studentId || '');
@@ -6141,13 +6146,6 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           }
         });
 
-        if (batchStudents.length === 0 && editNameBox && !isNameEditOpen) {
-          isNameEditOpen = true;
-          editNameBox.classList.add('open');
-          if (originalExcelNameBadge) {
-            originalExcelNameBadge.textContent = 'Batch ' + cleanBatch + ' has no Excel names yet — please enter your full name below';
-          }
-        }
         updateTwoStepFormVisibility();
       }
 
@@ -6155,6 +6153,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         batchInput.addEventListener('change', function() {
           var selectedBatch = batchInput.value.trim();
           setFieldError(batchInput, 'batchError', false);
+          hasSelectedStudentFromBatch = false;
           if (studentComboInput) studentComboInput.value = '';
           if (studentIdInput) studentIdInput.value = '';
           if (originalExcelNameInput) originalExcelNameInput.value = '';
@@ -6167,37 +6166,74 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         });
       }
 
+      if (studentComboChevron && studentComboboxContainer) {
+        studentComboChevron.addEventListener('mousedown', function(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+          if (batchInput && batchInput.value) {
+            var isOpen = studentComboboxContainer.classList.contains('open');
+            if (isOpen) {
+              studentComboboxContainer.classList.remove('open');
+            } else {
+              populateStudentDropdownForBatch(batchInput.value, '');
+              studentComboboxContainer.classList.add('open');
+            }
+          }
+        });
+      }
+
       if (studentComboInput && studentComboboxContainer) {
         studentComboInput.addEventListener('focus', function() {
-          if (batchInput && batchInput.value) {
-            populateStudentDropdownForBatch(batchInput.value, '');
+          if (batchInput && batchInput.value && !hasSelectedStudentFromBatch) {
+            populateStudentDropdownForBatch(batchInput.value, studentComboInput.value);
             studentComboboxContainer.classList.add('open');
           }
         });
         studentComboInput.addEventListener('click', function() {
-          if (batchInput && batchInput.value) {
+          if (batchInput && batchInput.value && !hasSelectedStudentFromBatch) {
+            populateStudentDropdownForBatch(batchInput.value, studentComboInput.value);
             studentComboboxContainer.classList.add('open');
           }
         });
         studentComboInput.addEventListener('input', function() {
           var typed = studentComboInput.value;
-          if (batchInput && batchInput.value) {
-            populateStudentDropdownForBatch(batchInput.value, typed);
-            studentComboboxContainer.classList.add('open');
+          var cleanTyped = String(typed || '').trim();
+          if (nameInput) {
+            nameInput.value = typed;
           }
-          // Check if typed string exactly matches a student in the selected batch
-          var exactMatch = allMasterStudents.find(function(s) {
-            return String(s.batchYear) === String(batchInput ? batchInput.value : '') &&
-              String(s.name || '').toLowerCase() === String(typed || '').trim().toLowerCase();
-          });
-          if (exactMatch) {
-            nameInput.value = exactMatch.name;
-            if (originalExcelNameInput) originalExcelNameInput.value = exactMatch.name;
-            if (studentIdInput) studentIdInput.value = exactMatch.studentId || '';
-          } else if (!isNameEditOpen) {
-            nameInput.value = '';
+          if (cleanTyped.length >= 2) {
+            setFieldError(nameInput, 'nameError', false);
+            setFieldError(studentComboInput, 'nameError', false);
+          }
+          if (!cleanTyped) {
+            hasSelectedStudentFromBatch = false;
             if (originalExcelNameInput) originalExcelNameInput.value = '';
             if (studentIdInput) studentIdInput.value = '';
+            if (batchInput && batchInput.value) {
+              populateStudentDropdownForBatch(batchInput.value, '');
+              studentComboboxContainer.classList.add('open');
+            }
+          } else if (hasSelectedStudentFromBatch) {
+            // User already selected a student from the batch list and is editing their name directly in the Name input field:
+            // Preserve studentIdInput and originalExcelNameInput so the official student record remains linked!
+            studentComboboxContainer.classList.remove('open');
+          } else {
+            if (batchInput && batchInput.value) {
+              populateStudentDropdownForBatch(batchInput.value, typed);
+              studentComboboxContainer.classList.add('open');
+            }
+            var exactMatch = allMasterStudents.find(function(s) {
+              return String(s.batchYear) === String(batchInput ? batchInput.value : '') &&
+                !isStudentAlreadyRegisteredInBatch(batchInput ? batchInput.value : '', s) &&
+                String(s.name || '').toLowerCase() === cleanTyped.toLowerCase();
+            });
+            if (exactMatch) {
+              if (originalExcelNameInput) originalExcelNameInput.value = exactMatch.name;
+              if (studentIdInput) studentIdInput.value = exactMatch.studentId || '';
+            } else {
+              if (originalExcelNameInput) originalExcelNameInput.value = '';
+              if (studentIdInput) studentIdInput.value = '';
+            }
           }
           updateDuplicateWarningUI();
           updateTwoStepFormVisibility();
@@ -6316,7 +6352,9 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         if (isSubmitting) return;
         globalError.style.display = 'none';
 
-        var nameVal = (nameInput.value || (studentSelect ? studentSelect.value : '') || '').trim();
+        var nameVal = ((studentComboInput && studentComboInput.value) || (nameInput && nameInput.value) || (studentSelect ? studentSelect.value : '') || '').trim();
+        if (nameInput) nameInput.value = nameVal;
+        if (studentComboInput && !studentComboInput.value) studentComboInput.value = nameVal;
         var origExcelVal = (originalExcelNameInput && originalExcelNameInput.value ? originalExcelNameInput.value : nameVal).trim();
         var stuIdVal = (studentIdInput && studentIdInput.value ? studentIdInput.value : '').trim();
         var placeVal = placeInput.value.trim();
@@ -6337,10 +6375,12 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
 
         if (nameVal.length < 2) {
           setFieldError(nameInput, 'nameError', true);
+          setFieldError(studentComboInput, 'nameError', true);
           if (studentSelect) studentSelect.classList.add('invalid');
           valid = false;
         } else {
           setFieldError(nameInput, 'nameError', false);
+          setFieldError(studentComboInput, 'nameError', false);
           if (studentSelect) studentSelect.classList.remove('invalid');
         }
 
@@ -6437,6 +6477,41 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
                 'Registration failed. Please try again.'
               );
               throw new Error(apiErrMsg);
+            }
+            var savedRec = (result.data && result.data.data) ? result.data.data : result.data;
+            var finalStuId = String((savedRec && savedRec.studentId) || stuIdVal || '').trim();
+            var finalOrigNm = String((savedRec && savedRec.originalExcelName) || origExcelVal || nameVal || '').trim().toUpperCase();
+            var finalCurNm = String((savedRec && savedRec.name) || nameVal || '').trim().toUpperCase();
+            var immediateRegInfo = {
+              registrationId: result.data.registrationId || (savedRec && savedRec.registrationId) || '',
+              ticketId: result.data.ticketId || (savedRec && savedRec.ticketId) || '',
+              name: (savedRec && savedRec.name) || nameVal,
+              originalExcelName: (savedRec && savedRec.originalExcelName) || origExcelVal || nameVal,
+              place: placeVal,
+              whatsappNumber: phoneVal,
+              participation: partVal,
+              registrationStatus: 'REGISTERED',
+              checkedIn: false,
+              studentId: finalStuId
+            };
+            if (finalStuId) {
+              registeredStudentsMap['STU::' + finalStuId] = immediateRegInfo;
+            }
+            if (batchVal && finalOrigNm) {
+              registeredStudentsMap[batchVal + '::' + finalOrigNm] = immediateRegInfo;
+            }
+            if (batchVal && finalCurNm) {
+              registeredStudentsMap[batchVal + '::' + finalCurNm] = immediateRegInfo;
+            }
+            for (var ms = 0; ms < allMasterStudents.length; ms++) {
+              var mst = allMasterStudents[ms];
+              if (!mst || String(mst.batchYear || '').trim() !== batchVal) continue;
+              var mSid = String(mst.studentId || '').trim();
+              var mNm = String(mst.name || '').trim().toUpperCase();
+              if ((finalStuId && mSid === finalStuId) || (finalOrigNm && mNm === finalOrigNm) || (finalCurNm && mNm === finalCurNm)) {
+                mst.isRegistered = true;
+                if (mSid) registeredStudentsMap['STU::' + mSid] = immediateRegInfo;
+              }
             }
             fetchPublicStudentsList();
             if (isAdminAuthenticated && typeof fetchDashboardData === 'function') {
@@ -7023,8 +7098,10 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           form.reset();
         }
         isNameEditOpen = false;
+        hasSelectedStudentFromBatch = false;
         if (editNameBox) editNameBox.classList.remove('open');
         if (studentComboInput) studentComboInput.value = '';
+        if (nameInput) nameInput.value = '';
         if (originalExcelNameInput) originalExcelNameInput.value = '';
         if (studentIdInput) studentIdInput.value = '';
         if (duplicateNameWarning) {
@@ -7556,7 +7633,8 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         s = s.replace(/[^A-Z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
         if (!s) return '';
         var gluedSuffixes = [
-          'SAQUAFI', 'SAQAAFI', 'SAAQUAFI', 'SAQAFI', 'SAKAFI',
+          'SAQUAFI', 'SAQAAFI', 'SAAQUAFI', 'SAKHAFI', 'SAQHAFI', 'SAKHAAFI',
+          'SHAKAFI', 'SHAQAFI', 'SHAQUAFI', 'SAQAFI', 'SAKAFI', 'SAQAFY', 'SAQUAFY', 'SAKHAFY',
           'MUEENI', 'MUEENY', 'MUINI', 'ULOOMI', 'LATHEEFI',
           'MUHTHADI', 'MUTHADI', 'MUHTHDI', 'SURAIJI', 'NIZAMI',
           'NISAMI', 'NAEEMI', 'ADANY', 'SAADI', 'HADI'
@@ -7588,12 +7666,23 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
              .replace(/\bABOO\s+THAHIR\b/g, 'ABUTHWAHIR')
              .replace(/\bABU\s+BAKER\b/g, 'ABUBAKER')
              .replace(/\bABU\s+BACKER\b/g, 'ABUBAKER')
-             .replace(/\bABOO\s+BACKER\b/g, 'ABUBAKER');
+             .replace(/\bABOO\s+BACKER\b/g, 'ABUBAKER')
+             .replace(/\bMUSTHAFA\s+UBAIDULLA\b/g, 'UBAIDULLA')
+             .replace(/\bSUNEER\s+ALI\b/g, 'SUNEER');
         var rules = [
           [/\bSAQUAFI\b/g, 'SAQAFI'],
           [/\bSAQAAFI\b/g, 'SAQAFI'],
           [/\bSAAQUAFI\b/g, 'SAQAFI'],
+          [/\bSAKHAFI\b/g, 'SAQAFI'],
+          [/\bSAQHAFI\b/g, 'SAQAFI'],
+          [/\bSAKHAAFI\b/g, 'SAQAFI'],
+          [/\bSHAKAFI\b/g, 'SAQAFI'],
+          [/\bSHAQAFI\b/g, 'SAQAFI'],
+          [/\bSHAQUAFI\b/g, 'SAQAFI'],
           [/\bSAKAFI\b/g, 'SAQAFI'],
+          [/\bSAQAFY\b/g, 'SAQAFI'],
+          [/\bSAQUAFY\b/g, 'SAQAFI'],
+          [/\bSAKHAFY\b/g, 'SAQAFI'],
           [/\bMUEENY\b/g, 'MUEENI'],
           [/\bMUINI\b/g, 'MUEENI'],
           [/\bMUTHADI\b/g, 'MUHTHADI'],
@@ -7611,6 +7700,10 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           [/\bABOOBACKER\b/g, 'ABUBAKER'],
           [/\bABUBACKER\b/g, 'ABUBAKER'],
           [/\bABOOBKAR\b/g, 'ABUBAKER'],
+          [/\bJAMALUDDEEN\b/g, 'JAMAL'],
+          [/\bJAMALUDHEEN\b/g, 'JAMAL'],
+          [/\bJAMALUDEEN\b/g, 'JAMAL'],
+          [/\bSUNEERALI\b/g, 'SUNEER'],
           [/\bSAFUVAN\b/g, 'SAFVAN'],
           [/\bSAFUWAN\b/g, 'SAFVAN'],
           [/\bNAMER\b/g, 'NAMEER'],
@@ -7748,6 +7841,26 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             }
           }
         }
+        for (var c3 = 0; c3 < cands.length; c3++) {
+          var cToks = cands[c3].coreName.split(' ').filter(function(t) { return t.length >= 4; });
+          var cComp = cands[c3].coreName.replace(/\s+/g, '');
+          var matchedStudents = [];
+          for (var s5 = 0; s5 < batchStudents.length; s5++) {
+            var st5 = batchStudents[s5];
+            var stC5 = extractCoreAlumniNameAndDegreesClient(st5.name);
+            if (!stC5.coreName) continue;
+            var stToks = stC5.coreName.split(' ').filter(function(t) { return t.length >= 4; });
+            var stComp = stC5.coreName.replace(/\s+/g, '');
+            var tokOverlap = cToks.some(function(ct) { return stToks.indexOf(ct) !== -1; });
+            var prefMatch = Math.min(cComp.length, stComp.length) >= 5 && (cComp.indexOf(stComp) === 0 || stComp.indexOf(cComp) === 0);
+            if (tokOverlap || prefMatch) {
+              matchedStudents.push(st5);
+            }
+          }
+          if (matchedStudents.length === 1) {
+            return matchedStudents[0];
+          }
+        }
         return null;
       }
 
@@ -7806,7 +7919,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
             }
           }
           var nonRegInfo = hasMasterList ? computeNonRegisteredForBatch(yrStr) : null;
-          var regCnt = nonRegInfo ? (nonRegInfo.registeredCount + (nonRegInfo.extraUnlistedCount || 0)) : Object.keys(seenSet).length;
+          var regCnt = nonRegInfo ? (nonRegInfo.totalStudents > 0 ? nonRegInfo.registeredCount : (nonRegInfo.registeredCount + (nonRegInfo.extraUnlistedCount || 0))) : Object.keys(seenSet).length;
           totalUnique += regCnt;
           var offTot = Number(batchTotals[yrStr] || 0);
           var regFmt = regCnt < 10 ? ('0' + regCnt) : String(regCnt);
@@ -8045,6 +8158,32 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
                 }
               }
               if (matchedCoreSid) break;
+            }
+          }
+          if (!matchedCoreSid) {
+            for (var cc3 = 0; cc3 < coreCands.length; cc3++) {
+              var candObj3 = coreCands[cc3];
+              var cToks3 = candObj3.coreName.split(' ').filter(function(t) { return t.length >= 4; });
+              var cComp3 = candObj3.coreName.replace(/\s+/g, '');
+              var candSids3 = [];
+              for (var b3 = 0; b3 < batchStudents.length; b3++) {
+                var bst3 = batchStudents[b3];
+                var bSid3 = String(bst3.studentId || '').trim();
+                if (!bSid3 || matchedStudentIds[bSid3]) continue;
+                var bstC3 = extractCoreAlumniNameAndDegreesClient(bst3.name);
+                if (!bstC3.coreName) continue;
+                var stToks3 = bstC3.coreName.split(' ').filter(function(t) { return t.length >= 4; });
+                var stComp3 = bstC3.coreName.replace(/\s+/g, '');
+                var tokOv3 = cToks3.some(function(ct) { return stToks3.indexOf(ct) !== -1; });
+                var prefM3 = Math.min(cComp3.length, stComp3.length) >= 5 && (cComp3.indexOf(stComp3) === 0 || stComp3.indexOf(cComp3) === 0);
+                if (tokOv3 || prefM3) {
+                  candSids3.push(bSid3);
+                }
+              }
+              if (candSids3.length === 1) {
+                matchedCoreSid = candSids3[0];
+                break;
+              }
             }
           }
 
