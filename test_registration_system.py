@@ -671,7 +671,55 @@ class TestAufbruchRegistrationSystem(unittest.TestCase):
         self.assertNotIn("SHAHEER SA'ADI", [s["name"] for s in non_reg_map["2023"]])
         self.assertNotIn("ABU THWAHIR MUEENI", [s["name"] for s in non_reg_map["2023"]])
         self.assertNotIn("SHAFI HADI", [s["name"] for s in non_reg_map["2024"]])
+        self.assertNotIn("BISHIR HADI", [s["name"] for s in non_reg_map["2024"]])
         self.assertNotIn("MUHAMMED SABIQUE KA", [s["name"] for s in non_reg_map["2026"]])
+
+        # Verify Batch 2020 exact count calculation: when all Batch 2020 students except SHAFEEQ SAQUAFI
+        # have registered (including ANAS SAQUAFI and duplicate MUBASHIR SAQUAFI submission),
+        # Batch 2020 must show 22/23 registered and only 1 pending (SHAFEEQ SAQUAFI)
+        b2020_students = [s for s in master_students if str(s.get("batchYear")) == "2020"]
+        self.assertEqual(len(b2020_students), 23)
+        b2020_test_regs = []
+        for idx_s, st_20 in enumerate(b2020_students, start=1):
+            if st_20["name"] == "SHAFEEQ SAQUAFI":
+                continue
+            if st_20["studentId"] == "STU-2020-152":
+                # Simulate ANAS SAQUAFI registering once (under STU-2020-153) while MUBASHIR SAQUAFI submits twice
+                continue
+            b2020_test_regs.append(
+                {
+                    "registrationId": f"T20-{idx_s}",
+                    "batchYear": "2020",
+                    "name": st_20["name"],
+                    "originalExcelName": st_20["name"],
+                    "studentId": st_20["studentId"],
+                    "participation": "പങ്കെടുക്കും",
+                }
+            )
+        # Add duplicate submission for MUBASHIR SAQUAFI (STU-2020-155) with edited name
+        b2020_test_regs.append(
+            {
+                "registrationId": "T20-DUP",
+                "batchYear": "2020",
+                "name": "MUBASHIR KOTTAKKUTH",
+                "originalExcelName": "MUBASHIR SAQUAFI",
+                "studentId": "STU-2020-155",
+                "participation": "പങ്കെടുക്കും",
+            }
+        )
+        rep_2020 = srv_mod.build_batch_report_data(b2020_test_regs, master_students)
+        b2020_row = [b for b in rep_2020["batches"] if b["batchYear"] == "2020"][0]
+        self.assertEqual(b2020_row["officialTotal"], 23)
+        self.assertEqual(b2020_row["registeredCount"], 22)
+        self.assertEqual(b2020_row["nonRegisteredCount"], 1)
+        self.assertEqual(b2020_row["nonRegisteredNames"], ["SHAFEEQ SAQUAFI"])
+        self.assertEqual(b2020_row["reportLine"], "20. Batch 2020 : 22/23 (95.7%)")
+        for b_row in rep_2020["batches"]:
+            self.assertEqual(
+                b_row["officialTotal"],
+                b_row["registeredCount"] + b_row["nonRegisteredCount"],
+                f"Batch {b_row['batchYear']} total mismatch",
+            )
 
         # 5-QR. Verify QR Scanner verification, Public Ticket Privacy & One-Time Check-in Confirmation
         # (a0) Public /api/ticket?token=... must NOT expose private phone numbers or WhatsApp links

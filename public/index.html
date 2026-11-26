@@ -4445,7 +4445,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
                 📊 Official Batch-wise Registration Report (2001 – 2026)
               </h3>
               <p style="font-size: 13px; color: #94A3B8;">
-                Overall Registration: <strong id="overallBatchRegSummary" style="color: #34D399; font-size: 14px;">00/00 (0%)</strong> • Official Student Total: <strong id="officialStudentTotalValue">0</strong>
+                Overall Registration: <strong id="overallBatchRegSummary" style="color: #34D399; font-size: 14px;">00/00 (0%)</strong> • Official Student Total: <strong id="officialStudentTotalValue" style="color: #FFFFFF;">0</strong> • Registered: <strong id="overallRegisteredTotalValue" style="color: #34D399;">0</strong> • Pending: <strong id="overallPendingTotalValue" style="color: #FCA5A5;">0</strong>
               </p>
             </div>
             <div class="dash-toolbar">
@@ -7538,21 +7538,85 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           return;
         }
 
-        var total = dashboardRegistrations.length;
+        // Deduplicate registrations by unique student identity (studentId when linked, or batchYear + canonicalName)
+        // so duplicate submissions by the same student do not inflate dashboard statistics
+        var seenStudentKeys = {};
+        var dedupedRegistrations = [];
+        for (var i = 0; i < dashboardRegistrations.length; i++) {
+          var r = dashboardRegistrations[i];
+          if (!r) continue;
+          var rSid = String(r.studentId || '').trim();
+          var rBy = String(r.batchYear || '').trim();
+          var rCan = canonicalAlumniNameClient(r.originalExcelName || r.name || '', true);
+          var resolvedStu = (!rSid && rBy && typeof resolveStudentInBatchClient === 'function')
+            ? resolveStudentInBatchClient(rBy, r.name, r.originalExcelName, rSid)
+            : null;
+          if (!rSid && resolvedStu && resolvedStu.studentId) {
+            rSid = String(resolvedStu.studentId).trim();
+          }
+          var stuKey = rSid ? ('STU:' + rSid) : ('NAME:' + rBy + '::' + (rCan || r.registrationId || i));
+          if (seenStudentKeys[stuKey]) continue;
+          seenStudentKeys[stuKey] = true;
+          dedupedRegistrations.push(r);
+        }
+
+        var rep = getSyncedBatchReportData();
+        var repByBatch = {};
+        if (rep && Array.isArray(rep.batches)) {
+          for (var rb = 0; rb < rep.batches.length; rb++) {
+            repByBatch[String(rep.batches[rb].batchYear)] = rep.batches[rb];
+          }
+        }
+
+        var total = dedupedRegistrations.length;
         var participating = 0;
         var notParticipating = 0;
         var batchMap = {};
 
-        for (var i = 0; i < dashboardRegistrations.length; i++) {
-          var r = dashboardRegistrations[i];
-          var isYes = (r.participation === 'പങ്കെടുക്കും');
+        for (var d = 0; d < dedupedRegistrations.length; d++) {
+          var dr = dedupedRegistrations[d];
+          var isYes = (dr.participation === 'പങ്കെടുക്കും');
           if (isYes) participating++;
           else notParticipating++;
 
-          var bKey = r.batchYear || 'Unspecified';
-          if (!batchMap[bKey]) batchMap[bKey] = { total: 0, yes: 0, no: 0 };
+          var bKey = String(dr.batchYear || 'Unspecified').trim();
+          if (!batchMap[bKey]) batchMap[bKey] = { total: 0, yes: 0, no: 0, officialTotal: 0 };
           batchMap[bKey].total++;
           if (isYes) batchMap[bKey].yes++; else batchMap[bKey].no++;
+        }
+
+        // Synchronize batchMap totals with verified Official Batch-wise Registration Report counts
+        Object.keys(repByBatch).forEach(function(yrKey) {
+          var bRep = repByBatch[yrKey];
+          if (batchMap[yrKey] || bRep.registeredCount > 0) {
+            if (!batchMap[yrKey]) {
+              batchMap[yrKey] = { total: bRep.registeredCount, yes: bRep.registeredCount, no: 0, officialTotal: bRep.officialTotal };
+            } else {
+              var diff = bRep.registeredCount - batchMap[yrKey].total;
+              batchMap[yrKey].total = bRep.registeredCount;
+              batchMap[yrKey].officialTotal = bRep.officialTotal;
+              if (diff > 0) {
+                batchMap[yrKey].yes += diff;
+              } else if (diff < 0) {
+                var redYes = Math.min(batchMap[yrKey].yes, -diff);
+                batchMap[yrKey].yes -= redYes;
+                var remDiff = (-diff) - redYes;
+                if (remDiff > 0) {
+                  batchMap[yrKey].no = Math.max(0, batchMap[yrKey].no - remDiff);
+                }
+              }
+            }
+          }
+        });
+
+        if (Object.keys(batchMap).length > 0) {
+          total = 0;
+          participating = 0;
+          Object.keys(batchMap).forEach(function(bk) {
+            total += batchMap[bk].total;
+            participating += batchMap[bk].yes;
+          });
+          notParticipating = Math.max(0, total - participating);
         }
 
         var rate = total > 0 ? Math.round((participating / total) * 100) : 0;
@@ -7574,7 +7638,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           donutEl.style.background = 'conic-gradient(#10B981 0% ' + rate + '%, #EF4444 ' + rate + '% 100%)';
         }
 
-        // Render Batch-wise Registration Count Chart
+        // Render Batch-wise Registration Count Chart synchronized with Official Batch Report
         var batchKeys = Object.keys(batchMap).sort();
         document.getElementById('batchUniqueBadge').textContent = batchKeys.length + ' Batches';
         var batchContainer = document.getElementById('batchChartContainer');
@@ -7587,12 +7651,15 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         batchKeys.forEach(function(k) {
           var item = batchMap[k];
           var pct = Math.round((item.total / maxBatch) * 100);
+          var countLabel = item.officialTotal > 0
+            ? (item.total + '/' + item.officialTotal + ' (' + item.yes + ' പങ്കെടുക്കും)')
+            : (item.total + ' (' + item.yes + ' പങ്കെടുക്കും)');
           var row = document.createElement('div');
           row.className = 'bar-row';
           row.innerHTML =
             '<div class="bar-row-meta">' +
               '<span>Batch ' + escapeHtml(k) + '</span>' +
-              '<span>' + item.total + ' (' + item.yes + ' പങ്കെടുക്കും)</span>' +
+              '<span>' + escapeHtml(countLabel) + '</span>' +
             '</div>' +
             '<div class="bar-track"><div class="bar-fill" style="width: ' + pct + '%;"></div></div>';
           batchContainer.appendChild(row);
@@ -7772,6 +7839,26 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         return { coreName: givenTokens.join(' '), degrees: degrees };
       }
 
+      function extractAlumniInitialsClient(rawName) {
+        var canon = canonicalAlumniNameClient(rawName, false);
+        if (!canon) return {};
+        var tokens = canon.split(' ');
+        var inits = {};
+        for (var i = 0; i < tokens.length; i++) {
+          var t = tokens[i];
+          if (
+            t.length >= 1 &&
+            t.length <= 2 &&
+            !ALUMNI_DEGREE_TOKENS_CLIENT[t] &&
+            !ALUMNI_PLACE_AND_NOISE_TOKENS_CLIENT[t] &&
+            !ALUMNI_HONORIFIC_PREFIXES_CLIENT[t]
+          ) {
+            inits[t] = true;
+          }
+        }
+        return inits;
+      }
+
       function hasDegreeOverlapClient(degA, degB) {
         if (!degA || !degB) return false;
         var keys = Object.keys(degA);
@@ -7833,12 +7920,30 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           }
         }
         for (var c2 = 0; c2 < cands.length; c2++) {
+          var rInits = Object.assign({}, extractAlumniInitialsClient(rOrig), extractAlumniInitialsClient(rName));
+          var candSts = [];
           for (var s4 = 0; s4 < batchStudents.length; s4++) {
             var st4 = batchStudents[s4];
             var stC4 = extractCoreAlumniNameAndDegreesClient(st4.name);
             if (stC4.coreName && (stC4.coreName === cands[c2].coreName || stC4.coreName.replace(/\s+/g, '') === cands[c2].coreName.replace(/\s+/g, ''))) {
-              return st4;
+              candSts.push(st4);
             }
+          }
+          if (candSts.length === 1) {
+            return candSts[0];
+          } else if (candSts.length > 1) {
+            if (cleanSid) {
+              for (var cs = 0; cs < candSts.length; cs++) {
+                if (String(candSts[cs].studentId || '').trim() === cleanSid) return candSts[cs];
+              }
+            }
+            if (Object.keys(rInits).length > 0) {
+              var initMatches = candSts.filter(function(cst) {
+                return hasDegreeOverlapClient(extractAlumniInitialsClient(cst.name), rInits);
+              });
+              if (initMatches.length === 1) return initMatches[0];
+            }
+            return candSts[0];
           }
         }
         for (var c3 = 0; c3 < cands.length; c3++) {
@@ -7943,6 +8048,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           });
         }
         var ovFmt = totalUnique < 10 ? ('0' + totalUnique) : String(totalUnique);
+        var totalPending = Math.max(0, overallTotal - totalUnique);
         var ovPctStr = formatPctClient(totalUnique, overallTotal);
         var ovPctNum = overallTotal > 0 ? Math.round((totalUnique / overallTotal) * 1000) / 10 : 0;
         lines.push('');
@@ -7952,6 +8058,7 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           batches: batches,
           totalRegistered: totalUnique,
           totalRegisteredFormatted: ovFmt,
+          totalPending: totalPending,
           officialOverallTotal: overallTotal,
           overallPercentage: ovPctNum,
           overallPercentageFormatted: ovPctStr,
@@ -7979,6 +8086,8 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         dashboardWhatsappReportText = rep.whatsappReportText || '';
         var summaryEl = document.getElementById('overallBatchRegSummary');
         var totalValEl = document.getElementById('officialStudentTotalValue');
+        var regValEl = document.getElementById('overallRegisteredTotalValue');
+        var pendValEl = document.getElementById('overallPendingTotalValue');
         var barEl = document.getElementById('overallBatchProgressBar');
         var previewEl = document.getElementById('batchReportPreviewBox');
         var gridEl = document.getElementById('batchReportGridContainer');
@@ -7988,6 +8097,12 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
         }
         if (totalValEl) {
           totalValEl.textContent = String(rep.officialOverallTotal || 0);
+        }
+        if (regValEl) {
+          regValEl.textContent = String(rep.totalRegistered || 0);
+        }
+        if (pendValEl) {
+          pendValEl.textContent = String(rep.totalPending != null ? rep.totalPending : Math.max(0, (rep.officialOverallTotal || 0) - (rep.totalRegistered || 0)));
         }
         if (barEl) {
           barEl.style.width = Math.min(100, Number(rep.overallPercentage || 0)) + '%';
@@ -8147,17 +8262,43 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           if (!matchedCoreSid) {
             for (var cc2 = 0; cc2 < coreCands.length; cc2++) {
               var candObj2 = coreCands[cc2];
+              var urInits = Object.assign({}, extractAlumniInitialsClient(urOrig1), extractAlumniInitialsClient(urName1));
+              var urSid2 = String(ur1.studentId || '').trim();
+              var candSts2 = [];
               for (var b2 = 0; b2 < batchStudents.length; b2++) {
                 var bst2 = batchStudents[b2];
                 var bSid2 = String(bst2.studentId || '').trim();
                 if (!bSid2 || matchedStudentIds[bSid2]) continue;
                 var bstC2 = extractCoreAlumniNameAndDegreesClient(bst2.name);
                 if (bstC2.coreName && (bstC2.coreName === candObj2.coreName || bstC2.coreName.replace(/\s+/g, '') === candObj2.coreName.replace(/\s+/g, ''))) {
-                  matchedCoreSid = bSid2;
-                  break;
+                  candSts2.push(bst2);
                 }
               }
-              if (matchedCoreSid) break;
+              if (candSts2.length === 1) {
+                matchedCoreSid = String(candSts2[0].studentId || '').trim();
+                break;
+              } else if (candSts2.length > 1) {
+                if (urSid2) {
+                  for (var cs2 = 0; cs2 < candSts2.length; cs2++) {
+                    if (String(candSts2[cs2].studentId || '').trim() === urSid2) {
+                      matchedCoreSid = urSid2;
+                      break;
+                    }
+                  }
+                }
+                if (!matchedCoreSid && Object.keys(urInits).length > 0) {
+                  var initM2 = candSts2.filter(function(cst) {
+                    return hasDegreeOverlapClient(extractAlumniInitialsClient(cst.name), urInits);
+                  });
+                  if (initM2.length === 1) {
+                    matchedCoreSid = String(initM2[0].studentId || '').trim();
+                  }
+                }
+                if (!matchedCoreSid) {
+                  matchedCoreSid = String(candSts2[0].studentId || '').trim();
+                }
+                break;
+              }
             }
           }
           if (!matchedCoreSid) {
@@ -8214,11 +8355,35 @@ Thank you for registering for Aufbruch – Alumni Conclave 2026.</div>
           }
         }
 
+        // Pass 4: If a batch contains duplicate student rows with the exact same normalized name as an already-registered student in that batch
+        // (e.g., Batch 2020 'ANAS SAQUAFI' Sl. 152 & 153, Batch 2024 'BISHIR HADI' Sl. 249 & 261), mark the duplicate row as registered
+        // so an already-registered student never appears in the Non-Registered Students list.
+        var matchedExactNames = {};
+        for (var md = 0; md < batchStudents.length; md++) {
+          var mst = batchStudents[md];
+          var mSid = String(mst.studentId || '').trim();
+          if (mSid && matchedStudentIds[mSid]) {
+            var mNm = String(mst.name || '').trim().replace(/\s+/g, ' ').toUpperCase();
+            if (mNm) matchedExactNames[mNm] = true;
+          }
+        }
+        for (var md2 = 0; md2 < batchStudents.length; md2++) {
+          var mst2 = batchStudents[md2];
+          var mSid2 = String(mst2.studentId || '').trim();
+          var mNm2 = String(mst2.name || '').trim().replace(/\s+/g, ' ').toUpperCase();
+          if (mSid2 && !matchedStudentIds[mSid2] && mNm2 && matchedExactNames[mNm2]) {
+            matchedStudentIds[mSid2] = true;
+          }
+        }
+
         var nonRegList = [];
+        var seenPendingNames = {};
         for (var m = 0; m < batchStudents.length; m++) {
           var stu = batchStudents[m];
           var stuId = String(stu.studentId || '').trim();
-          if (!matchedStudentIds[stuId]) {
+          var stuNm = String(stu.name || '').trim().replace(/\s+/g, ' ').toUpperCase();
+          if (!matchedStudentIds[stuId] && !seenPendingNames[stuNm]) {
+            seenPendingNames[stuNm] = true;
             nonRegList.push({
               studentId: stuId,
               serialNo: stu.serialNo,

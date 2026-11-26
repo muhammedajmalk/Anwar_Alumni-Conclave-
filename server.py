@@ -1379,6 +1379,20 @@ def extract_core_alumni_name_and_degrees(raw_name: str) -> tuple[str, set[str]]:
     return " ".join(given_tokens), degrees
 
 
+def extract_alumni_initials(raw_name: str) -> set[str]:
+    canon = canonical_alumni_name(raw_name, False)
+    if not canon:
+        return set()
+    return {
+        t
+        for t in canon.split()
+        if 1 <= len(t) <= 2
+        and t not in ALUMNI_DEGREE_TOKENS
+        and t not in ALUMNI_PLACE_AND_NOISE_TOKENS
+        and t not in ALUMNI_HONORIFIC_PREFIXES
+    }
+
+
 def compute_batch_non_registered_map(
     records: list[dict],
     students: list[dict],
@@ -1488,18 +1502,36 @@ def compute_batch_non_registered_map(
                             break
                     if matched_sid:
                         break
-                # 2b. Match unmatched student with same core given name in the batch
+                # 2b. Match unmatched student with same core given name in the batch (disambiguating by studentId or initials when multiple students share a given name)
                 if not matched_sid:
                     for c_nm, _ in core_candidates:
+                        r_inits = extract_alumni_initials(r_orig or r_name) | extract_alumni_initials(r_name)
+                        cand_sts: list[dict] = []
                         for st in students_by_batch[by]:
                             sid = str(st.get("studentId", "")).strip()
                             if not sid or sid in matched_student_ids:
                                 continue
                             st_core, _ = extract_core_alumni_name_and_degrees(st.get("name", ""))
                             if st_core and (st_core == c_nm or st_core.replace(" ", "") == c_nm.replace(" ", "")):
-                                matched_sid = sid
-                                break
-                        if matched_sid:
+                                cand_sts.append(st)
+                        if len(cand_sts) == 1:
+                            matched_sid = str(cand_sts[0].get("studentId", "")).strip()
+                            break
+                        elif len(cand_sts) > 1:
+                            for cst in cand_sts:
+                                csid = str(cst.get("studentId", "")).strip()
+                                if r_sid and csid == r_sid:
+                                    matched_sid = csid
+                                    break
+                            if not matched_sid and r_inits:
+                                init_matches = [
+                                    cst for cst in cand_sts
+                                    if extract_alumni_initials(cst.get("name", "")) & r_inits
+                                ]
+                                if len(init_matches) == 1:
+                                    matched_sid = str(init_matches[0].get("studentId", "")).strip()
+                            if not matched_sid:
+                                matched_sid = str(cand_sts[0].get("studentId", "")).strip()
                             break
                 # 2c. Unambiguous core-token overlap or prefix match within the batch (e.g. "JAMALUDDEEN" -> "JAMAL", "MUSTHAFA UBAIDULLA" -> "UBAIDULLA")
                 if not matched_sid:
@@ -1577,11 +1609,37 @@ def compute_batch_non_registered_map(
                 if r.get("checkedIn"):
                     unique_checkin_by_batch[by].add(tok)
 
-    non_reg_by_batch: dict[str, list[dict]] = {y: [] for y in BATCH_YEARS}
+    # Pass 4: If a batch contains duplicate student rows with the exact same normalized name as an already-registered student in that batch
+    # (e.g., Batch 2020 'ANAS SAQUAFI' Sl. 152 & 153, Batch 2024 'BISHIR HADI' Sl. 249 & 261), mark the duplicate row as registered
+    # so an already-registered student never appears in the Non-Registered Students list.
     for by in BATCH_YEARS:
+        matched_exact_names = {
+            re.sub(r"\s+", " ", str(student_by_id[sid].get("name", "")).strip()).upper()
+            for sid in matched_student_ids
+            if sid in active_ids_by_batch[by] and sid in student_by_id
+        }
+        matched_canon_names = {
+            canonical_alumni_name(nm, True)
+            for nm in matched_exact_names
+            if canonical_alumni_name(nm, True)
+        }
         for st in students_by_batch[by]:
             sid = str(st.get("studentId", "")).strip()
-            if sid not in matched_student_ids:
+            if not sid or sid in matched_student_ids:
+                continue
+            snm = re.sub(r"\s+", " ", str(st.get("name", "")).strip()).upper()
+            if snm in matched_exact_names:
+                matched_student_ids.add(sid)
+                unique_reg_by_batch[by].add(f"STU:{sid}")
+
+    non_reg_by_batch: dict[str, list[dict]] = {y: [] for y in BATCH_YEARS}
+    for by in BATCH_YEARS:
+        seen_pending_names: set[str] = set()
+        for st in students_by_batch[by]:
+            sid = str(st.get("studentId", "")).strip()
+            snm = re.sub(r"\s+", " ", str(st.get("name", "")).strip()).upper()
+            if sid not in matched_student_ids and snm not in seen_pending_names:
+                seen_pending_names.add(snm)
                 non_reg_by_batch[by].append(
                     {
                         "studentId": sid,
@@ -1673,10 +1731,23 @@ def resolve_single_student_for_registration(
             if st_core and (st_core == c_nm or st_core.replace(" ", "") == c_nm.replace(" ", "")) and (st_deg & c_deg):
                 return st
     for c_nm, _ in core_candidates:
+        r_inits = extract_alumni_initials(r_orig or r_name) | extract_alumni_initials(r_name)
+        cand_sts = []
         for st in batch_students:
             st_core, _ = extract_core_alumni_name_and_degrees(st.get("name", ""))
             if st_core and (st_core == c_nm or st_core.replace(" ", "") == c_nm.replace(" ", "")):
-                return st
+                cand_sts.append(st)
+        if len(cand_sts) == 1:
+            return cand_sts[0]
+        elif len(cand_sts) > 1:
+            for cst in cand_sts:
+                if clean_sid and str(cst.get("studentId", "")).strip() == clean_sid:
+                    return cst
+            if r_inits:
+                init_matches = [cst for cst in cand_sts if extract_alumni_initials(cst.get("name", "")) & r_inits]
+                if len(init_matches) == 1:
+                    return init_matches[0]
+            return cand_sts[0]
     for c_nm, _ in core_candidates:
         c_tokens = {t for t in c_nm.split() if len(t) >= 4}
         c_comp = c_nm.replace(" ", "")
@@ -1738,18 +1809,20 @@ def build_batch_report_data(records: list[dict], students: list[dict]) -> dict:
     ]
 
     total_unique_registered = 0
+    total_non_registered = 0
     for idx, year in enumerate(BATCH_YEARS, start=1):
-        reg_cnt = len(unique_reg_by_batch[year])
-        total_unique_registered += reg_cnt
         off_tot = batch_totals.get(year, 0)
+        non_reg_list = non_reg_by_batch.get(year, [])
+        non_reg_cnt = len(non_reg_list)
+        reg_cnt = max(0, off_tot - non_reg_cnt) if off_tot > 0 else len(unique_reg_by_batch[year])
+        total_unique_registered += reg_cnt
+        total_non_registered += non_reg_cnt
         excel_cnt = off_tot
         checkin_cnt = len(unique_checkin_by_batch[year])
         pct_num = round((reg_cnt / off_tot) * 100, 1) if off_tot > 0 else 0.0
         pct_str = format_pct(reg_cnt, off_tot)
         line = f"{idx}. Batch {year} : {reg_cnt:02d}/{off_tot:02d} ({pct_str})"
         report_lines.append(line)
-        non_reg_list = non_reg_by_batch.get(year, [])
-        non_reg_cnt = len(non_reg_list)
         batch_rows.append(
             {
                 "index": idx,
@@ -1784,6 +1857,8 @@ def build_batch_report_data(records: list[dict], students: list[dict]) -> dict:
         "batches": batch_rows,
         "totalRegistered": total_unique_registered,
         "totalRegisteredFormatted": f"{total_unique_registered:02d}",
+        "totalPending": total_non_registered,
+        "totalPendingFormatted": f"{total_non_registered:02d}",
         "officialOverallTotal": overall_total,
         "overallPercentage": overall_pct_num,
         "overallPercentageFormatted": overall_pct_str,
@@ -2075,14 +2150,30 @@ def build_dashboard_payload(
         except Exception:
             pass
     batch_totals, overall_total = compute_student_batch_totals(students)
-    total = len(records)
-    participating = sum(1 for r in records if r["participation"] == "പങ്കെടുക്കും")
+    batch_report = build_batch_report_data(records, students)
+
+    # Deduplicate records by unique student identity (studentId when linked, or batchYear + canonicalName)
+    # so duplicate submissions by the same student do not inflate dashboard statistics
+    deduped_records: list[dict] = []
+    seen_student_keys: set[str] = set()
+    for r in records:
+        r_sid = str(r.get("studentId") or "").strip()
+        r_by = str(r.get("batchYear") or "").strip()
+        r_nm = canonical_alumni_name(r.get("originalExcelName") or r.get("name") or "", True)
+        stu_key = f"STU:{r_sid}" if r_sid else f"NAME:{r_by}::{r_nm or r.get('registrationId')}"
+        if stu_key in seen_student_keys:
+            continue
+        seen_student_keys.add(stu_key)
+        deduped_records.append(r)
+
+    total = len(deduped_records)
+    participating = sum(1 for r in deduped_records if r["participation"] == "പങ്കെടുക്കും")
     not_participating = total - participating
     rate = round((participating / total) * 100, 1) if total > 0 else 0
 
     checked_in_total = sum(
         1
-        for r in records
+        for r in deduped_records
         if r.get("hasTicket", r["participation"] == "പങ്കെടുക്കും") and r.get("checkedIn")
     )
     pending_checkin_total = max(0, participating - checked_in_total)
@@ -2099,9 +2190,10 @@ def build_dashboard_payload(
         1 for r in records if r.get("whatsappSent") or r.get("checkinWhatsappSent")
     )
 
+    batch_rep_by_yr = {b["batchYear"]: b for b in batch_report.get("batches", [])}
     batch_map: dict[str, dict] = {}
     place_map: dict[str, dict] = {}
-    for r in records:
+    for r in deduped_records:
         is_yes = r["participation"] == "പങ്കെടുക്കും"
         b_key = r["batchYear"] or "Unspecified"
         if b_key not in batch_map:
@@ -2123,7 +2215,37 @@ def build_dashboard_payload(
         else:
             place_map[p_key]["no"] += 1
 
-    batch_report = build_batch_report_data(records, students)
+    # Synchronize batch_map totals with verified batch_report counts
+    for b_yr, b_info in batch_rep_by_yr.items():
+        if b_yr in batch_map or b_info["registeredCount"] > 0:
+            if b_yr not in batch_map:
+                batch_map[b_yr] = {
+                    "batchYear": b_yr,
+                    "total": b_info["registeredCount"],
+                    "yes": b_info["registeredCount"],
+                    "no": 0,
+                    "checkedIn": b_info["checkedInCount"],
+                }
+            else:
+                diff = b_info["registeredCount"] - batch_map[b_yr]["total"]
+                batch_map[b_yr]["total"] = b_info["registeredCount"]
+                if diff > 0:
+                    batch_map[b_yr]["yes"] += diff
+                elif diff < 0:
+                    reduce_yes = min(batch_map[b_yr]["yes"], -diff)
+                    batch_map[b_yr]["yes"] -= reduce_yes
+                    rem = (-diff) - reduce_yes
+                    if rem > 0:
+                        batch_map[b_yr]["no"] = max(0, batch_map[b_yr]["no"] - rem)
+            batch_map[b_yr]["officialTotal"] = b_info["officialTotal"]
+            batch_map[b_yr]["nonRegisteredCount"] = b_info["nonRegisteredCount"]
+
+    if batch_map:
+        total = sum(item["total"] for item in batch_map.values())
+        participating = sum(item["yes"] for item in batch_map.values())
+        not_participating = max(0, total - participating)
+        rate = round((participating / total) * 100, 1) if total > 0 else 0
+        pending_checkin_total = max(0, participating - checked_in_total)
 
     return {
         "success": True,
@@ -2147,6 +2269,7 @@ def build_dashboard_payload(
             "checkinWhatsappNotConfigured": checkin_wa_not_configured_total,
             "whatsappSentTotal": whatsapp_sent_total,
             "uniqueBatchRegistered": batch_report["totalRegistered"],
+            "totalPending": batch_report["totalPending"],
             "officialOverallTotal": overall_total,
             "overallPercentage": batch_report["overallPercentage"],
             "overallPercentageFormatted": batch_report["overallPercentageFormatted"],
